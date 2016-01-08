@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>WB5</title>
+<style>
+		html, body {
+		  width:  100%;
+		  height: 100%;
+		  margin: 0px;
+		}
+		</style>
+	<!-- EaselJS 0.7.1, TweenJS 0.5.1, SoundJS 0.5.2, PreloadJS 0.4.1
+	<script src="http://code.createjs.com/createjs-2015.05.21.min.js"></script> -->
+		
+		<script src="createjs-2015.05.21.min.js"></script>
+	<!-- script
+			<script src="wbFormLine.js"></script>
+	<script src="wb_Container.js"></script>
+		src="http://hammerjs.github.io/dist/hammer.min.js"></script
+			//# sourceMappingURL=dd.map
+			-->
+
+	<script src="WB5.js"></script>
+</head>
+<body onresize="draw()">
+
+<canvas id="mainCanvas" width="800" height="500" style="background-color:blue;"></canvas>
+
+<script>
+Main.main();
+
+	(function() {
+			var 
+				// Obtain a reference to the canvas element
+				// using its id.
+				createjsin = document.getElementById('mainCanvas');
+			
+			  	// Obtain a graphics context on the
+			  	// canvas element for drawing.
+			  	//context = createjsin.getContext('2d');
+ 
+			// Start listening to resize events and
+			// draw canvas.
+			initialize();
+ 
+			function initialize() {
+				// Register an event listener to
+				// call the resizeCanvas() function each time 
+				// the window is resized.
+				window.addEventListener('resize', resizeCanvas, false);
+				
+				// Draw canvas border for the first time.
+				resizeCanvas();
+			}
+				
+			
+			function resizeCanvas() {
+				createjsin.width = window.innerWidth-5;
+				createjsin.height = window.innerHeight-5;
+				//redraw();
+			}
+		
+		})();
+</script>
+	
+</body>
+</html>
