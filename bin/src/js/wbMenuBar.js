@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
  'use strict';
  /**
  * Creates MenuBar to contian main buttons for whiteboard functions 
@@ -136,5 +136,5 @@
 	}
 	
 
-	window.MenuBar = createjs.promote(MenuBar, "Container");
-}());
+	scope.MenuBar = createjs.promote(MenuBar, "Container");
+}(window.WBdraw));

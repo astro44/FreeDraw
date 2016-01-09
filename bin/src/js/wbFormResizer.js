@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
  'use strict';
 	///var scope;// SAME AS static dynamic var
 	function FormResize(id,type) {
@@ -31,11 +31,11 @@
 		this.points=[];
 		//this.l
 		this.bg = new createjs.Shape();
-		this.box1= new resizeBtn("bx1", "#FFF",bx1_move);
-		this.box2=new resizeBtn("bx2", "#FFF",bx1_move);
-		this.box3=new resizeBtn("bx3", "#FFF",bx1_move);
-		this.box4=new resizeBtn("bx4", "#FFF",bx1_move);
-		this.boxr=new resizeBtn("bxr", "#FFF",bx1_move);
+		this.box1= new WBdraw.resizeBtn("bx1", "#FFF",bx1_move);
+		this.box2=new WBdraw.resizeBtn("bx2", "#FFF",bx1_move);
+		this.box3=new WBdraw.resizeBtn("bx3", "#FFF",bx1_move);
+		this.box4=new WBdraw.resizeBtn("bx4", "#FFF",bx1_move);
+		this.boxr=new WBdraw.resizeBtn("bxr", "#FFF",bx1_move);
 		
 	
 		this.addChild(this.bg,this.box1,this.box2,this.box3,this.box4,this.boxr); 
@@ -177,5 +177,5 @@
 	
 	
 
-	window.FormResize = createjs.promote(FormResize, "Container");
-}());
+	scope.FormResize = createjs.promote(FormResize, "Container");
+}(window.WBdraw));

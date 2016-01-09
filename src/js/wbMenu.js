@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
  'use strict';  
 
  /**
@@ -87,8 +87,8 @@
 		hi.alpha=1;
 		hi.name=hi.id="hi";
 		
-		this.menucontain= new MenuBar("wbmenu");
-		this.submenu= new MenuBar("sub_wbmenu");
+		this.menucontain= new WBdraw.MenuBar("wbmenu");
+		this.submenu= new WBdraw.MenuBar("sub_wbmenu");
 		this.menubuttons(this.options);
 		this.addChild(bg,this.menucontain,hi,this.submenu);
 		//this.on("click", this.handleClick);
@@ -174,7 +174,7 @@
 		var old=null;
 		var btn=null;
 		var invoke=this.oInvoke;
-		var btn = new Button("up","up.png","back to menu",'up','#999',oUp);
+		var btn = new WBdraw.Button("up","up.png","back to menu",'up','#999',oUp);
 		this.menucontain.addChild(btn);
 		old=btn;
 		for (var i =0;i<stot;++i){
@@ -183,7 +183,7 @@
 				continue;
 			}
 			invoke=(opt["btns"][">"]==undefined? oInvoke : invoke=oInvokeSub);
-			btn = new Button(opt["name"],opt["btns"]["icon"],opt["btns"]["hint"],opt["name"],'#'+Math.floor(Math.random()*16777215).toString(16),invoke);
+			btn = new WBdraw.Button(opt["name"],opt["btns"]["icon"],opt["btns"]["hint"],opt["name"],'#'+Math.floor(Math.random()*16777215).toString(16),invoke);
 			if (old!=null){
 				btn.x=0;
 				btn.y=old.y+old.height+10;
@@ -225,7 +225,7 @@
 		if (owner.submenu.currentMenu!=selected){
 			owner.submenu.requestedMenu(selected);
 			owner.submenu.removeAllBtns();
-			var btn = new Button("back","back.png","back to menu",'back','#999',oBack);
+			var btn = new WBdraw.Button("back","back.png","back to menu",'back','#999',oBack);
 			owner.submenu.addChild(btn);
 			old=btn;
 			for (var i =0;i<stot;++i){
@@ -235,7 +235,7 @@
 				var subs = opt["btns"][">"];
 				stot = subs.length;
 				for (var j=0; j < stot; ++j){
-					btn = new Button(subs[j]["name"],subs[j]["icon"],subs[j]["hint"],subs[j]["name"],'#'+Math.floor(Math.random()*16777215).toString(16),oInvoke);
+					btn = new WBdraw.Button(subs[j]["name"],subs[j]["icon"],subs[j]["hint"],subs[j]["name"],'#'+Math.floor(Math.random()*16777215).toString(16),oInvoke);
 					if (old!=null){
 						btn.x=0;
 						btn.y=old.y+old.height+10;
@@ -345,5 +345,5 @@
 		
 		//createjs.Tween.get(hi, {override:true}).to({y:-10},250,createjs.Ease.quadIn);
 	}
-	window.Menu = createjs.promote(Menu, "Container");
-}());
+	scope.Menu = createjs.promote(Menu, "Container");
+}(window.WBdraw));

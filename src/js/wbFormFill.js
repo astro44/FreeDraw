@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
  'use strict';
 	///var scope;// SAME AS static dynamic var
 	function FormFill(id,type) {
@@ -290,5 +290,5 @@
 		MC.endFill(); 
 		return true;
 	}
-	window.FormFill = createjs.promote(FormFill, "Container");
-}());
+	scope.FormFill = createjs.promote(FormFill, "Container");
+}(window.WBdraw));

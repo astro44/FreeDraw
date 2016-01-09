@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
 
 	function Button(id,icon,hint,label, color,invoke) {
 		this.Container_constructor();
@@ -57,5 +57,5 @@
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
 
-	window.Button = createjs.promote(Button, "Container");
-}());
+	scope.Button = createjs.promote(Button, "Container");
+}(window.WBdraw));

@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
  'use strict';
 	///var scope;// SAME AS static dynamic var
 	function FormShape(id,label,type, color ) {
@@ -146,5 +146,5 @@
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
 
-	window.FormShape = createjs.promote(FormShape, "Container");
-}());
+	scope.FormShape = createjs.promote(FormShape, "Container");
+}(window.WBdraw));

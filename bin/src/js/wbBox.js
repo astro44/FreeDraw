@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
  'use strict';
 	///var scope;// SAME AS static dynamic var
 	function Box(id, color,  transparent) {
@@ -83,5 +83,5 @@
 	};
 	
 
-	window.Box = createjs.promote(Box, "Container");
-}());
+	scope.Box = createjs.promote(Box, "Container");
+}(window.WBdraw));

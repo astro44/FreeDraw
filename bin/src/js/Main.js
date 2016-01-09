@@ -1,7 +1,7 @@
 /** @define {string} */
 var BUILD = "debug";
 
-(function(){
+(function(scope){
 
 function Main(){}
 
@@ -29,6 +29,7 @@ Main.prototype.initialize = function(){
 	this.mainStage.snapToPixelsEnabled = true;
 	this.mainStage.id="mainIn";
 	window.mainStage =this.mainStage;
+	this.mainStage.enableMouseOver(10);
 	/*
 	* createjs
 	*/
@@ -41,26 +42,54 @@ Main.prototype.initialize = function(){
 	createjs.Touch.enable(this.mainStage);
 	this.mainStage.enableMouseOver();
 	//this.mainStage.enableDOMEvents(true);
+	window.WBdraw.trace("main...start");
+	window.WBdraw.trace( BrowserDetect.browser);
+	window.WBdraw.trace( BrowserDetect.version);
+	window.WBdraw.trace( BrowserDetect.os);
 	
-	console.log("main...start");
+	var board1= new WBdraw.WBoard("BASE_main","#ccc");
+	WBdraw.currentBoard = board1;
 	
-	var wbcvs = new CanvasContainer("BASE_main","#ccc");
+	this.mainStage.addChild(board1);
+	//var wbcvs = new WBoard("BASE_main","#ccc");
+	//wbcvs.init(wbcvs);
 	//var shape = new FormLine("rcolvi_", "free")
 
-	this.mainStage.addChild(wbcvs);
 }
 	
 	function tick(event){
-		var wbcvs=mainStage.getChildByName("BASE_main");
-		if (wbcvs.width != mainStage.canvas.width){
-			wbcvs.setSize(mainStage.canvas.width,mainStage.canvas.height, '#CCC')
+		var board1=mainStage.getChildByName("BASE_main");
+		if (board1.width != mainStage.canvas.width || board1.height != mainStage.canvas.height){
+			board1.setSize(mainStage.canvas.width,mainStage.canvas.height, '#CCC');
+			console.log("abc tick  width:"+board1.width+"  widthCvs:"+ mainStage.canvas.width+"  height:"+board1.height+"  heightCvs:"+mainStage.canvas.height)
+			
+			initSIZE(mainStage);
 		}
 		mainStage.update();		
+	}
+	/*mainly for mobile fixed size*/
+	function initSIZE(stage){
+		var canvas = stage.canvas;
+		if (canvas !=undefined){
+			var board1=stage.getChildByName("BASE_main");
+			var wbInfo =new window.WBdraw.ConfigWB( BrowserDetect.os, board1.width, board1.height);
+			//var wbInfo = window.WBdraw.ConfigWB;
+			window.WBdraw.trace(wbInfo.width +", "+wbInfo.height+", "+wbInfo.scaleFactor);
+			// Set the Canvas size
+			canvas.width = wbInfo.width;
+			canvas.height = wbInfo.height;
+
+			// On hi-resolution platforms, we need to counter-scale.
+			canvas.style.width = wbInfo.width * wbInfo.scaleFactor + "px";
+			canvas.style.height = wbInfo.height * wbInfo.scaleFactor + "px";
+			
+			//now intialize WBoard
+		}
 	}
 
 /**
 * Expose class.
 */
-window.Main = Main;
+scope.Main = Main;
 
-})();
+}(window));

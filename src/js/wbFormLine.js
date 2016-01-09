@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
  'use strict';
 	///var scope;// SAME AS static dynamic var
 	function FormLine(id,type) {
@@ -388,5 +388,5 @@
 	
 	
 
-	window.FormLine = createjs.promote(FormLine, "Container");
-}());
+	scope.FormLine = createjs.promote(FormLine, "Container");
+}(window.WBdraw));

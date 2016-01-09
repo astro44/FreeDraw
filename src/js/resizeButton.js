@@ -1,4 +1,4 @@
-(function() {
+(function(scope) {
 
 	function resizeBtn(id, color,invoke) {
 		this.Container_constructor();
@@ -48,5 +48,5 @@
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
 
-	window.resizeBtn = createjs.promote(resizeBtn, "Container");
-}());
+	scope.resizeBtn = createjs.promote(resizeBtn, "Container");
+}(window.WBdraw));

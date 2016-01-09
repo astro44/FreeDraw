@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+		<!-- Define the viewport 
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0, target-densitydpi=device-dpi">-->
+	<meta name="apple-mobile-web-app-capable" content="yes">
 	<title>WB5</title>
 <style>
 		html, body {
@@ -13,6 +16,7 @@
 	<!-- EaselJS 0.7.1, TweenJS 0.5.1, SoundJS 0.5.2, PreloadJS 0.4.1
 	<script src="http://code.createjs.com/createjs-2015.05.21.min.js"></script> -->
 		
+		<script src="wbDraw.js"></script>
 		<script src="createjs-2015.05.21.min.js"></script>
 	<!-- script
 			<script src="wbFormLine.js"></script>
@@ -23,7 +27,7 @@
 
 	<script src="WB5.js"></script>
 </head>
-<body onresize="draw()">
+<body ><!--onresize="resizeCanvas()"-->
 
 <canvas id="mainCanvas" width="800" height="500" style="background-color:blue;"></canvas>
 
@@ -35,7 +39,11 @@ Main.main();
 				// Obtain a reference to the canvas element
 				// using its id.
 				createjsin = document.getElementById('mainCanvas');
-			
+			document.addEventListener(
+				"touchstart",
+				function() { return false; },
+				false
+			);
 			  	// Obtain a graphics context on the
 			  	// canvas element for drawing.
 			  	//context = createjsin.getContext('2d');
