@@ -26,8 +26,6 @@
 	var p = createjs.extend(WBoard, createjs.Container);
 	
 	p.getLayer = function (id){return this.layers[id];}	
-	
-	
 		p.drawinit= function(owner,form,type,path){
 			//create Shape
 			owner._objectInit=false;
@@ -39,7 +37,7 @@
 			createjs.Tween.get(owner.form, {override:true}).to({x:pos.x,y:pos.y,alpha:1},300,createjs.Ease.quadIn);
 		},
 		p.menuEventProxy=  function (event){
-			this.drawinit(event.param[0],event.param[1]);
+			this.drawinit(this,event.param[0],event.param[1]);
 		},
 		p.shapeStart=  function (){
 			if (this.shapeNOW!=null){
@@ -57,14 +55,12 @@
 					break;
 				default:
 					if (!this._objectInit){
-						window.WBdraw.trace("fffffffff     default      ffffffffff");
+						window.WBdraw.trace(" Form"+window.WBdraw.toTitleCase(this._tempModel.classIn));
 						var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(this._tempModel.classIn)]("rcolvi_"+type, type)
 						//var shape = new FormLine("rcolvi_"+type, type);
-						console.log("Object in.."+mc);
 						shape.x=mainStage.mouseX;
 						shape.y=mainStage.mouseY;
 						mc.addChild(shape);
-						console.log("22Object in.."+this._tempModel.classIn);
 						this.shapeNOW=shape;
 						addListeners(shape,this);
 						//noncommited event
@@ -80,7 +76,7 @@
 			this.shapeNOW.drawTemp(x,y);		
 		},
 		p.drawdone=  function (owner){
-			console.log("...done nwo"+p);
+			window.WBdraw.trace("...done nwo",p);
 			owner.shapeNOW.drawPerm(owner.shapeNOW,false);
 			owner.shapeNOW=null;
 		},
@@ -112,14 +108,13 @@
 		
 		this.addChild(bg,DECK,MAIN,SAND,this.resizer);
 		this.menu=new WBdraw.Menu("m1",this); 
-		
+		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
 		this.addChild(this.menu); 
 		
 		this.on("click", this.handleClick);
 		this.on("mousedown", this.handlePress);
 		this.on("pressup", this.handleRelease);
 		
-		console.log("box1");
 		//this.cursor = "pointer";
 		//this.mouseChildren = false;
 		
@@ -164,7 +159,7 @@
 
 	p.handleClick = function (event) {
 		//alert("You clicked on a button: "+this.label);
-		console.log("click1");
+		window.WBdraw.trace("click1");
 	};
 	
 	p.handlePress = function(event){
@@ -186,20 +181,20 @@
 		this.drawing(mainStage.mouseX,mainStage.mouseY);
 	};
 	p.endDraw = function(event){
-		console.log("enddraw1");
+		window.WBdraw.trace("enddraw1");
 		this.off("pressmove", this.drawLine);
 	};
 	
 	
 	p.test_draw = function(form,type){
-		console.log("enddraw1");
+		window.WBdraw.trace("enddraw1");
 		this.drawinit(this,form,type);
 	};
 	
 
 	function onSelect(event){
-		console.log(this.resizer);
-		console.log("=========onSelect-=22222=======");
+		window.WBdraw.trace(this.resizer);
+		window.WBdraw.trace("=========onSelect-=22222=======");
 		this.resizer.handleRollOver(event);
 		this.resizer.wrapTarget(this.resizer,event.param);
 		//this.dispatchEvent(event);
@@ -211,8 +206,8 @@
 		shape.addEventListener("CommitEvent", onCommit.bind(owner));
 	}
 	function onCommit(event){
-		console.log("=========commited-========");
-		console.log(event);	
+		window.WBdraw.trace("=========commited-========");
+		window.WBdraw.trace(event);	
 	}
 
 

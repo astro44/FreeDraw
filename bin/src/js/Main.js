@@ -9,13 +9,7 @@ Main.main = function(){
 	var main = new Main();
 	main.initialize();
 }
-//Main.prototype.registerInvoker= function(){
-	//register method to be used
-//}
 
-/**
-* Initializes the basics of the app.
-*/
 Main.prototype.initialize = function(){
 	/**
 	* mainCanvas
@@ -51,9 +45,6 @@ Main.prototype.initialize = function(){
 	WBdraw.currentBoard = board1;
 	
 	this.mainStage.addChild(board1);
-	//var wbcvs = new WBoard("BASE_main","#ccc");
-	//wbcvs.init(wbcvs);
-	//var shape = new FormLine("rcolvi_", "free")
 
 }
 	
@@ -67,7 +58,7 @@ Main.prototype.initialize = function(){
 		}
 		mainStage.update();		
 	}
-	/*mainly for mobile fixed size*/
+	/*primarily mobile fixed size*/
 	function initSIZE(stage){
 		var canvas = stage.canvas;
 		if (canvas !=undefined){
@@ -78,7 +69,6 @@ Main.prototype.initialize = function(){
 			// Set the Canvas size
 			canvas.width = wbInfo.width;
 			canvas.height = wbInfo.height;
-
 			// On hi-resolution platforms, we need to counter-scale.
 			canvas.style.width = wbInfo.width * wbInfo.scaleFactor + "px";
 			canvas.style.height = wbInfo.height * wbInfo.scaleFactor + "px";
@@ -87,9 +77,7 @@ Main.prototype.initialize = function(){
 		}
 	}
 
-/**
-* Expose class.
-*/
+
 scope.Main = Main;
 
 }(window));
