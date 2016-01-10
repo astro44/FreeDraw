@@ -332,6 +332,7 @@
 		console.log("---==>> ||>>  main:"+ form +"  sub:"+ subType);
 		
 		//owner.controller.drawinit(form,subType);
+		//drawinit
 		
 			console.log("........---------__bb__--->>>>>   event Controller>>>>>   ");
 		var myevent = {

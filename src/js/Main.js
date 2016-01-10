@@ -62,7 +62,7 @@ Main.prototype.initialize = function(){
 	function initSIZE(stage){
 		var canvas = stage.canvas;
 		if (canvas !=undefined){
-			//var board1=stage.getChildByName("BASE_main");
+			var board1=stage.getChildByName("BASE_main");
 			var wbInfo =new window.WBdraw.ConfigWB( BrowserDetect.os, board1.width, board1.height);
 			//var wbInfo = window.WBdraw.ConfigWB;
 			window.WBdraw.trace(wbInfo.width +", "+wbInfo.height+", "+wbInfo.scaleFactor);

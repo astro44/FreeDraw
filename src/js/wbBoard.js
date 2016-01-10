@@ -26,12 +26,12 @@
 	var p = createjs.extend(WBoard, createjs.Container);
 	
 	p.getLayer = function (id){return this.layers[id];}	
-	
-	
 		p.drawinit= function(owner,form,type,path){
 			//create Shape
 			owner._objectInit=false;
 			var modelIN={"classIn":form,"type":type,"path":path}
+			console.log("--------------------->>>    drawinit     ");
+			console.log(modelIN);
 			owner._tempModel = modelIN;
 		}
 		p.shapeTweenUpdate= function (form,pos){
@@ -39,7 +39,9 @@
 			createjs.Tween.get(owner.form, {override:true}).to({x:pos.x,y:pos.y,alpha:1},300,createjs.Ease.quadIn);
 		},
 		p.menuEventProxy=  function (event){
-			this.drawinit(event.param[0],event.param[1]);
+			console.log(".............menuEventProxy"+event);
+			console.log(event.param[1]);
+			this.drawinit(this,event.param[0],event.param[1]);
 		},
 		p.shapeStart=  function (){
 			if (this.shapeNOW!=null){
@@ -50,6 +52,8 @@
 			}
 			var mc = this.layers['cvsMAIN'];
 			var type =this._tempModel.type;
+			console.log("...dddddddddddddddddsss--------shape START------ssssssaaaaaaaaaa...");
+			console.log(this._tempModel);
 			switch (this._tempModel.type) {
 				case "select":
 					break;
@@ -57,7 +61,7 @@
 					break;
 				default:
 					if (!this._objectInit){
-						window.WBdraw.trace("fffffffff     default      ffffffffff");
+						window.WBdraw.trace("fffffffff     default      ffffffffff   Form"+window.WBdraw.toTitleCase(this._tempModel.classIn));
 						var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(this._tempModel.classIn)]("rcolvi_"+type, type)
 						//var shape = new FormLine("rcolvi_"+type, type);
 						console.log("Object in.."+mc);
@@ -112,7 +116,7 @@
 		
 		this.addChild(bg,DECK,MAIN,SAND,this.resizer);
 		this.menu=new WBdraw.Menu("m1",this); 
-		
+		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
 		this.addChild(this.menu); 
 		
 		this.on("click", this.handleClick);
