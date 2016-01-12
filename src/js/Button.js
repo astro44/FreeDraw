@@ -18,7 +18,13 @@
 
 
 	p.setup = function() {
-		var text = new createjs.Text(this.label, "20px Arial", "#000");
+		var luma = window.WBdraw.luma(this.color);
+		var tcolor = window.WBdraw.getContrast50(this.color);
+		//console.log(luma);
+		if (luma < 130) {//very dark switch text color to white
+			var tcolor="#FFF";
+		}
+		var text = new createjs.Text(this.label, "20px Arial", tcolor);
 		text.textBaseline = "top";
 		text.textAlign = "center";
 		

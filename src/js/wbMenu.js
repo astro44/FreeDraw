@@ -95,7 +95,7 @@
 		//this.on("mousedown", this.handlePress);
 		//this.on("pressup", this.handleRelease);
 		
-		console.log("box1");
+		window.WBdraw.trace("box1");
 		//this.cursor = "pointer";
 		//this.mouseChildren = false;
 		
@@ -133,7 +133,7 @@
 		}
 	}
 	p.getWidth = function(){
-		console.log("get width");
+		window.WBdraw.trace("get width");
 		return width;
 	}
 	p.wbRegister = function (wbid,tabid){
@@ -157,7 +157,7 @@
 	p.handlePress = function(event){
         //mainStage.addEventListener("stagemousemove", this.drawLine);
         //mainStage.addEventListener("stagemouseup", this.endDraw);
-		console.log("pressing....21acfsa");
+		window.WBdraw.trace("pressing....21acfsa");
 		this.controller.shapeStart();
 		this.on("pressmove", this.drawLine);
 	};
@@ -195,7 +195,7 @@
 			
 			old = btn;
 		}
-		console.log("________done...");
+		window.WBdraw.trace("________done...");
 		var mPoint=this.menucontain.getSize();
 		//this.setSize(mPoint.x,mPoint.y);
 		console.log(mPoint);
@@ -248,7 +248,7 @@
 				}
 				break;
 			}
-			console.log(".........FINISHED ");
+			window.WBdraw.trace(".........FINISHED ");
 			owner.submenu.setSize(owner.menucontain.width,owner.menucontain.height,'#'+Math.floor(Math.random()*16777215).toString(16),true)
 			owner.submenu.x=owner.menucontain.width;
 			owner.submenu.scaleX=0;
@@ -259,9 +259,9 @@
 	function animateOut(owner){
 		createjs.Tween.get(owner.submenu, {override:true}).to({x: owner.menucontain.width, scaleX:0}, 250, createjs.Ease.quadIn);
 		createjs.Tween.get(owner.menucontain, {override:true}).to({x: 0, scaleX:1}, 250, createjs.Ease.quadIn);
-		console.log("----->OUT");
-		console.log(owner);
-		console.log(owner.hi_Y);
+		window.WBdraw.trace("----->OUT");
+		window.WBdraw.trace(owner);
+		window.WBdraw.trace(owner.hi_Y);
 		if (owner.hi_Y!=0){
 			var hi=owner.getChildByName("hi");
 			createjs.Tween.get(hi, {override:true}).to({y:owner.hi_Y},250,createjs.Ease.quadIn);
@@ -271,8 +271,8 @@
 	function animateIn(owner){
 		createjs.Tween.get(owner.submenu, {override:true}).to({x:0,scaleX:1},250,createjs.Ease.quadIn);
 		createjs.Tween.get(owner.menucontain, {override:true}).to({x:0, scaleX:.01},250,createjs.Ease.quadIn);
-		console.log("----->IN");
-		console.log(owner.hi_Y);
+		window.WBdraw.trace("----->IN");
+		window.WBdraw.trace(owner.hi_Y);
 		if (owner.hi_Y!=0){
 			var hi=owner.getChildByName("hi");
 			createjs.Tween.get(hi, {override:true}).to({y:-20},250,createjs.Ease.quadIn);
@@ -329,12 +329,12 @@
 		owner.hi_Y = mbtn.y;
 			//hi.y = mbtn.y;
 		owner.setHiSize(w,mbtn.height,'#FF0000');
-		console.log("---==>> ||>>  main:"+ form +"  sub:"+ subType);
+		window.WBdraw.trace("---==>> ||>>  main:"+ form +"  sub:"+ subType);
 		
 		//owner.controller.drawinit(form,subType);
 		//drawinit
 		
-			console.log("........---------__bb__--->>>>>   event Controller>>>>>   ");
+			window.WBdraw.trace("........---------__bb__--->>>>>   event Controller>>>>>   ");
 		var myevent = {
 			 type: "MenuEvent",
 			 param: [form,subType]

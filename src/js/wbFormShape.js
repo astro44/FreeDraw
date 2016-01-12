@@ -33,7 +33,7 @@
 		//bg.graphics.beginFill(this.color).drawRoundRect(0,0,width,height,10);
 		bg.graphics.setStrokeStyle(5);
 		bg.graphics.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));
-		bg.graphics.beginFill(this.color).drawRoundRect(0,0,width,height,10);
+		bg.graphics.beginFill(this.color).drawRoundRect(0, 0, width, height, 10);
 		
 		this.addChild(bg, text); 
 		this.on("click", this.handleClick);

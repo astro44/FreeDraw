@@ -27,6 +27,7 @@
 		
 		this.addChild(background); 
 		this.on("click", this.handleClick);
+		this.on("mousedown", this.handlePress);
 		this.on("rollover", this.handleRollOver);
 		this.on("rollout", this.handleRollOver);
 		this.cursor = "pointer";
@@ -38,10 +39,14 @@
 	} ;
 	
 	
+	p.handlePress = function(event){ 
+		event.stopImmediatePropagation();
+	};
 
 	p.handleClick = function (event) {
 		//alert("You clicked on a button: "+this.label);
 		this.method(this,this.id)
+		event.stopImmediatePropagation();
 	} ;
 
 	p.handleRollOver = function(event) {       

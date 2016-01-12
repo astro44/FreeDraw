@@ -30,8 +30,6 @@
 			//create Shape
 			owner._objectInit=false;
 			var modelIN={"classIn":form,"type":type,"path":path}
-			console.log("--------------------->>>    drawinit     ");
-			console.log(modelIN);
 			owner._tempModel = modelIN;
 		}
 		p.shapeTweenUpdate= function (form,pos){
@@ -39,8 +37,6 @@
 			createjs.Tween.get(owner.form, {override:true}).to({x:pos.x,y:pos.y,alpha:1},300,createjs.Ease.quadIn);
 		},
 		p.menuEventProxy=  function (event){
-			console.log(".............menuEventProxy"+event);
-			console.log(event.param[1]);
 			this.drawinit(this,event.param[0],event.param[1]);
 		},
 		p.shapeStart=  function (){
@@ -52,8 +48,6 @@
 			}
 			var mc = this.layers['cvsMAIN'];
 			var type =this._tempModel.type;
-			console.log("...dddddddddddddddddsss--------shape START------ssssssaaaaaaaaaa...");
-			console.log(this._tempModel);
 			switch (this._tempModel.type) {
 				case "select":
 					break;
@@ -61,14 +55,12 @@
 					break;
 				default:
 					if (!this._objectInit){
-						window.WBdraw.trace("fffffffff     default      ffffffffff   Form"+window.WBdraw.toTitleCase(this._tempModel.classIn));
+						window.WBdraw.trace(" Form"+window.WBdraw.toTitleCase(this._tempModel.classIn));
 						var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(this._tempModel.classIn)]("rcolvi_"+type, type)
 						//var shape = new FormLine("rcolvi_"+type, type);
-						console.log("Object in.."+mc);
 						shape.x=mainStage.mouseX;
 						shape.y=mainStage.mouseY;
 						mc.addChild(shape);
-						console.log("22Object in.."+this._tempModel.classIn);
 						this.shapeNOW=shape;
 						addListeners(shape,this);
 						//noncommited event
@@ -81,11 +73,13 @@
 				return;
 			}
 			//console.log("..drawing nwo");
-			this.shapeNOW.drawTemp(x,y);		
+			if (this.shapeNOW!=undefined)
+				this.shapeNOW.drawTemp(x,y);		
 		},
 		p.drawdone=  function (owner){
-			console.log("...done nwo"+p);
-			owner.shapeNOW.drawPerm(owner.shapeNOW,false);
+			window.WBdraw.trace("...done nwo",p);
+			if (owner.shapeNOW!=undefined)
+				owner.shapeNOW.drawPerm(owner.shapeNOW,false);
 			owner.shapeNOW=null;
 		},
 		p.clearObject=  function(){
@@ -123,7 +117,6 @@
 		this.on("mousedown", this.handlePress);
 		this.on("pressup", this.handleRelease);
 		
-		console.log("box1");
 		//this.cursor = "pointer";
 		//this.mouseChildren = false;
 		
@@ -168,7 +161,7 @@
 
 	p.handleClick = function (event) {
 		//alert("You clicked on a button: "+this.label);
-		console.log("click1");
+		window.WBdraw.trace("click1");
 	};
 	
 	p.handlePress = function(event){
@@ -190,20 +183,20 @@
 		this.drawing(mainStage.mouseX,mainStage.mouseY);
 	};
 	p.endDraw = function(event){
-		console.log("enddraw1");
+		window.WBdraw.trace("enddraw1");
 		this.off("pressmove", this.drawLine);
 	};
 	
 	
 	p.test_draw = function(form,type){
-		console.log("enddraw1");
+		window.WBdraw.trace("enddraw1");
 		this.drawinit(this,form,type);
 	};
 	
 
 	function onSelect(event){
-		console.log(this.resizer);
-		console.log("=========onSelect-=22222=======");
+		window.WBdraw.trace(this.resizer);
+		window.WBdraw.trace("=========onSelect-=22222=======");
 		this.resizer.handleRollOver(event);
 		this.resizer.wrapTarget(this.resizer,event.param);
 		//this.dispatchEvent(event);
@@ -215,8 +208,8 @@
 		shape.addEventListener("CommitEvent", onCommit.bind(owner));
 	}
 	function onCommit(event){
-		console.log("=========commited-========");
-		console.log(event);	
+		window.WBdraw.trace("=========commited-========");
+		window.WBdraw.trace(event);	
 	}
 
 

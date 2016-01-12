@@ -20,6 +20,7 @@
 		this.box4=null;
 		this.boxr=null;
 		this.setup();
+		console.log ("@@@@@@  NEW FormResize  ");
 	}
 	createjs.EventDispatcher.initialize(FormResize.prototype);
 	var p = createjs.extend(FormResize, createjs.Container);
@@ -77,6 +78,7 @@
 		owner.boxr.x=obj.width*.5;
 		owner.boxr.y=-60;
 		var MC = this.bg.graphics;
+		MC.clear();
 		MC.beginStroke('red'); 
 		MC.setStrokeStyle(2);
 		var origin = new createjs.Point(0,0); 

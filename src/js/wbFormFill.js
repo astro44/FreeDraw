@@ -173,14 +173,28 @@
 		}
 		lc = owner.points[0];
 		var strokeIn=5;
+		if (lc.x<0){//moveBy in the + direction X
+			owner.regX=-Math.abs(lc.x*.5);
+			owner.x=owner.x+owner.regX;
+		}else{//moveBy in neg
+			owner.regX = Math.abs(lc.x*.5);
+			owner.x = owner.x+owner.regX;
+		}
+		if (lc.y<0){//moveBy in the + direction Y
+			owner.regY =-Math.abs(lc.y*.5);
+			owner.y = owner.y+owner.regY;
+		}else{//moveBy in neg
+			owner.regY=Math.abs(lc.y*.5);
+			owner.y=owner.y+owner.regY;
+		}
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
-        HTC.rect(0,0,lc.x, lc.y);
-		MC.rect(0,0,lc.x, lc.y);
+        HTC.rect(0,0,Math.floor(lc.x), Math.floor(lc.y));
+		MC.rect(0,0,Math.floor(lc.x), Math.floor(lc.y));
 		
 		
         MC.endStroke();
@@ -198,6 +212,9 @@
 		var MC =owner.bg.graphics;
 		MC.clear();
 		owner.points=[];
+		
+
+		
 		MC.setStrokeStyle(5);
 			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
 			MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -207,7 +224,6 @@
 		MC.endFill(); 
 	}
 	p.circlePerm = function(owner,shape,init){
-		
 		var MC =owner.bg.graphics;
 		var HTC =owner.bg.hitArea.graphics;
 		MC.clear();
@@ -222,15 +238,30 @@
 		}
 		lc = owner.points[0];
 		var strokeIn=5;
+		if (lc.x<0){//moveBy in the + direction X
+			owner.regX=-Math.abs(lc.x*.5);
+			owner.x=owner.x+owner.regX;
+		}else{//moveBy in neg
+			owner.regX = Math.abs(lc.x*.5);
+			owner.x = owner.x+owner.regX;
+		}
+		if (lc.y<0){//moveBy in the + direction Y
+			owner.regY =-Math.abs(lc.y*.5);
+			owner.y = owner.y+owner.regY;
+		}else{//moveBy in neg
+			owner.regY=Math.abs(lc.y*.5);
+			owner.y=owner.y+owner.regY;
+		}
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
-        HTC.drawEllipse(0,0,lc.x, lc.y);
-		MC.drawEllipse(0,0,lc.x, lc.y);
+        HTC.drawEllipse(0,0,Math.floor(lc.x), Math.floor(lc.y));
+		MC.drawEllipse(0,0,Math.floor(lc.x), Math.floor(lc.y));
 		
+		window.WBdraw.trace();
 		
         MC.endStroke();
         HTC.endStroke();
@@ -240,7 +271,6 @@
 	}
 	
 	p.star = function(owner,fx,fy){
-		
 		var lc= owner.bg.globalToLocal(fx,fy);
 		var sPos={};
 		var MC =owner.bg.graphics;

@@ -181,6 +181,20 @@
 			return false;
 		}
 		lc = owner.points[0];
+		if (lc.x<0){//moveBy in the + direction X
+			owner.regX=-Math.abs(lc.x*.5);
+		}else{//moveBy in neg
+			owner.regX = Math.abs(lc.x*.5);
+		}
+		owner.x = owner.x+owner.regX;
+		
+		if (lc.y<0){//moveBy in the + direction Y
+			owner.regY =-Math.abs(lc.y*.5);
+		}else{//moveBy in neg
+			owner.regY=Math.abs(lc.y*.5);
+		}
+		owner.y=owner.y+owner.regY;
+		
 		var strokeIn=5;
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
@@ -263,21 +277,37 @@
 			//var d = Math.sqrt( (x2-=x1)*x2 + (y2-=y1)*y2 );
 		}
 		//(lowX,lowY)(addx,addx)
-		owner.bg.x=(lowX<0?Math.abs(lowX):0);
+		/*owner.bg.x=(lowX<0?Math.abs(lowX):0);
 		owner.bg.y=(lowY>0?Math.abs(lowY):0);
+		*/
         MC.endStroke();
         HTC.endStroke();
 		HTC.endFill(); 
 		owner.x-=owner.bg.x;
 		owner.y+=owner.bg.y;
 		owner.rect= new createjs.Rectangle(0,0,maxX,maxY);
-		owner.regX = maxX*.5;
+		/*owner.regX = maxX*.5;
 		owner.regY = maxY*.5;
 		owner.x+=owner.regX;
 		owner.y+=owner.regY;
+		*/
+		
+		var xMid = lowX+Math.abs((lowX-maxX)*.5)
+		var yMid = lowY+Math.abs((lowY-maxY)*.5)
 		//owner.bg.hitArea.x=owner.bg.x;
 		//owner.bg.hitArea.y=owner.bg.y;
-		
+		if (lowX<0){//moveBy in the + direction X
+			owner.regX=-Math.abs(xMid);
+		}else{//moveBy in neg
+			owner.regX = Math.abs(xMid);
+		}
+		owner.x = owner.x+owner.regX;
+		if (lowY<0){//moveBy in the + direction Y
+			owner.regY =-Math.abs(yMid);
+		}else{//moveBy in neg
+			owner.regY=Math.abs(yMid);
+		}
+			owner.y=owner.y+owner.regY;
 		owner.setDimension(owner,owner.rect.width,owner.rect.height);
 		return true;
 	};
