@@ -73,8 +73,10 @@
 				return;
 			}
 			//console.log("..drawing nwo");
-			if (this.shapeNOW!=undefined)
-				this.shapeNOW.drawTemp(x,y);		
+			if (this.shapeNOW!=undefined){
+				var lc= this.shapeNOW.bg.globalToLocal(x,y);
+				this.shapeNOW.drawTemp(lc.x,lc.y);		
+			}
 		},
 		p.drawdone=  function (owner){
 			window.WBdraw.trace("...done nwo",p);

@@ -38,6 +38,7 @@
 	} ;
 
 	p.drawTemp= function (fx,fy) {
+		
 		p[this.type](this,fx,fy);
 	}
 
@@ -143,9 +144,8 @@
 
 	
 	p.square = function(owner,fx,fy){
-		
-		var lc= owner.bg.globalToLocal(fx,fy);
-		
+		var lc=new createjs.Point(fx,fy);
+		//var lc= owner.bg.globalToLocal(fx,fy);
 		var MC =owner.bg.graphics;
 		MC.clear();
 		owner.points=[];
@@ -187,6 +187,8 @@
 			owner.regY=Math.abs(lc.y*.5);
 			owner.y=owner.y+owner.regY;
 		}
+		owner.width=Math.abs(Math.floor(lc.x));
+		owner.height=Math.abs(Math.floor(lc.y));
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -201,13 +203,15 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
+		
+		
 		return true;
 	}
 
 	
 	p.circle = function(owner,fx,fy){
-		
-		var lc= owner.bg.globalToLocal(fx,fy);
+		var lc=new createjs.Point(fx,fy);
+		//var lc= owner.bg.globalToLocal(fx,fy);
 		
 		var MC =owner.bg.graphics;
 		MC.clear();
@@ -252,6 +256,9 @@
 			owner.regY=Math.abs(lc.y*.5);
 			owner.y=owner.y+owner.regY;
 		}
+		
+		owner.width=Math.abs(Math.floor(lc.x));
+		owner.height=Math.abs(Math.floor(lc.y));
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -271,7 +278,8 @@
 	}
 	
 	p.star = function(owner,fx,fy){
-		var lc= owner.bg.globalToLocal(fx,fy);
+		var lc=new createjs.Point(fx,fy);
+		//var lc= owner.bg.globalToLocal(fx,fy);
 		var sPos={};
 		var MC =owner.bg.graphics;
 		MC.clear();
@@ -304,6 +312,9 @@
 		}
 		sPos = owner.points[0];
 		var strokeIn=5;
+		
+		owner.width=Math.abs(Math.floor(lc.x));
+		owner.height=Math.abs(Math.floor(lc.y));
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 

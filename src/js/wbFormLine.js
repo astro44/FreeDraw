@@ -141,8 +141,9 @@
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
 	p.straight =  function (owner,fx,fy){
-		var lc= owner.bg.globalToLocal(fx,fy);
 		
+		var lc=new createjs.Point(fx,fy);
+		//var lc= owner.bg.globalToLocal(fx,fy);
 		var MC =owner.bg.graphics;
 		MC.clear();
 		owner.points=[];
@@ -220,7 +221,8 @@
 		var MC =owner.bg.graphics;
 		var lp = owner.points[owner.points.length-1]; 
 		var d=0;
-		var lc= owner.bg.globalToLocal(fx,fy);
+		var lc=new createjs.Point(fx,fy);
+		//var lc= owner.bg.globalToLocal(fx,fy);
 		//console.log(fx+","+fy);
 		//console.log(lc);
 		MC.setStrokeStyle(5);
@@ -318,7 +320,8 @@
 		sPos.x=0;
 		sPos.y=0;
 		var MC =owner.bg.graphics;
-		var lc= owner.bg.globalToLocal(fx,fy);
+		var lc=new createjs.Point(fx,fy);
+		//var lc= owner.bg.globalToLocal(fx,fy);
 		MC.clear();
 		owner.points=[];
 		MC.setStrokeStyle(5);
@@ -343,7 +346,7 @@
 		//owner.width=sPos.cx
 		//console.log(owner.width+"x"+owner.height);
 	};	
-	p.bezierPerm = function (owner,shape,init){
+	p.bezierPerm = function (owner,shape,init){//http://blog.sklambert.com/finding-the-control-points-of-a-bezier-curve/
 		var tot = owner.points.length;
 		var strokeIn=5;
 		var MC =owner.bg.graphics;
