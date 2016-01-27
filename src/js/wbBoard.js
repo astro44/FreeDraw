@@ -110,7 +110,7 @@
 		this.resizer.y=20;
 		
 		
-		this.addChild(bg,DECK,MAIN,SAND,this.resizer);
+		this.addChild(bg,DECK,MAIN,SAND);
 		this.menu=new WBdraw.Menu("m1",this); 
 		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
 		this.addChild(this.menu); 
@@ -200,6 +200,8 @@
 		window.WBdraw.trace(this.resizer);
 		window.WBdraw.trace("=========onSelect-=22222=======");
 		this.resizer.handleRollOver(event);
+		if (this.resizer.parent==undefined)
+			this.addChild(this.resizer);
 		this.resizer.wrapTarget(this.resizer,event.param);
 		//this.dispatchEvent(event);
 	}

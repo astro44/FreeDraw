@@ -50,6 +50,8 @@
 				.beginStroke('#ccc')
 				.beginFill(color)
 				.drawRect(0,0,width,height);
+				
+		this.cache(0,0,width,height);
 	};
 	p.getWidth = function(){
 		console.log("get width");

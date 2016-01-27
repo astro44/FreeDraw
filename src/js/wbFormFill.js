@@ -38,7 +38,7 @@
 	} ;
 
 	p.drawTemp= function (fx,fy) {
-		
+		this.uncache();
 		p[this.type](this,fx,fy);
 	}
 
@@ -91,6 +91,9 @@
 			target.x=mStage.mouseX-target.rel.x+target.regX;
 			target.y=mStage.mouseY-target.rel.y+target.regY;
 			console.log(target.rel+","+target.regX);
+			console.log(event);
+			//mainStage.update();
+			//event.target.update();
 		}
 	}
 	p.moveEND = function(event){
@@ -156,6 +159,7 @@
 		owner.points.push(lc);
 		MC.endStroke();
 		MC.endFill(); 
+		//this.cache(0,0,inX,inY);
 	}
 	p.squarePerm = function(owner,shape,init){
 		
@@ -187,23 +191,24 @@
 			owner.regY=Math.abs(lc.y*.5);
 			owner.y=owner.y+owner.regY;
 		}
-		owner.width=Math.abs(Math.floor(lc.x));
-		owner.height=Math.abs(Math.floor(lc.y));
+		var inX=Math.floor(lc.x);
+		var inY=Math.floor(lc.y)
+		owner.width=Math.abs(inX);
+		owner.height=Math.abs(inY);
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
-        HTC.rect(0,0,Math.floor(lc.x), Math.floor(lc.y));
-		MC.rect(0,0,Math.floor(lc.x), Math.floor(lc.y));
-		
+        HTC.rect(0,0,inX,inY);
+		MC.rect(0,0,inX,inY);
 		
         MC.endStroke();
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
-		
+		owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
 		
 		return true;
 	}
@@ -257,16 +262,18 @@
 			owner.y=owner.y+owner.regY;
 		}
 		
-		owner.width=Math.abs(Math.floor(lc.x));
-		owner.height=Math.abs(Math.floor(lc.y));
+		var inX=Math.floor(lc.x);
+		var inY=Math.floor(lc.y)
+		owner.width=Math.abs(inX);
+		owner.height=Math.abs(inY);
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
-        HTC.drawEllipse(0,0,Math.floor(lc.x), Math.floor(lc.y));
-		MC.drawEllipse(0,0,Math.floor(lc.x), Math.floor(lc.y));
+        HTC.drawEllipse(0,0,inX,inY);
+		MC.drawEllipse(0,0,inX,inY);
 		
 		window.WBdraw.trace();
 		
@@ -274,6 +281,7 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
+		owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
 		return true;
 	}
 	
@@ -313,8 +321,8 @@
 		sPos = owner.points[0];
 		var strokeIn=5;
 		
-		owner.width=Math.abs(Math.floor(lc.x));
-		owner.height=Math.abs(Math.floor(lc.y));
+		owner.width=Math.abs(Math.floor(sPos.radius*2));
+		owner.height=Math.abs(Math.floor(sPos.radius*2));
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -324,7 +332,11 @@
         HTC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
 		MC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
 		
-		
+		owner.x-=sPos.radius;
+		owner.y-=sPos.radius;
+		this.x+=sPos.radius;
+		this.y+=sPos.radius;
+		/**/
         MC.endStroke();
         HTC.endStroke();
 		HTC.endFill(); 

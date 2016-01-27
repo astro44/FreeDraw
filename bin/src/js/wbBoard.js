@@ -73,11 +73,15 @@
 				return;
 			}
 			//console.log("..drawing nwo");
-			this.shapeNOW.drawTemp(x,y);		
+			if (this.shapeNOW!=undefined){
+				var lc= this.shapeNOW.bg.globalToLocal(x,y);
+				this.shapeNOW.drawTemp(lc.x,lc.y);		
+			}
 		},
 		p.drawdone=  function (owner){
 			window.WBdraw.trace("...done nwo",p);
-			owner.shapeNOW.drawPerm(owner.shapeNOW,false);
+			if (owner.shapeNOW!=undefined)
+				owner.shapeNOW.drawPerm(owner.shapeNOW,false);
 			owner.shapeNOW=null;
 		},
 		p.clearObject=  function(){
@@ -106,7 +110,7 @@
 		this.resizer.y=20;
 		
 		
-		this.addChild(bg,DECK,MAIN,SAND,this.resizer);
+		this.addChild(bg,DECK,MAIN,SAND);
 		this.menu=new WBdraw.Menu("m1",this); 
 		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
 		this.addChild(this.menu); 
@@ -196,6 +200,8 @@
 		window.WBdraw.trace(this.resizer);
 		window.WBdraw.trace("=========onSelect-=22222=======");
 		this.resizer.handleRollOver(event);
+		if (this.resizer.parent==undefined)
+			this.addChild(this.resizer);
 		this.resizer.wrapTarget(this.resizer,event.param);
 		//this.dispatchEvent(event);
 	}

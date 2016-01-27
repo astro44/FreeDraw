@@ -1,8 +1,9 @@
 (function(scope) {
 
-	function resizeBtn(id, color,invoke) {
+	function resizeBtn(id, color,invoke,revoke) {
 		this.Container_constructor();
 		this.method=invoke
+		this.methodStop=revoke
 		this.color = color;
 		this.name=this.id=id;
 		this.type="btn";
@@ -27,6 +28,9 @@
 		
 		this.addChild(background); 
 		this.on("click", this.handleClick);
+		this.on("mousedown", this.handlePress);
+		//this.on("mousedown", this.handlePress);
+		this.on("pressup", this.handleRelease);
 		this.on("rollover", this.handleRollOver);
 		this.on("rollout", this.handleRollOver);
 		this.cursor = "pointer";
@@ -38,10 +42,20 @@
 	} ;
 	
 	
+	p.handlePress = function(event){ 
+		this.method(this,this.id)
+		event.stopImmediatePropagation();
+	};
+	p.handleRelease = function(event){ 
+		console.log("release");
+		this.methodStop(this,this.id)
+		event.stopImmediatePropagation();
+	};
 
 	p.handleClick = function (event) {
 		//alert("You clicked on a button: "+this.label);
-		this.method(this,this.id)
+		//this.method(this,this.id)
+		event.stopImmediatePropagation();
 	} ;
 
 	p.handleRollOver = function(event) {       

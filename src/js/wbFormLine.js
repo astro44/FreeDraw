@@ -90,6 +90,7 @@
 			target.x=mStage.mouseX-target.rel.x+target.regX;
 			target.y=mStage.mouseY-target.rel.y+target.regY;
 			console.log(target.rel+","+target.regX);
+			//mainStage.update();
 		}
 	}
 	p.moveEND = function(event){

@@ -154,17 +154,7 @@
 		console.log("click1");
 	};
 	
-	p.handlePress = function(event){
-        //mainStage.addEventListener("stagemousemove", this.drawLine);
-        //mainStage.addEventListener("stagemouseup", this.endDraw);
-		window.WBdraw.trace("pressing....21acfsa");
-		this.controller.shapeStart();
-		this.on("pressmove", this.drawLine);
-	};
-	p.handleRelease = function(event){
-		this.controller.drawdone();
-		this.off("pressmove", this.drawLine);
-	};
+
 
 	p.menubuttons = function(buttons, language){
 		if (language==null) language = "EN";

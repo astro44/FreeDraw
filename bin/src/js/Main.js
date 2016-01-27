@@ -24,12 +24,37 @@ Main.prototype.initialize = function(){
 	this.mainStage.id="mainIn";
 	window.mainStage =this.mainStage;
 	this.mainStage.enableMouseOver(10);
+	
+	
+	var stats = new Stats();
+	var stats1 = new Stats();
+	var stats2 = new Stats();
+	stats.setMode( 0 )
+	stats1.setMode( 1 )
+	stats2.setMode( 2 )
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.left = '0px';
+	stats.domElement.style.bottom = '10px';
+	document.body.appendChild( stats.domElement );
+	window.stats=stats;
+	stats1.domElement.style.position = 'absolute';
+	stats1.domElement.style.left = '90px';
+	stats1.domElement.style.bottom = '10px';
+	document.body.appendChild( stats1.domElement );
+	window.stats1=stats1;
+	stats2.domElement.style.position = 'absolute';
+	stats2.domElement.style.left = '180px';
+	stats2.domElement.style.bottom = '10px';
+	document.body.appendChild( stats2.domElement );
+	window.stats2=stats2;
+	//this.window.meter=meter;
 	/*
 	* createjs
 	*/
 	createjs.Ticker.addEventListener("tick", this.mainStage);
-	createjs.Ticker.timingMode = createjs.Ticker.RAF;
-	createjs.Ticker.setFPS(30);
+	//createjs.Ticker.timingMode = createjs.Ticker.RAF;
+	createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
+	createjs.Ticker.setFPS(60);
 	
 	createjs.Ticker.on("tick",tick);
 	
@@ -50,13 +75,21 @@ Main.prototype.initialize = function(){
 	
 	function tick(event){
 		var board1=mainStage.getChildByName("BASE_main");
+		
+		window.stats.begin();
+		window.stats1.begin();
+		window.stats2.begin();
 		if (board1.width != mainStage.canvas.width || board1.height != mainStage.canvas.height){
 			board1.setSize(mainStage.canvas.width,mainStage.canvas.height, '#CCC');
 			console.log("abc tick  width:"+board1.width+"  widthCvs:"+ mainStage.canvas.width+"  height:"+board1.height+"  heightCvs:"+mainStage.canvas.height)
 			
 			initSIZE(mainStage);
 		}
-		mainStage.update();		
+		//mainStage.update();		
+		
+		window.stats.end();
+		window.stats1.end();
+		window.stats2.end();
 	}
 	/*primarily mobile fixed size*/
 	function initSIZE(stage){
