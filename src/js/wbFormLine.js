@@ -263,20 +263,33 @@
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
-        HTC.moveTo(0, 0);
-        MC.moveTo(0, 0);
 		var maxY=0;
 		var maxX=0;
 		var lowX=0;
 		var lowY=0;
+		var negX=0;
+		var negY=0;
 		for (var i=0;i<tot;++i){
 			var cp=owner.points[i];
-			MC.lineTo(cp.x,cp.y);
-			HTC.lineTo(cp.x,cp.y);
 			if (cp.x>maxX) maxX=cp.x;
 			if (cp.y>maxY) maxY=cp.y;
 			if (cp.x<lowX) lowX=cp.x;
 			if (cp.y<lowY) lowY=cp.y;
+		}
+       // HTC.moveTo(0, 0);
+       // MC.moveTo(0, 0);
+		if (lowX<0){negX=lowX; }
+		if (lowY<0){negY=lowY}
+		for (var i=0;i<tot;++i){
+			owner.points[i].x+=Math.abs(negX);
+			owner.points[i].y+=Math.abs(negY);
+			var cp=owner.points[i];
+			if (i==0){
+				HTC.moveTo(cp.x,cp.y);
+				MC.moveTo(cp.x,cp.y);
+			}
+			MC.lineTo(cp.x,cp.y);
+			HTC.lineTo(cp.x,cp.y);
 			//var d = Math.sqrt( (x2-=x1)*x2 + (y2-=y1)*y2 );
 		}
 		//(lowX,lowY)(addx,addx)
@@ -286,31 +299,21 @@
         MC.endStroke();
         HTC.endStroke();
 		HTC.endFill(); 
-		owner.x-=owner.bg.x;
-		owner.y+=owner.bg.y;
-		owner.rect= new createjs.Rectangle(0,0,maxX,maxY);
-		/*owner.regX = maxX*.5;
-		owner.regY = maxY*.5;
-		owner.x+=owner.regX;
-		owner.y+=owner.regY;
-		*/
+		owner.x+=negX;
+		owner.y+=negY;
+		owner.rect= new createjs.Rectangle(0,0,Math.abs(negX)+maxX,Math.abs(negY)+maxY);
+		var xMid = owner.rect.width*.5;
+		var yMid =  owner.rect.height*.5;
+		owner.x-=xMid;
+		owner.y-=yMid;
 		
-		var xMid = lowX+Math.abs((lowX-maxX)*.5)
-		var yMid = lowY+Math.abs((lowY-maxY)*.5)
 		//owner.bg.hitArea.x=owner.bg.x;
 		//owner.bg.hitArea.y=owner.bg.y;
-		if (lowX<0){//moveBy in the + direction X
-			owner.regX=-Math.abs(xMid);
-		}else{//moveBy in neg
-			owner.regX = Math.abs(xMid);
-		}
-		owner.x = owner.x+owner.regX;
-		if (lowY<0){//moveBy in the + direction Y
-			owner.regY =-Math.abs(yMid);
-		}else{//moveBy in neg
-			owner.regY=Math.abs(yMid);
-		}
-			owner.y=owner.y+owner.regY;
+
+			owner.regX=xMid;
+			owner.x+=xMid*2;
+			owner.regY=yMid;
+			owner.y+=yMid*2;
 		owner.setDimension(owner,owner.rect.width,owner.rect.height);
 		return true;
 	};
