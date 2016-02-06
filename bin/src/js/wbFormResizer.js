@@ -37,18 +37,28 @@
 			btn.off("pressmove");
 			var pt= this.formTarget.globalToLocal(this.box4.x*2,this.box4.y*2);
 			console.log("......done........"+this.x+"X"+this.y  +"   "+pt.x+"X"+pt.y);
-			this.formTarget.x=this.x-this.box4.x+this.tolerance;
-			this.formTarget.y=this.y-this.box4.y+this.tolerance;
 			//this.formTarget.drawTemp(pt.x,pt.y);
-			this.formTarget.drawTemp((this.box4.x*2)-this.tolerance*2,(this.box4.y*2)-this.tolerance*2);
-			this.formTarget.drawPerm(this.formTarget);
+			this.rotation=this.formTarget.rotation;
+			switch(this.formTarget.type){
+				case 'bezier':
+					break;
+				case 'free':
+					break;
+				default:
+					this.formTarget.x=this.x-this.box4.x+this.tolerance;
+					this.formTarget.y=this.y-this.box4.y+this.tolerance;
+					this.formTarget.drawTemp((this.box4.x*2)-this.tolerance*2,(this.box4.y*2)-this.tolerance*2);
+					this.formTarget.drawPerm(this.formTarget);
+			}
 		return "";
 	}
 	
-	//p.moveitR = function(event){
 	function moveitR(event){
-		this.rotation=event.stageX;
-		this.formTarget.rotation=this.rotation;
+		var pt = this.globalToLocal(event.stageX,event.stageY);
+		var angle=cAngle({x:0,y:0},pt);
+		console.log("x1:"+this.boxr.x+" y1:"+this.boxr.y+" sx:"+pt.x+"  sy:"+pt.y);
+		console.log(angle);
+		this.formTarget.rotation=angle+this.rotation;//this.rotation;
 	}
 	function moveit(event){
 		console.log(event);
@@ -56,14 +66,13 @@
 		var pt = this.globalToLocal(event.stageX,event.stageY);
 		var oldX=0;
 		var oldY=0;
-		switch(bx.id){
-			case 'bx1':
-				break;
-			case 'bx2':
+		console.log("==============>>>>>>>>>>>"+this.formTarget.type);
+		switch(this.formTarget.type){
+			case 'bezier':
 				break;
 			case 'bx3':
 				break;
-			case 'bx4':
+			default:
 				oldX=this.box4.x;
 				oldY=this.box4.y;
 				if(pt.x>this.box1.x+30 && pt.y>this.box1.y+30){
@@ -107,7 +116,12 @@
 	p.handleRollOver = function(event) {       
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
-	
+
+	function cAngle(center, p1) {
+		var p0 = {x: center.x, y: center.y - Math.sqrt(Math.abs(p1.x - center.x) * Math.abs(p1.x - center.x)
+				+ Math.abs(p1.y - center.y) * Math.abs(p1.y - center.y))};
+		return (2 * Math.atan2(p1.y - p0.y, p1.x - p0.x)) * 180 / Math.PI;
+	}
 	p.wrapTarget = function(owner,obj){
 		console.log("---------------->>resizer"+this.rotation);
 		this.rotation=obj.rotation;
@@ -125,17 +139,25 @@
 		miniWrap(this.bg,midW,midH);
 	}
 	function positionBoxes(owner,midW,midH,bxname){
-		owner.box1.x=owner.box3.x=0-midW;
-		owner.box1.y=owner.box2.y=0-midH
-		owner.box2.x=midW;
-		owner.box3.y=midH;
-		if (bxname!="bx4"){
-			owner.box4.x=midW;
-			owner.box4.y=midH;
+		switch(owner.formTarget.type){
+			case 'bezier':
+				owner.box1.x=owner.formTarget
+				break;
+			case 'bx3':
+				break;
+			default:
+				owner.box1.x=owner.box3.x=0-midW;
+				owner.box1.y=owner.box2.y=0-midH
+				owner.box2.x=midW;
+				owner.box3.y=midH;
+				if (bxname!="bx4"){
+					owner.box4.x=midW;
+					owner.box4.y=midH;
+				}
+				
+				owner.boxr.x=0;
+				owner.boxr.y=-60-midH;
 		}
-		
-		owner.boxr.x=0;
-		owner.boxr.y=-60-midH;
 	}
 		
 	function miniWrap(bg,midW,midH){

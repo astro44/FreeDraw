@@ -42,6 +42,8 @@
 			switch(this.formTarget.type){
 				case 'bezier':
 					break;
+				case 'free':
+					break;
 				default:
 					this.formTarget.x=this.x-this.box4.x+this.tolerance;
 					this.formTarget.y=this.y-this.box4.y+this.tolerance;
