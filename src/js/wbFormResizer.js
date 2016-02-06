@@ -38,6 +38,7 @@
 			var pt= this.formTarget.globalToLocal(this.box4.x*2,this.box4.y*2);
 			console.log("......done........"+this.x+"X"+this.y  +"   "+pt.x+"X"+pt.y);
 			//this.formTarget.drawTemp(pt.x,pt.y);
+			this.rotation=this.formTarget.rotation;
 			switch(this.formTarget.type){
 				case 'bezier':
 					break;
@@ -50,10 +51,12 @@
 		return "";
 	}
 	
-	//p.moveitR = function(event){
 	function moveitR(event){
-		this.rotation=event.stageX;
-		this.formTarget.rotation=this.rotation;
+		var pt = this.globalToLocal(event.stageX,event.stageY);
+		var angle=cAngle({x:0,y:0},pt);
+		console.log("x1:"+this.boxr.x+" y1:"+this.boxr.y+" sx:"+pt.x+"  sy:"+pt.y);
+		console.log(angle);
+		this.formTarget.rotation=angle+this.rotation;//this.rotation;
 	}
 	function moveit(event){
 		console.log(event);
@@ -111,7 +114,12 @@
 	p.handleRollOver = function(event) {       
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
-	
+
+	function cAngle(center, p1) {
+		var p0 = {x: center.x, y: center.y - Math.sqrt(Math.abs(p1.x - center.x) * Math.abs(p1.x - center.x)
+				+ Math.abs(p1.y - center.y) * Math.abs(p1.y - center.y))};
+		return (2 * Math.atan2(p1.y - p0.y, p1.x - p0.x)) * 180 / Math.PI;
+	}
 	p.wrapTarget = function(owner,obj){
 		console.log("---------------->>resizer"+this.rotation);
 		this.rotation=obj.rotation;
