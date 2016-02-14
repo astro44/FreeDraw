@@ -109,18 +109,27 @@
 		//event.stopImmediatePropagation();
 	}
 	
+
+	
 	p.handlePress = function(event){
-        mainStage.addEventListener("stagemousemove", this.moveSTART);
+       // mainStage.addEventListener("stagemousemove", this.moveSTART);
         mainStage.addEventListener("stagemouseup", this.moveEND);
 		if (!this.scaled){
 		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
-		this.scaled=true
-		this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
+		this.scaled=true;
 		
+		//this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
+		this.rel2=new createjs.Point(mainStage.mouseX-this.x,mainStage.mouseY-this.y);
+		//this.regStage = this.localToGlobal(this.regX,this.regY);
+		
+			
+			this.rel = new createjs.Point(this.width*.5+this.rel2.x,this.height*.5+this.rel2.y);
 		//this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
 		event.stopImmediatePropagation();
 		}
 	}
+	
+	
 	p.handleRelease = function(event){
         mainStage.removeEventListener("stagemousemove", this.moveSTART);
         mainStage.removeEventListener("stagemouseup", this.moveEND);

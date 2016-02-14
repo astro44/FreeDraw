@@ -14,6 +14,7 @@
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
 		this.setup();
+		this.tempOrigin=null;
 	}
 	createjs.EventDispatcher.initialize(FormFill.prototype);
 	var p = createjs.extend(FormFill, createjs.Container);
@@ -41,7 +42,7 @@
 		this.uncache();
 		p[this.type](this,fx,fy);
 	}
-
+	
 	p.drawPerm= function (shape,init) {
 		if (shape.id !=this.id)
 			return;
@@ -52,12 +53,20 @@
 			throw "[E] No function matches:"+this.type+"Perm() in FormLine (wbFormLine.js)";
 			
 		}
+		  // var myevent = {
+			// type: "CommitEvent",
+			// param: this
+		  // };
+		if (finalIn)
+			this.commit("create");
+			//this.dispatchEvent(myevent);
+	}
+	p.commit = function (action){
 		   var myevent = {
 			 type: "CommitEvent",
 			 param: this
 		   };
-		if (finalIn)
-			this.dispatchEvent(myevent);
+		this.dispatchEvent(myevent);
 	}
 
 	p.width=0;
@@ -70,9 +79,11 @@
 		return width;
 	}
 	p.moveLocally = function(evt){
-		//Below is only needed to keep object in play
-		this.x=evt.stageX-this.rel.x+this.regX;
-		this.y=evt.stageY-this.rel.y+this.regY;
+			var newX=evt.stageX-this.rel.x+this.regX;
+			var newY=evt.stageY-this.rel.y+this.regY;
+
+		this.x=newX;
+		this.y=newY;
 		update=true;
 		evt.stopImmediatePropagation();
 	}
@@ -88,10 +99,11 @@
         }
 
         if (target != null) {
-			target.x=mStage.mouseX-target.rel.x+target.regX;
-			target.y=mStage.mouseY-target.rel.y+target.regY;
+			//target.x=mStage.mouseX-target.rel.x+target.regX;
+			//target.y=mStage.mouseY-target.rel.y+target.regY;
 			console.log(target.rel+","+target.regX);
 			console.log(event);
+			console.log("@@@  start 9 @@@@");
 			//mainStage.update();
 			//event.target.update();
 		}
@@ -112,18 +124,29 @@
 		//event.stopImmediatePropagation();
 	}
 	
+	
+	
 	p.handlePress = function(event){
-        mainStage.addEventListener("stagemousemove", this.moveSTART);
+       // mainStage.addEventListener("stagemousemove", this.moveSTART);
         mainStage.addEventListener("stagemouseup", this.moveEND);
 		if (!this.scaled){
 		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
-		this.scaled=true
-		this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
+		this.scaled=true;
 		
+		//this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
+		this.rel2=new createjs.Point(mainStage.mouseX-this.x,mainStage.mouseY-this.y);
+		//this.regStage = this.localToGlobal(this.regX,this.regY);
+		
+			
+			this.rel = new createjs.Point(this.width*.5+this.rel2.x,this.height*.5+this.rel2.y);
 		//this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
 		event.stopImmediatePropagation();
 		}
 	}
+	
+	
+	
+	
 	p.handleRelease = function(event){
         mainStage.removeEventListener("stagemousemove", this.moveSTART);
         mainStage.removeEventListener("stagemouseup", this.moveEND);
