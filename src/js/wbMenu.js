@@ -3,7 +3,7 @@
 
  /**
  *@author Rcolvin
- * Creates Menu that holds MenuBar And floating menu
+ * Creates Menu that holds MenuBar And sub menu
  * @param {String} id 
  * @return {String} color
  */
@@ -19,8 +19,8 @@
 		this.currentMenu="";
 		//menu items
 		this.options= new Object();
-		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"delete":true};
-		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"delete":true};
+		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"modify":true};
+		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"modify":true};
 		/**
 		* 
 		* Each name for main menu MUST match a "class" name like "menu" to match "Menu"
@@ -44,7 +44,9 @@
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
 			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
-			{"name":"delete", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}}
+			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
+					{"name":"color","icon":"ss.png","action":"method1","hint":""},
+					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
 		];
 		this.options["EN"]=[ 
 			{"name":"select", "btns":{"icon":"ss.png","hint":"select opject","action":"select"}},
@@ -63,7 +65,9 @@
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
 			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
-			{"name":"delete", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}}
+			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
+					{"name":"color","icon":"ss.png","action":"method1","hint":""},
+					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
 		];
 		
 		this.setup();
@@ -91,9 +95,10 @@
 		this.submenu= new WBdraw.MenuBar("sub_wbmenu");
 		this.menubuttons(this.options);
 		this.addChild(bg,this.menucontain,hi,this.submenu);
-		//this.on("click", this.handleClick);
-		//this.on("mousedown", this.handlePress);
-		//this.on("pressup", this.handleRelease);
+		
+		this.on("mousedown", this.handlePress);
+		this.on("pressup", this.handleRelease);
+		this.on("pressmove", this.moveLocally);
 		
 		window.WBdraw.trace("box1");
 		//this.cursor = "pointer";
@@ -149,10 +154,15 @@
 	p.push =function(items){}//toback
 	
 
-	p.handleClick = function (event) {
-		//alert("You clicked on a button: "+this.label);
-		console.log("click1");
-	};
+	p.handlePress = function(event){
+		event.stopImmediatePropagation();
+	}
+	p.handleRelease = function(event){
+		event.stopImmediatePropagation();
+	}
+	p.moveLocally = function(event){
+		event.stopImmediatePropagation();
+	}
 	
 
 

@@ -59,6 +59,14 @@
 			this.dispatchEvent(myevent);
 	}
 
+	p.commit = function (action){
+		   var myevent = {
+			 type: "CommitEvent",
+			 param: this
+		   };
+		this.dispatchEvent(myevent);
+	}
+	
 	p.width=0;
 	p.height=0;
 	

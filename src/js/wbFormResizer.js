@@ -156,19 +156,25 @@
 		return (2 * Math.atan2(p1.y - p0.y, p1.x - p0.x)) * 180 / Math.PI;
 	}
 	p.wrapTarget = function(owner,obj){
-		this.rotation=obj.rotation;
-		console.log(obj);
-		owner.formTarget=obj;
-		var w=obj.width;
-		var h=obj.height;
-		var mc=this.bg.graphics;
-		//console.log(w+",X"+h+",   x:"+obj.x+",Y:"+obj.y);
-		owner.x=obj.x;
-		owner.y=obj.y;
-		var midW=Math.ceil(obj.width*.5)+this.tolerance;
-		var midH=Math.ceil(obj.height*.5)+this.tolerance;
-		positionBoxes(owner,midW,midH,"")
-		miniWrap(this.bg,midW,midH);
+		if (obj==null){
+			owner.formTarget=null;
+			if (this.parent)
+				this.parent.removeChild(this);
+		}else{
+			this.rotation=obj.rotation;
+			console.log(obj);
+			owner.formTarget=obj;
+			var w=obj.width;
+			var h=obj.height;
+			var mc=this.bg.graphics;
+			//console.log(w+",X"+h+",   x:"+obj.x+",Y:"+obj.y);
+			owner.x=obj.x;
+			owner.y=obj.y;
+			var midW=Math.ceil(obj.width*.5)+this.tolerance;
+			var midH=Math.ceil(obj.height*.5)+this.tolerance;
+			positionBoxes(owner,midW,midH,"")
+			miniWrap(this.bg,midW,midH);
+		}
 	}
 	function positionBoxes(owner,midW,midH,bx){
 		

@@ -72,6 +72,10 @@
 		var bg = new createjs.Shape();
 		bg.name=bg.id="bg";
 		bg.alpha=.5;
+		
+		this.on("mousedown", this.handlePress);
+		this.on("pressup", this.handleRelease);
+		this.on("pressmove", this.moveLocally);
 		//bg.graphics.beginFill(this.color).drawRoundRect(0,0,width,height,10);
 		//bg.graphics.setStrokeStyle(5);
 		//bg.graphics.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));
@@ -84,6 +88,18 @@
 		this.offset = Math.random()*10;
 		this.count = 0;
 	} ;
+	
+		
+	p.handlePress = function(event){
+		event.stopImmediatePropagation();
+	}
+	p.handleRelease = function(event){
+		event.stopImmediatePropagation();
+	}
+	p.moveLocally = function(event){
+		event.stopImmediatePropagation();
+	}
+	
 
 	p.width=0;
 	p.height=0;
