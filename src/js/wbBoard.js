@@ -12,7 +12,7 @@
 		this.layers= new Object();
 		this.controller =null;
 		this.currentTab=0;
-		this.allTabs=[];
+		this.allTabs={};
 		
 		//this.config=new WBdraw.ConfigWB(platform, width, height);
 		this._currentdeckIndex=null;
@@ -38,7 +38,7 @@
 					switch (type){
 						case "delete":
 							if (this.shapeNOW!=null){
-								this.onDelete(this.shapeNOW);
+								this.onDelete(this.shapeNOW,this.currentTab);
 								this.shapeNOW=null;
 							}
 							break;
@@ -226,15 +226,15 @@
 		window.WBdraw.trace("enddraw1");
 		this.drawinit(this,form,type);
 	};
-	p.onDelete=function(shape){
+	p.onDelete=function(shape,tab){
 		window.WBdraw.trace("8=========o");
 		console.log(shape);
 		if(shape.parent != null){
 			console.log(shape.parent);
 			shape.uncache();
-			shape.alpha=.3;
 			shape.parent.removeChild(shape);
 			window.WBdraw.trace("<<<<=======o");
+			delete shape;
 		}
 		this.resizer.wrapTarget(this.resizer,null);
 	}
@@ -246,6 +246,25 @@
 		//remove from memory the given tab
 		//this.allTabs[0][childindex]  remove//
 		//this.allTabs.splice(0);
+	}
+	p.updateShape = function(shape,tab){
+		//does tab exists?
+		var found=false;
+		if (this.allTabs[tab]==undefined)this.allTabs[tab]=[];
+		var tot=this.allTabs[tab].length;
+		console.log("~~~~!-updateShape-!~~~~");
+		console.log(this.allTabs);
+		console.log(this.allTabs[tab]);
+		found=false;
+		for (var i=0;i<tot;++i){
+			if (this.allTabs[tab][i].name==shape.name){
+				this.allTabs[tab][i]=shape;
+				found=true;
+			}
+		}
+		if (!found){
+			this.allTabs[tab].push(shape);
+		}
 	}
 	
 
@@ -269,11 +288,15 @@
 	}
 	function onCommit(event){
 		window.WBdraw.trace("=========commited-========");
-		console.log(this.shapeNOW);
-		this.shapeNOW._commited=true;
+		var shape = event.param;
+		console.log(shape);
+		shape._commited=true;
 		//this.shapeNOW.parent.removeChild(this.shapeNOW);
-		window.WBdraw.trace(event);	
+		
+		this.updateShape(shape,this.currentTab);
+		//window.WBdraw.trace(event);	
 	}
+
 
 
 	

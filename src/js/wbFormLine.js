@@ -14,6 +14,7 @@
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
 		this.setup();
+		this.lastXY={x:0,y:0}
 	}
 	createjs.EventDispatcher.initialize(FormLine.prototype);
 	var p = createjs.extend(FormLine, createjs.Container);
@@ -27,9 +28,9 @@
 	
 		this.addChild(this.bg); 
 		
-		this.on("mousedown", this.handlePress);
-		this.on("pressup", this.handleRelease);
-		this.on("pressmove", this.moveLocally);
+		this.on("mousedown", this.handlePress.bind(this));
+		this.on("pressup", this.handleRelease.bind(this));
+		this.on("pressmove", this.moveLocally.bind(this));
 		this.cursor = "pointer";
 		this.mouseChildren = false;
 		
@@ -103,6 +104,9 @@
 	}
 	p.moveEND = function(event){
 		var mStage = event.target;
+		if (this.x==this.lastXY.x && this.y==this.lastXY.y){
+			return;
+		}
 		var target, targets = mStage.getObjectsUnderPoint(mStage.mouseX, mStage.mouseY, 1);
         for (var i=0; i<targets.length; i++) {
             if (targets[i].parent.scaled) {
@@ -114,6 +118,10 @@
 			target.scaled=false;
 		createjs.Tween.get(target,{override:true}).to({scaleX:1, scaleY:1},100,createjs.Ease.quadIn);
 		}
+		  console.log("...moved....");
+		this.commit("moved");
+		this.lastXY.x=this.x;
+		this.lastXY.y=this.y;
 		//event.stopImmediatePropagation();
 	}
 	
@@ -121,7 +129,7 @@
 	
 	p.handlePress = function(event){
        // mainStage.addEventListener("stagemousemove", this.moveSTART);
-        mainStage.addEventListener("stagemouseup", this.moveEND);
+        mainStage.addEventListener("stagemouseup", this.moveEND.bind(this));
 		if (!this.scaled){
 		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
 		this.scaled=true;
