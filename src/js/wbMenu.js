@@ -327,9 +327,11 @@
 			}
 		}
 		hi.x = owner.menucontain.x + owner.menucontain.width;
-		owner.hi_Y = mbtn.y;
+		if (mbtn!=null){
+			owner.hi_Y = mbtn.y;
 			//hi.y = mbtn.y;
-		owner.setHiSize(w,mbtn.height,'#FF0000');
+			owner.setHiSize(w,mbtn.height,'#FF0000');
+		}
 		window.WBdraw.trace("---==>> ||>>  main:"+ form +"  sub:"+ subType);
 		
 		//owner.controller.drawinit(form,subType);
