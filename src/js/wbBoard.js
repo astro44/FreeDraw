@@ -105,8 +105,10 @@
 			}
 			//console.log("..drawing nwo");
 			if (this.shapeNOW!=undefined){
-				var lc= this.shapeNOW.bg.globalToLocal(x,y);
-				this.shapeNOW.drawTemp(lc.x,lc.y);		
+				if (this.shapeNOW != this.resizer.formTarget){
+					var lc= this.shapeNOW.bg.globalToLocal(x,y);
+					this.shapeNOW.drawTemp(lc.x,lc.y);		
+				}
 			}
 		},
 		p.drawdone=  function (owner){
@@ -214,6 +216,7 @@
 	
 	// out of scope below
 	p.drawLine = function(event){
+		//console.log(".......drawline..........");
 		this.drawing(mainStage.mouseX,mainStage.mouseY);
 	};
 	p.endDraw = function(event){

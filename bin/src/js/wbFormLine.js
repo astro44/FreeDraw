@@ -14,6 +14,7 @@
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
 		this.setup();
+		this.lastXY={x:0,y:0}
 	}
 	createjs.EventDispatcher.initialize(FormLine.prototype);
 	var p = createjs.extend(FormLine, createjs.Container);
@@ -27,9 +28,9 @@
 	
 		this.addChild(this.bg); 
 		
-		this.on("mousedown", this.handlePress);
-		this.on("pressup", this.handleRelease);
-		this.on("pressmove", this.moveLocally);
+		this.on("mousedown", this.handlePress.bind(this));
+		this.on("pressup", this.handleRelease.bind(this));
+		this.on("pressmove", this.moveLocally.bind(this));
 		this.cursor = "pointer";
 		this.mouseChildren = false;
 		
@@ -59,6 +60,14 @@
 			this.dispatchEvent(myevent);
 	}
 
+	p.commit = function (action){
+		   var myevent = {
+			 type: "CommitEvent",
+			 param: this
+		   };
+		this.dispatchEvent(myevent);
+	}
+	
 	p.width=0;
 	p.height=0;
 	
@@ -95,6 +104,9 @@
 	}
 	p.moveEND = function(event){
 		var mStage = event.target;
+		if (this.x==this.lastXY.x && this.y==this.lastXY.y){
+			return;
+		}
 		var target, targets = mStage.getObjectsUnderPoint(mStage.mouseX, mStage.mouseY, 1);
         for (var i=0; i<targets.length; i++) {
             if (targets[i].parent.scaled) {
@@ -106,21 +118,34 @@
 			target.scaled=false;
 		createjs.Tween.get(target,{override:true}).to({scaleX:1, scaleY:1},100,createjs.Ease.quadIn);
 		}
+		  console.log("...moved....");
+		this.commit("moved");
+		this.lastXY.x=this.x;
+		this.lastXY.y=this.y;
 		//event.stopImmediatePropagation();
 	}
 	
+
+	
 	p.handlePress = function(event){
-        mainStage.addEventListener("stagemousemove", this.moveSTART);
-        mainStage.addEventListener("stagemouseup", this.moveEND);
+       // mainStage.addEventListener("stagemousemove", this.moveSTART);
+        mainStage.addEventListener("stagemouseup", this.moveEND.bind(this));
 		if (!this.scaled){
 		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
-		this.scaled=true
-		this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
+		this.scaled=true;
 		
+		//this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
+		this.rel2=new createjs.Point(mainStage.mouseX-this.x,mainStage.mouseY-this.y);
+		//this.regStage = this.localToGlobal(this.regX,this.regY);
+		
+			
+			this.rel = new createjs.Point(this.width*.5+this.rel2.x,this.height*.5+this.rel2.y);
 		//this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
 		event.stopImmediatePropagation();
 		}
 	}
+	
+	
 	p.handleRelease = function(event){
         mainStage.removeEventListener("stagemousemove", this.moveSTART);
         mainStage.removeEventListener("stagemouseup", this.moveEND);

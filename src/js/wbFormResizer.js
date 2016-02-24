@@ -45,6 +45,7 @@
 				default:
 					this.formTarget.x=this.x-this.box4.x+this.tolerance;
 					this.formTarget.y=this.y-this.box4.y+this.tolerance;
+					console.log("again...");
 					this.formTarget.drawTemp((this.box4.x*2)-this.tolerance*2,(this.box4.y*2)-this.tolerance*2);
 					this.formTarget.drawPerm(this.formTarget);
 			}

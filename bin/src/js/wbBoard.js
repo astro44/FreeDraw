@@ -11,6 +11,8 @@
 		this.color = color;
 		this.layers= new Object();
 		this.controller =null;
+		this.currentTab=0;
+		this.allTabs={};
 		
 		//this.config=new WBdraw.ConfigWB(platform, width, height);
 		this._currentdeckIndex=null;
@@ -20,6 +22,8 @@
 		this._isConnector=null;      //Boolean
 		this._sandboxRect=null;      //sandboxArea 
 		this._tempModel=null;
+		this._isSynched=false;
+		this._int=0;
 		
 		this.setup();
 	}
@@ -27,10 +31,32 @@
 	
 	p.getLayer = function (id){return this.layers[id];}	
 		p.drawinit= function(owner,form,type,path){
-			//create Shape
-			owner._objectInit=false;
-			var modelIN={"classIn":form,"type":type,"path":path}
-			owner._tempModel = modelIN;
+			//create modify Shape
+			console.log("!@#@!!@###@@@====>>  form:"+form+" type:"+type);
+			switch (form){
+				case "modify":
+					switch (type){
+						case "delete":
+							if (this.shapeNOW!=null){
+								this.onDelete(this.shapeNOW,this.currentTab);
+								this.shapeNOW=null;
+							}
+							break;
+						case "color":
+							break;
+						case "alpha":
+							break
+					}
+					break;
+				case "clear":
+					break;
+				case "print":
+					break;
+				default:				
+					owner._objectInit=false;
+					var modelIN={"classIn":form,"type":type,"path":path}
+					owner._tempModel = modelIN;
+			}
 		}
 		p.shapeTweenUpdate= function (form,pos){
 			pos.alpha=0.5;
@@ -56,7 +82,12 @@
 				default:
 					if (!this._objectInit){
 						window.WBdraw.trace(" Form"+window.WBdraw.toTitleCase(this._tempModel.classIn));
-						var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(this._tempModel.classIn)]("rcolvi_"+type, type)
+						var nameIn="rcolvi_";
+						if (!this._isSynched){
+							nameIn+=this._int
+							++this._int;
+						}
+						var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(this._tempModel.classIn)](nameIn, type)
 						//var shape = new FormLine("rcolvi_"+type, type);
 						shape.x=mainStage.mouseX;
 						shape.y=mainStage.mouseY;
@@ -74,8 +105,10 @@
 			}
 			//console.log("..drawing nwo");
 			if (this.shapeNOW!=undefined){
-				var lc= this.shapeNOW.bg.globalToLocal(x,y);
-				this.shapeNOW.drawTemp(lc.x,lc.y);		
+				if (this.shapeNOW != this.resizer.formTarget){
+					var lc= this.shapeNOW.bg.globalToLocal(x,y);
+					this.shapeNOW.drawTemp(lc.x,lc.y);		
+				}
 			}
 		},
 		p.drawdone=  function (owner){
@@ -105,6 +138,7 @@
 		this.layers[DECK.id]=DECK;
 		this.layers[MAIN.id]=MAIN;
 		this.layers[SAND.id]=SAND;
+		window.WBdraw.trace("8=====1====o");
 		this.resizer= new WBdraw.FormResize("rsize","rtool");
 		this.resizer.x=200;
 		this.resizer.y=20;
@@ -182,6 +216,7 @@
 	
 	// out of scope below
 	p.drawLine = function(event){
+		//console.log(".......drawline..........");
 		this.drawing(mainStage.mouseX,mainStage.mouseY);
 	};
 	p.endDraw = function(event){
@@ -194,6 +229,46 @@
 		window.WBdraw.trace("enddraw1");
 		this.drawinit(this,form,type);
 	};
+	p.onDelete=function(shape,tab){
+		window.WBdraw.trace("8=========o");
+		console.log(shape);
+		if(shape.parent != null){
+			console.log(shape.parent);
+			shape.uncache();
+			shape.parent.removeChild(shape);
+			window.WBdraw.trace("<<<<=======o");
+			delete shape;
+		}
+		this.resizer.wrapTarget(this.resizer,null);
+	}
+	p.onDeleteAll=function(tab){
+		if (tab==this.currentTab){
+			//remove from view
+			window.WBdraw.trace("<removeAll>");
+		}
+		//remove from memory the given tab
+		//this.allTabs[0][childindex]  remove//
+		//this.allTabs.splice(0);
+	}
+	p.updateShape = function(shape,tab){
+		//does tab exists?
+		var found=false;
+		if (this.allTabs[tab]==undefined)this.allTabs[tab]=[];
+		var tot=this.allTabs[tab].length;
+		console.log("~~~~!-updateShape-!~~~~");
+		console.log(this.allTabs);
+		console.log(this.allTabs[tab]);
+		found=false;
+		for (var i=0;i<tot;++i){
+			if (this.allTabs[tab][i].name==shape.name){
+				this.allTabs[tab][i]=shape;
+				found=true;
+			}
+		}
+		if (!found){
+			this.allTabs[tab].push(shape);
+		}
+	}
 	
 
 	function onSelect(event){
@@ -203,8 +278,11 @@
 		if (this.resizer.parent==undefined)
 			this.addChild(this.resizer);
 		this.resizer.wrapTarget(this.resizer,event.param);
+		console.log(event.param);
+		this.shapeNOW = event.param
 		//this.dispatchEvent(event);
 	}
+	
 	
 	
 	function addListeners (shape,owner){
@@ -213,8 +291,15 @@
 	}
 	function onCommit(event){
 		window.WBdraw.trace("=========commited-========");
-		window.WBdraw.trace(event);	
+		var shape = event.param;
+		console.log(shape);
+		shape._commited=true;
+		//this.shapeNOW.parent.removeChild(this.shapeNOW);
+		
+		this.updateShape(shape,this.currentTab);
+		//window.WBdraw.trace(event);	
 	}
+
 
 
 	

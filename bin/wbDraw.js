@@ -11,8 +11,8 @@
 	 */
 	function WBdraw() {}
 	
-	var s = WBdraw;
-	s.initialize = function(){
+	var wb = WBdraw;
+	wb.initialize = function(){
 		console.log("say what?");
 	}
 
@@ -23,7 +23,7 @@
 
 	WBdraw.toTitleCase= function(str){
 			return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-		},
+	}
 	
     WBdraw.username_set = function(value) {
 		 uname = value;
@@ -31,13 +31,32 @@
     WBdraw.username = function() {
 		return uname;
 	}
+	WBdraw.MidPoint= function( from, to ){
+	  var xs = 0;
+	  var ys = 0;
+	  xs = to.x - from.x;
+	  xs = xs * xs;
+	  ys = to.y - from.y;
+	  ys = ys * ys;
+	  return Math.sqrt( xs + ys );
+	}
+	/*
+	WBdraw.rotatePoint = function(cc, pp, angle) {
+		var radians = (Math.PI / 180) * angle,
+			cos = Math.cos(radians),
+			sin = Math.sin(radians),
+			nx = (cos * (pp.x - cc.x)) + (sin * (pp.y - cc.y)) + cc.x,
+			ny = (cos * (pp.y - cc.y)) - (sin * (pp.x - cc.x)) + cc.y;
+		return [nx, ny];
+	}*/
+	
 	
 	WBdraw.getContrast50 = function (hexcolor){
 		return (parseInt(hexcolor.substring(1), 16) > 0xffffff/2) ? 'black':'white';
 	}
 	
 	WBdraw.luma = function(hex/*#000000*/){
-		console.log(hex);//#61fbf1 //#88d66 //#92ae2 //#cf2f9
+		//console.log(hex);//#61fbf1 //#88d66 //#92ae2 //#cf2f9
 		var c = hex.substring(1);      // strip #
 		var rgb = parseInt(c, 16);   // convert rrggbb to decimal
 		var r = (rgb >> 16) & 0xff;  // extract red
