@@ -43,7 +43,7 @@
 			{"name":"select_area", "btns":{"icon":"ss.png","hint":"selectable area",">":[{"name":"add","icon":"ss.png","action":"method1","hint":""},
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
-			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
+			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
 					{"name":"color","icon":"ss.png","action":"method1","hint":""},
 					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
@@ -64,7 +64,7 @@
 			{"name":"select_area", "btns":{"icon":"ss.png","hint":"selectable area",">":[{"name":"add","icon":"ss.png","action":"method1","hint":""},
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
-			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
+			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
 					{"name":"color","icon":"ss.png","action":"method1","hint":""},
 					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
@@ -313,13 +313,14 @@
 		var form="";
 		var subType="";
 		var mbtn;
-		if (owner.submenu.currentMenu==""){
+		if (owner.submenu.scaleX==0){
 			form=btn.name;
 			mbtn=btn;
 		}else{
 			mbtn=owner.menucontain.getChildByName(owner.submenu.currentMenu);
 			var w=4;
 			var types = getMainByBtn(owner,btn);
+			console.log("....submenu Button pressed...");
 			if (types.length>1){
 				form=types[0];
 				subType=types[1];

@@ -24,7 +24,9 @@
 		this._tempModel=null;
 		this._isSynched=false;
 		this._int=0;
-		
+		//action_delete=5;
+		//action_create=1;
+		//action_update=2;
 		this.setup();
 	}
 	var p = createjs.extend(WBoard, createjs.Container);
@@ -49,6 +51,8 @@
 					}
 					break;
 				case "clear":
+						this.onDeleteAll(this.currentTab);
+						this.shapeNOW=null;
 					break;
 				case "print":
 					break;
@@ -229,9 +233,10 @@
 		window.WBdraw.trace("enddraw1");
 		this.drawinit(this,form,type);
 	};
-	p.onDelete=function(shape,tab){
+	p.onDelete=function(shape,tab,grouped){
 		window.WBdraw.trace("8=========o");
 		console.log(shape);
+		if (!grouped)this.updateShape(shape,5,tab);
 		if(shape.parent != null){
 			console.log(shape.parent);
 			shape.uncache();
@@ -245,28 +250,43 @@
 		if (tab==this.currentTab){
 			//remove from view
 			window.WBdraw.trace("<removeAll>");
+			var stot = this.allTabs[tab].length;
+			for (var i =0;i<stot;++i){
+				this.onDelete(this.allTabs[tab][i],tab,true);
+			}
 		}
+		if (this.allTabs[tab]!=undefined)
+			this.allTabs[tab].splice(0);
 		//remove from memory the given tab
 		//this.allTabs[0][childindex]  remove//
 		//this.allTabs.splice(0);
 	}
-	p.updateShape = function(shape,tab){
+
+	p.updateShape = function(shape,action/*int*/,tab){
 		//does tab exists?
 		var found=false;
+		console.log("~~~~!-updateShape-!~~~~"+tab);
+		//if (tab==undefined)return;
 		if (this.allTabs[tab]==undefined)this.allTabs[tab]=[];
 		var tot=this.allTabs[tab].length;
-		console.log("~~~~!-updateShape-!~~~~");
 		console.log(this.allTabs);
 		console.log(this.allTabs[tab]);
 		found=false;
 		for (var i=0;i<tot;++i){
 			if (this.allTabs[tab][i].name==shape.name){
-				this.allTabs[tab][i]=shape;
+				if(action==5){//DELETE
+					this.allTabs[tab].splice(i,1);
+				}else{
+					this.allTabs[tab][i]=shape;
+				}
 				found=true;
+				break;
 			}
 		}
-		if (!found){
+		if (!found && action!=5){
 			this.allTabs[tab].push(shape);
+		}else if (action==5){
+			console.log("see if event already exists in undo/redo with SAME timeStamp");
 		}
 	}
 	
@@ -290,13 +310,13 @@
 		shape.addEventListener("CommitEvent", onCommit.bind(owner));
 	}
 	function onCommit(event){
-		window.WBdraw.trace("=========commited-========");
+		window.WBdraw.trace("=========commited-========"+this.currentTab);
 		var shape = event.param;
 		console.log(shape);
 		shape._commited=true;
 		//this.shapeNOW.parent.removeChild(this.shapeNOW);
 		
-		this.updateShape(shape,this.currentTab);
+		this.updateShape(shape,2,this.currentTab);
 		//window.WBdraw.trace(event);	
 	}
 
