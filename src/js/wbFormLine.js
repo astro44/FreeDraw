@@ -239,6 +239,7 @@
 		HTC.endFill(); 
 		
 		owner.setDimension(owner,lc.x,lc.y);
+		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		return true;
 	}
 	
@@ -340,6 +341,7 @@
 			owner.regY=yMid;
 			owner.y+=yMid*2;
 		owner.setDimension(owner,owner.rect.width,owner.rect.height);
+		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		return true;
 	};
 

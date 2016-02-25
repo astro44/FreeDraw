@@ -183,7 +183,6 @@
 	
 	p.square = function(owner,fx,fy){
 		var lc=new createjs.Point(fx,fy);
-		//var lc= owner.bg.globalToLocal(fx,fy);
 		var MC =owner.bg.graphics;
 		MC.clear();
 		owner.points=[];
@@ -195,6 +194,19 @@
 		MC.endStroke();
 		MC.endFill(); 
 		//this.cache(0,0,inX,inY);
+	}
+	
+	
+	function convert2pos(owner,lc){
+		if (lc.x<0){//moveBy in the + direction X
+			lc.x=Math.abs(lc.x);
+			owner.x-=lc.x;
+		}
+		if (lc.y<0){//moveBy in the + direction Y
+			lc.y=Math.abs(lc.y);
+			owner.y-=lc.y;
+		}
+		return lc;
 	}
 	p.squarePerm = function(owner,shape,init){
 		
@@ -210,7 +222,8 @@
 			console.log(parentIN.getNumChildren());
 			return false;
 		}
-		lc = owner.points[0];
+		olc = owner.points[0];
+		lc = convert2pos(owner,olc);
 		var strokeIn=5;
 		if (lc.x<0){//moveBy in the + direction X
 			owner.regX=-Math.abs(lc.x*.5);
@@ -243,7 +256,8 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
-		owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
+		//owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
+		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		
 		return true;
 	}
@@ -280,7 +294,9 @@
 			console.log(parentIN.getNumChildren());
 			return false;
 		}
-		lc = owner.points[0];
+		
+		olc = owner.points[0];
+		lc = convert2pos(owner,olc);
 		var strokeIn=5;
 		if (lc.x<0){//moveBy in the + direction X
 			owner.regX=-Math.abs(lc.x*.5);
@@ -301,6 +317,7 @@
 		var inY=Math.floor(lc.y)
 		owner.width=Math.abs(inX);
 		owner.height=Math.abs(inY);
+		//owner.setBounds(owner.x,owner.y,Math.abs(inX),Math.abs(inY));
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -316,7 +333,8 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
-		owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
+		
+		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		return true;
 	}
 	
