@@ -243,6 +243,11 @@
 		var inY=Math.floor(lc.y)
 		owner.width=Math.abs(inX);
 		owner.height=Math.abs(inY);
+		if (owner.width<10 || owner.height<10){
+			owner.parent.removeChild(owner);
+			delete owner;
+			return false;
+		}
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -317,6 +322,11 @@
 		var inY=Math.floor(lc.y)
 		owner.width=Math.abs(inX);
 		owner.height=Math.abs(inY);
+		if (owner.width<10 || owner.height<10){
+			owner.parent.removeChild(owner);
+			delete owner;
+			return false;
+		}
 		//owner.setBounds(owner.x,owner.y,Math.abs(inX),Math.abs(inY));
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  

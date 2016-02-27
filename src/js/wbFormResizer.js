@@ -78,9 +78,9 @@
 		var bs2= this.box2.globalToLocal(event.stageX,event.stageY);
 		var bs3 = this.box3.globalToLocal(event.stageX,event.stageY);
 		var bs4 = this.box4.globalToLocal(event.stageX,event.stageY);
-		//if (midW<15 || midH<15){
-		//	rFail=true;
-		//}
+		if (midW<10 || midH<10){
+			rFail=true;
+		}
 		if (this.box1.hitTest(bs1.x,bs1.y) && bx.name!="bx1"){
 			rFail=true;
 		}else if(this.box2.hitTest(bs2.x,bs2.y) && bx.name!="bx2"){
@@ -263,64 +263,8 @@
 		}
 	}
 	
-	p.straight =  function (owner,fx,fy){
-		var lc= owner.bg.globalToLocal(fx,fy);
-		
-		var MC =owner.bg.graphics;
-		MC.clear();
-		owner.points=[];
-		MC.setStrokeStyle(5);
-		d= Math.sqrt( (lc.x)*lc.x + (lc.y)*lc.y );
-		r = d%owner.segSize;
-		tot =d/owner.segSize;
-		var lastX=0;
-		var lastY=0;
-		for (var i=0;i<tot; ++i){
-			var x=lc.x*(i/tot);	
-			var y=lc.y*(i/tot);	
-			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
-			MC.moveTo(lastX,lastY); 
-			MC.lineTo(x, y);
-			lastX = x;
-			lastY = y;
-		}
-		MC.moveTo(lastX,lastY); 
-		MC.lineTo(lc.x, lc.y);
-		owner.points.push(lc);
-		MC.endStroke();
-		
-	}
-	p.straightPerm = function(owner,shape,init){
-		var MC =owner.bg.graphics;
-		var HTC =owner.bg.hitArea.graphics;
-		MC.clear();
-		HTC.clear();
-		var tot = owner.points.length;
-		if (tot==0){
-			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
-			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
-			return false;
-		}
-		lc = owner.points[0];
-		var strokeIn=5;
-		MC.setStrokeStyle(strokeIn);
-		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
-		HTC.setStrokeStyle(strokeIn*2);
-		HTC.beginStroke('#000'); 
-		HTC.beginFill('red');  
-        HTC.moveTo(0, 0);
-        MC.moveTo(0, 0);
-		MC.lineTo(lc.x, lc.y);
-		HTC.lineTo(lc.x, lc.y);
-		
-		
-        MC.endStroke();
-        HTC.endStroke();
-		HTC.endFill(); 
-		return true;
-	}
+
+
 
 	
 	
