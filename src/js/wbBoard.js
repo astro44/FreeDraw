@@ -34,6 +34,7 @@
 	p.getLayer = function (id){return this.layers[id];}	
 		p.drawinit= function(owner,form,type,path){
 			//create modify Shape
+			if (type==null || type=="")type=form;
 			console.log("!@#@!!@###@@@====>>  form:"+form+" type:"+type);
 			switch (form){
 				case "modify":
@@ -58,6 +59,7 @@
 					break;
 				default:				
 					owner._objectInit=false;
+					
 					var modelIN={"classIn":form,"type":type,"path":path}
 					owner._tempModel = modelIN;
 			}
@@ -119,7 +121,10 @@
 			window.WBdraw.trace("...done nwo",p);
 			if (owner.shapeNOW!=undefined)
 				owner.shapeNOW.drawPerm(owner.shapeNOW,false);
+			if (owner.shapeNOW.type=="text")
+				owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
 			owner.shapeNOW=null;
+			
 		},
 		p.clearObject=  function(){
 			
@@ -210,6 +215,8 @@
 		console.log("pressing.33gfw...");
 		this.shapeStart();
 		this.on("pressmove", this.drawLine);
+		
+		this.resizer.wrapTarget(this.resizer,null);
 		event.stopImmediatePropagation();
 	};
 	p.handleRelease = function(event){

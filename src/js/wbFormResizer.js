@@ -15,11 +15,13 @@
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
 		this.formTarget=null;
+		this.formTargetLAST=null;
 		this.box1=null;
 		this.box2=null;
 		this.box3=null;
 		this.box4=null;
 		this.boxr=null;
+		this.TXT=null
 		this.setup();
 		console.log ("@@@@@@  NEW FormResize  ");
 	}
@@ -27,6 +29,8 @@
 	var p = createjs.extend(FormResize, createjs.Container);
 	
 	function bx1_move(btn,btn_name){
+		if (this.TXT!==null)
+			this.TXT.visible=false;
 		if (btn_name.indexOf("r")!=-1)
 			btn.on("pressmove", moveitR.bind(this));  //btn.on("pressmove", moveitR.bind(this));
 		else
@@ -35,12 +39,18 @@
 	}	
 	function bx1_stop(btn,btn_name){
 			btn.off("pressmove");
+			console.log("bx1------------>>>>>>>>>>>> stop"+this.formTarget.type);
 			var pt= this.formTarget.globalToLocal(this.box4.x*2,this.box4.y*2);
 			this.rotation=this.formTarget.rotation;
+			//this.formTargetLAST=this.formTarget;
 			switch(this.formTarget.type){
 				case 'bezier':
 					break;
 				case 'free':
+					break;
+				case 'text2deleteme':
+					this.formTarget.drawTemp((this.box4.x*2)-this.tolerance*2,(this.box4.y*2)-this.tolerance*2);
+					this.formTarget.drawPerm(this.formTarget);
 					break;
 				default:
 					this.formTarget.x=this.x-this.box4.x+this.tolerance;
@@ -48,6 +58,10 @@
 					console.log("again...");
 					this.formTarget.drawTemp((this.box4.x*2)-this.tolerance*2,(this.box4.y*2)-this.tolerance*2);
 					this.formTarget.drawPerm(this.formTarget);
+			}
+			if (this.TXT!==null){
+				this.TXT.visible=true;
+				resizeEditor(this,this.formTarget);
 			}
 		this.formTarget.commit("resize");
 		return "";
@@ -114,6 +128,7 @@
 		}
 		positionBoxes(this,midW*2,midH*2,bx)
 		miniWrap(this.bg,Math.ceil(nX) ,Math.ceil(nY))
+		
 		//switch(bx.name){
 			//case 'bx1':
 
@@ -130,8 +145,38 @@
 		this.box4=new WBdraw.resizeBtn("bx4", "#FFF",bx1_move.bind(this),bx1_stop.bind(this));
 		this.boxr=new WBdraw.resizeBtn("bxr", "#FFF",bx1_move.bind(this),bx1_stop.bind(this));
 		
-	
-		this.addChild(this.bg,this.box1,this.box2,this.box3,this.box4,this.boxr); 
+		var he = window.WBdraw.getCanvasDiv("editTxt");
+		he.style.display="none";
+		he.innerHTML='<textarea name="txt2edit" id="txt2edit" cols="" rows="" style="width:inherit" readOnly>dfasf</textarea>';
+		//he.readOnly=false;
+		//he.style.width='60%';
+		
+		var dd = window.WBdraw.getCanvasDiv("txt2edit");
+		var owner=this;
+		dd.onclick=function (e){dd.readOnly=false;
+		
+		
+		}
+		//dd.onfocus=function (e){dd.value="dude"}
+		dd.onblur=function (e){
+			//commit change
+			if (owner.formTargetLAST!=null)
+				owner.formTargetLAST.setText(dd.value);
+			owner.formTargetLAST=null;
+		}
+		dd.onkeypress=function (e){
+			var code = e.which || e.keyCode;
+			console.log(code);
+			if (code == 13){
+				//commit change
+			}
+		}
+		dd.onkeydown=function (e){
+			var code = e.which || e.keyCode;
+			console.log(code);
+			}
+		this.TXT=new createjs.DOMElement(he);
+		this.addChild(this.bg,this.box1,this.box2,this.box3,this.box4,this.boxr,this.TXT); 
 		
 
 		
@@ -149,34 +194,84 @@
 	};
 	
 		
-
+	/*funciton addTXT(owner,add){
+		if (add){
+			
+		}
+	}*/
 
 	function cAngle(center, p1) {
 		var p0 = {x: center.x, y: center.y - Math.sqrt(Math.abs(p1.x - center.x) * Math.abs(p1.x - center.x)
 				+ Math.abs(p1.y - center.y) * Math.abs(p1.y - center.y))};
 		return (2 * Math.atan2(p1.y - p0.y, p1.x - p0.x)) * 180 / Math.PI;
 	}
+	
 	p.wrapTarget = function(owner,obj){
+		var he = window.WBdraw.getCanvasDiv("editTxt");
 		if (obj==null){
+			if (owner.formTarget!=null){
+				owner.formTarget.scaleState(false);
+				owner.formTargetLAST=owner.formTarget;
+			}
+			console.log(".....%$%.unwrrap....."+owner.formTargetLAST);
 			owner.formTarget=null;
-			if (this.parent)
-				this.parent.removeChild(this);
+			console.log(".....%$%.unwrrap....."+owner.formTargetLAST);
+			if (owner.parent)
+				owner.parent.removeChild(this);
+			
+			he.style.display='none';
 		}else{
 			this.rotation=obj.rotation;
 			console.log(obj);
+			owner.formTargetLAST=owner.formTarget;
 			owner.formTarget=obj;
+			
+			
+			console.log(owner.TXT);
 			var w=obj.width;
 			var h=obj.height;
 			var mc=this.bg.graphics;
+			he.style.display='block';
+			console.log("hsfdhshfksdahsdkl");
 			//console.log(w+",X"+h+",   x:"+obj.x+",Y:"+obj.y);
 			owner.x=obj.x;
 			owner.y=obj.y;
-			var midW=Math.ceil(obj.width*.5)+this.tolerance;
-			var midH=Math.ceil(obj.height*.5)+this.tolerance;
+			var midW=Math.ceil(obj.width*.5)+owner.tolerance;
+			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
+			resizeEditor(owner,obj);
 			positionBoxes(owner,midW,midH,"")
 			miniWrap(this.bg,midW,midH);
 		}
+		
+		var dd = window.WBdraw.getCanvasDiv("txt2edit");
+		if (owner.formTarget!=null){
+			if (owner.formTarget.type=="text"){
+				if (owner.formTarget.text.text!=""){
+					dd.x=owner.formTarget.x;
+					dd.y=owner.formTarget.y;
+					dd.value=owner.formTarget.text.text;
+						if (dd.value=="enter text here"){
+							dd.focus();
+							dd.select()
+						}
+				}
+			}
+		}
 	}
+	
+	function resizeEditor(owner,obj){
+		var he = window.WBdraw.getCanvasDiv("editTxt");
+		var te=window.WBdraw.getCanvasDiv("txt2edit");
+		te.style.width="inherit";
+			he.style.width=obj.width+"px";
+			
+			var midW=Math.ceil(obj.width*.5)+owner.tolerance;
+			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
+			owner.TXT.x=-midW+5;
+			owner.TXT.y=-midH+5;
+			
+	}
+	
 	function positionBoxes(owner,midW,midH,bx){
 		
 		if (bx.name!="bx4"){

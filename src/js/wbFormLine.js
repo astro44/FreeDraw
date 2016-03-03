@@ -71,6 +71,10 @@
 	p.width=0;
 	p.height=0;
 	
+	p.scaleState = function (scld){
+		this.scaled=scld;
+		this.scaleX=this.scaleY=1;
+	}
 	p.setSize = function (width,height,color){
 		
 	}

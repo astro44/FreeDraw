@@ -1,10 +1,10 @@
 (function(scope) {
  'use strict';
 	///var scope;// SAME AS static dynamic var
-	function FormFill(id,type) {
+	function FormText(id,type) {
 		this.Container_constructor();
 		this.id=this.name=id;
-		this.color = "";
+		this.color = "000";
 		this.type=type;
 		this.limitDraw=false;
 		this.rect=null;
@@ -13,21 +13,23 @@
 		this.regY=0;
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
-		this.setup();
+		this.text=null;
 		this.tempOrigin=null;
-		this.lastXY={x:0,y:0}
+		this.lastXY={x:0,y:0};
+		this.points=[];
+		this.label="enter text here"
+		this.setup();
 	}
-	createjs.EventDispatcher.initialize(FormFill.prototype);
-	var p = createjs.extend(FormFill, createjs.Container);
+	createjs.EventDispatcher.initialize(FormText.prototype);
+	var p = createjs.extend(FormText, createjs.Container);
 
 	p.setup = function() {
-		this.points=[];
 		//this.l
 	this.bg = new createjs.Shape();
 	this.hitHelper = new createjs.Shape();
-	this.bg.hitArea=this.hitHelper;
-	
-		this.addChild(this.bg); 
+			this.text = new createjs.Text(this.label, "20px Arial", "#000");
+	this.text.hitArea=this.hitHelper;
+		this.addChild(this.bg,this.text); 
 		
 		this.on("mousedown", this.handlePress.bind(this));
 		this.on("pressup", this.handleRelease.bind(this));
@@ -37,21 +39,38 @@
 		
 		this.offset = Math.random()*10;
 		this.count = 0;
+		
+			this.text.name = this.text.id="txt";
+			//this.text.text="hiya";
+			this.text.textBaseline = "top";
+			this.text.textAlign = "left";
+			this.text.wordWrap = true;
+			this.width = this.text.getMeasuredWidth()+30;
+				this.height = this.text.getMeasuredHeight()+20;
+		this.points.push(new createjs.Point(this.text.getMeasuredWidth()+30,this.text.getMeasuredHeight()+20));
+		this.squarePerm(this);
 	} ;
 
+	p.setText=function(text){
+		this.text.text=text;
+		this.updateCache();
+	}
+	
 	p.drawTemp= function (fx,fy) {
 		this.uncache();
-		p[this.type](this,fx,fy);
+		//this.bg.visible=true;
+		this.bg.alpha=1;
+		this.square(this,fx,fy);
 	}
 	
 	p.drawPerm= function (shape,init) {
 		if (shape.id !=this.id)
 			return;
 		try{
-			var finalIn=p[this.type+"Perm"](this,shape,init);
+			var finalIn=this.squarePerm(this,shape,init);
 		}catch(err){
 			console.log(err);
-			throw "[E] No function matches:"+this.type+"Perm() in FormFill (wbFormFill.js)";
+			throw "[E] No function matches:"+this.type+"Perm() in FormText (wbFormText.js)";
 			
 		}
 		  // var myevent = {
@@ -188,11 +207,12 @@
 	p.square = function(owner,fx,fy){
 		var lc=new createjs.Point(fx,fy);
 		var MC =owner.bg.graphics;
+		
 		MC.clear();
 		owner.points=[];
 		MC.setStrokeStyle(5);
-			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
-			MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+			MC.beginStroke('#000'); 
+			MC.beginFill('#FFF'); 
 			MC.rect(0,0,lc.x, lc.y);
 		owner.points.push(lc);
 		MC.endStroke();
@@ -215,7 +235,7 @@
 	p.squarePerm = function(owner,shape,init){
 		
 		var MC =owner.bg.graphics;
-		var HTC =owner.bg.hitArea.graphics;
+		var HTC =owner.text.hitArea.graphics;
 		MC.clear();
 		HTC.clear();
 		var tot = owner.points.length;
@@ -226,6 +246,10 @@
 			console.log(parentIN.getNumChildren());
 			return false;
 		}
+		
+
+		
+		
 		olc = owner.points[0];
 		lc = convert2pos(owner,olc);
 		var strokeIn=5;
@@ -247,14 +271,19 @@
 		var inY=Math.floor(lc.y)
 		owner.width=Math.abs(inX);
 		owner.height=Math.abs(inY);
-		if (owner.width<10 || owner.height<10){
-			owner.parent.removeChild(owner);
-			delete owner;
-			return false;
+	
+		
+		if (owner.width<30 || owner.height<20){	
+			if (owner.width< owner.text.getMeasuredWidth()  ){
+				owner.width = owner.text.getMeasuredWidth()+30;
+			}
+			if (owner.height<owner.text.getMeasuredHeight()){
+				owner.height = owner.text.getMeasuredHeight()+20;
+			}
 		}
 		MC.setStrokeStyle(strokeIn);
-		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
-		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+		MC.beginStroke('#000');  
+		MC.beginFill('#FFF'); 
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
@@ -265,6 +294,13 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
+		owner.text.x=owner.text.y=strokeIn;
+		owner.text.lineWidth=inX;
+		owner.text.width=inX;
+		owner.text.height=inY;
+		
+		owner.bg.visible=false;
+		
 		//owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
 		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		
@@ -272,143 +308,9 @@
 	}
 
 	
-	p.circle = function(owner,fx,fy){
-		var lc=new createjs.Point(fx,fy);
-		//var lc= owner.bg.globalToLocal(fx,fy);
-		
-		var MC =owner.bg.graphics;
-		MC.clear();
-		owner.points=[];
-		
-
-		
-		MC.setStrokeStyle(5);
-			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
-			MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
-			MC.drawEllipse(0,0,lc.x, lc.y);
-		owner.points.push(lc);
-		MC.endStroke();
-		MC.endFill(); 
-	}
-	p.circlePerm = function(owner,shape,init){
-		var MC =owner.bg.graphics;
-		var HTC =owner.bg.hitArea.graphics;
-		MC.clear();
-		HTC.clear();
-		var tot = owner.points.length;
-		if (tot==0){
-			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
-			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
-			return false;
-		}
-		
-		olc = owner.points[0];
-		lc = convert2pos(owner,olc);
-		var strokeIn=5;
-		if (lc.x<0){//moveBy in the + direction X
-			owner.regX=-Math.abs(lc.x*.5);
-			owner.x=owner.x+owner.regX;
-		}else{//moveBy in neg
-			owner.regX = Math.abs(lc.x*.5);
-			owner.x = owner.x+owner.regX;
-		}
-		if (lc.y<0){//moveBy in the + direction Y
-			owner.regY =-Math.abs(lc.y*.5);
-			owner.y = owner.y+owner.regY;
-		}else{//moveBy in neg
-			owner.regY=Math.abs(lc.y*.5);
-			owner.y=owner.y+owner.regY;
-		}
-		
-		var inX=Math.floor(lc.x);
-		var inY=Math.floor(lc.y)
-		owner.width=Math.abs(inX);
-		owner.height=Math.abs(inY);
-		if (owner.width<10 || owner.height<10){
-			owner.parent.removeChild(owner);
-			delete owner;
-			return false;
-		}
-		//owner.setBounds(owner.x,owner.y,Math.abs(inX),Math.abs(inY));
-		MC.setStrokeStyle(strokeIn);
-		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
-		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
-		HTC.setStrokeStyle(strokeIn*2);
-		HTC.beginStroke('#000'); 
-		HTC.beginFill('red');  
-        HTC.drawEllipse(0,0,inX,inY);
-		MC.drawEllipse(0,0,inX,inY);
-		
-		//window.WBdraw.trace();
-		
-        MC.endStroke();
-        HTC.endStroke();
-		HTC.endFill(); 
-		MC.endFill(); 
-		
-		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
-		return true;
-	}
 	
-	p.star = function(owner,fx,fy){
-		var lc=new createjs.Point(fx,fy);
-		//var lc= owner.bg.globalToLocal(fx,fy);
-		var sPos={};
-		var MC =owner.bg.graphics;
-		MC.clear();
-		owner.points=[];
-		MC.setStrokeStyle(5);
-			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
-			MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
-			console.log("---=-=-=--=-=-=-=-=>>>>")
-			sPos.radius=200*(fx/mainStage.canvas.width);  //max radius based on X
-			sPos.pointy=.9*(fy/mainStage.canvas.height);   // max Point size based on Y
-			sPos.points=5;
-			MC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
-			//MC.drawPolyStar(0, 0, 50, 5, 0.6, -90);
-		owner.points.push(sPos);
-		MC.endStroke();
-		MC.endFill(); 
-	}
-	p.starPerm = function(owner,shape,init){
-		var MC =owner.bg.graphics;
-		var HTC =owner.bg.hitArea.graphics;
-		MC.clear();
-		HTC.clear();
-		var tot = owner.points.length;
-		if (tot==0){
-			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
-			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
-			return false;
-		}
-		sPos = owner.points[0];
-		var strokeIn=5;
-		
-		owner.width=Math.abs(Math.floor(sPos.radius*2));
-		owner.height=Math.abs(Math.floor(sPos.radius*2));
-		MC.setStrokeStyle(strokeIn);
-		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
-		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
-		HTC.setStrokeStyle(strokeIn*2);
-		HTC.beginStroke('#000'); 
-		HTC.beginFill('red');  
-        HTC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
-		MC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
-		
-		owner.x-=sPos.radius;
-		owner.y-=sPos.radius;
-		this.x+=sPos.radius;
-		this.y+=sPos.radius;
-		/**/
-        MC.endStroke();
-        HTC.endStroke();
-		HTC.endFill(); 
-		MC.endFill(); 
-		return true;
-	}
-	scope.FormFill = createjs.promote(FormFill, "Container");
+
+
+	
+	scope.FormText = createjs.promote(FormText, "Container");
 }(window.WBdraw));

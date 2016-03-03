@@ -19,8 +19,8 @@
 		this.currentMenu="";
 		//menu items
 		this.options= new Object();
-		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"modify":true};
-		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"modify":true};
+		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"modify":true,"text":true};
+		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"modify":true,"text":true};
 		/**
 		* 
 		* Each name for main menu MUST match a "class" name like "menu" to match "Menu"
@@ -43,6 +43,7 @@
 					{"name":"video","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"select_area", "btns":{"icon":"ss.png","hint":"selectable area",">":[{"name":"add","icon":"ss.png","action":"method1","hint":""},
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
+			{"name":"text", "btns":{"icon":"ss.png","hint":"text area","action":"method1"}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
 			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
@@ -65,6 +66,7 @@
 					{"name":"video","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"select_area", "btns":{"icon":"ss.png","hint":"selectable area",">":[{"name":"add","icon":"ss.png","action":"method1","hint":""},
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
+			{"name":"text", "btns":{"icon":"ss.png","hint":"text area","action":"method1"}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
 			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
@@ -94,6 +96,7 @@
 		hi.name=hi.id="hi";
 		
 		this.menucontain= new WBdraw.MenuBar("wbmenu");
+		this.menucontain.scaleX=1;
 		this.submenu= new WBdraw.MenuBar("sub_wbmenu");
 		this.menubuttons(this.options);
 		this.addChild(bg,this.menucontain,hi,this.submenu);
@@ -309,9 +312,7 @@
 	function oInvoke(btn,btnID){
 		//alert(" execute   function directly in controller for immediate or subMenu effect:: "+btnID);
 		var owner = btn.parent.parent;
-		console.log(btn.height);
 		var hi=owner.getChildByName("hi");
-		console.log(owner.submenu);
 		var form="";
 		var subType="";
 		var mbtn;
