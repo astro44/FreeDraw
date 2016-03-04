@@ -121,8 +121,12 @@
 			window.WBdraw.trace("...done nwo",p);
 			if (owner.shapeNOW!=undefined)
 				owner.shapeNOW.drawPerm(owner.shapeNOW,false);
-			if (owner.shapeNOW.type=="text")
-				owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
+			if (owner.shapeNOW.type=="text"){
+				if (owner.resizer.parent==undefined)
+					owner.addChild(this.resizer);
+					owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
+					owner.test_draw("line","free");
+			}
 			owner.shapeNOW=null;
 			
 		},
@@ -158,9 +162,9 @@
 		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
 		this.addChild(this.menu); 
 		
-		this.on("click", this.handleClick);
-		this.on("mousedown", this.handlePress);
-		this.on("pressup", this.handleRelease);
+		this.on("click", this.handleClick.bind(this));
+		this.on("mousedown", this.handlePress.bind(this));
+		this.on("pressup", this.handleRelease.bind(this));
 		
 		//this.cursor = "pointer";
 		//this.mouseChildren = false;
@@ -214,7 +218,7 @@
         //mainStage.addEventListener("stagemouseup", this.endDraw);
 		console.log("pressing.33gfw...");
 		this.shapeStart();
-		this.on("pressmove", this.drawLine);
+		this.on("pressmove", this.drawLine.bind(this));
 		
 		this.resizer.wrapTarget(this.resizer,null);
 		event.stopImmediatePropagation();
@@ -233,6 +237,7 @@
 	p.endDraw = function(event){
 		window.WBdraw.trace("enddraw1");
 		this.off("pressmove", this.drawLine);
+		
 	};
 	
 	
