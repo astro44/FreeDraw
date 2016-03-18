@@ -17,6 +17,8 @@
 		this.tempOrigin=null;
 		this.lastXY={x:0,y:0};
 		this.points=[];
+		this.related=null;
+		this.biderectional=false;
 		this.label="enter text here"
 		this.setup();
 	}
@@ -33,7 +35,7 @@
 		
 		this.on("mousedown", this.handlePress.bind(this));
 		this.on("pressup", this.handleRelease.bind(this));
-		this.on("pressmove", this.moveLocally.bind(this));
+		//this.on("pressmove", this.moveLocally.bind(this));
 		this.cursor = "pointer";
 		this.mouseChildren = false;
 		
@@ -49,6 +51,7 @@
 				this.height = this.text.getMeasuredHeight()+20;
 		this.points.push(new createjs.Point(this.text.getMeasuredWidth()+30,this.text.getMeasuredHeight()+20));
 		this.squarePerm(this);
+		this.status=window.WBdraw.FormProxy.NEW;
 	} ;
 
 	p.setText=function(text){
@@ -79,13 +82,14 @@
 		  // };
 		  console.log("...create....");
 		if (finalIn)
-			this.commit("create");
+			this.commit("update");
 			//this.dispatchEvent(myevent);
 	}
 	p.commit = function (action){
 		   var myevent = {
 			 type: "CommitEvent",
-			 param: this
+			 param: this,
+			 action:action
 		   };
 		this.dispatchEvent(myevent);
 	}
@@ -103,15 +107,7 @@
 	p.getWidth = function(){
 		return width;
 	}
-	p.moveLocally = function(evt){
-			var newX=evt.stageX-this.rel.x+this.regX;
-			var newY=evt.stageY-this.rel.y+this.regY;
 
-		this.x=newX;
-		this.y=newY;
-		update=true;
-		evt.stopImmediatePropagation();
-	}
 	p.moveSTART = function (event){
 		event.stopImmediatePropagation();
 		var mStage = event.target;		
@@ -161,39 +157,21 @@
 	
 	
 	p.handlePress = function(event){
-       // mainStage.addEventListener("stagemousemove", this.moveSTART);
 		  console.log("...handlePress....");
-        mainStage.addEventListener("stagemouseup", this.moveEND.bind(this));
-		if (!this.scaled){
-		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
-		this.scaled=true;
-		
-		//this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
-		this.rel2=new createjs.Point(mainStage.mouseX-this.x,mainStage.mouseY-this.y);
-		//this.regStage = this.localToGlobal(this.regX,this.regY);
-		
-			
-			this.rel = new createjs.Point(this.width*.5+this.rel2.x,this.height*.5+this.rel2.y);
-		//this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
-		event.stopImmediatePropagation();
-		}
-	}
-	
-	
-	
-	
-	p.handleRelease = function(event){
-        mainStage.removeEventListener("stagemousemove", this.moveSTART);
-        mainStage.removeEventListener("stagemouseup", this.moveEND);
-		event.stopImmediatePropagation();
-		//this.skewX = -35;
-		//this.rotation= 35;
-		//this.rotation+= 35;
-		
 	   var mevt = {
-		 type: "SelectEvent",
+		 type: "PressEvent", 
 		 param: this
 	   };
+		if (!this.scaled)event.stopImmediatePropagation();
+	   this.dispatchEvent(mevt);
+	}
+	
+	p.handleRelease = function(event){
+	   var mevt = {
+		 type: "ReleaseEvent", 
+		 param: this
+	   };
+		event.stopImmediatePropagation();
 	   this.dispatchEvent(mevt);
 	}
 	
@@ -308,7 +286,11 @@
 	}
 
 	
-	
+	p.destroy = function(fromJMS){
+		this.uncache();
+		this._commited = false;
+		
+	}
 
 
 	

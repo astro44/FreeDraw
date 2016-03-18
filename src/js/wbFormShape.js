@@ -8,6 +8,7 @@
 		this.type=type
 		this.label = label;
 		this.setup();
+		this._commited = false;
 	}
 	var p = createjs.extend(FormShape, createjs.Container);
 

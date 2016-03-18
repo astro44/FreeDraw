@@ -13,8 +13,13 @@
 		this.regY=0;
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
+		this.lastXY={x:0,y:0};
+		this._commited = false; 
+		this._listenMove=null;
+		this._listenEnd=null;
+		this.related=null;
+		this.biderectional=false;
 		this.setup();
-		this.lastXY={x:0,y:0}
 	}
 	createjs.EventDispatcher.initialize(FormLine.prototype);
 	var p = createjs.extend(FormLine, createjs.Container);
@@ -30,17 +35,122 @@
 		
 		this.on("mousedown", this.handlePress.bind(this));
 		this.on("pressup", this.handleRelease.bind(this));
-		this.on("pressmove", this.moveLocally.bind(this));
 		this.cursor = "pointer";
 		this.mouseChildren = false;
 		
 		this.offset = Math.random()*10;
 		this.count = 0;
+		if (this.type=="links") drawArrow(this);
+		this.status=window.WBdraw.FormProxy.NEW;
 	} ;
+	
+	function drawArrow(owner){
+		owner.arrow  = new createjs.Shape();
+		owner.ball  = new createjs.Shape();
+		owner.addChild(owner.arrow, owner.ball); 
+	}
+	
+	function propArrow(arrow,size, color){
+		var MC = arrow.graphics;
+		MC.setStrokeStyle(5);
+			MC.beginStroke(color); 
+			MC.beginFill(color); 
+			MC.moveTo(-size,size);
+			MC.lineTo(0,0);
+			MC.lineTo(-size,-size);
+		MC.endStroke();
+		MC.endFill(); 
+	}
+	function propBall(arrow,size, color){
+		var MC = arrow.graphics;
+		MC.setStrokeStyle(5);
+			MC.beginStroke(color); 
+			MC.beginFill(color); 
+			MC.drawEllipse(0,0,size,size);
+	}
+	function positionEnds(owner){
+		
+	}
 
 	p.drawTemp= function (fx,fy) {
+		this._commited = false;
+		//console.log("drawtemp__"+this.type+"__");
 		p[this.type](this,fx,fy);
 	}
+	p.linked = function(){
+		console.log(this.related);
+		return (this.related!=null? (this.related.from!=null):false)
+	}
+	p.link = function (shape){
+			var Obj={from:null,to:null}
+			if (this.related!=null){
+				Obj=this.related;	
+				if (Obj.from==shape){
+					console.log("[E]  -->SAME shape AS to");
+					return false;
+				}
+				if (Obj.to!=null && Obj.from!=null)//Avoid multiple sets 
+					return true;
+				Obj.to=shape;
+				console.log(Obj);
+				listenersAdd(this,Obj.to,Obj.from);
+				finalIn = this.linksPerm(this,Obj.to,Obj.from,this.biderectional);
+				
+				if (finalIn)
+					this.commit("update");
+							
+							return true;
+				//TODO: draw final And commit
+			}else{
+				Obj.from=shape;
+				this.related=Obj;
+			}
+		return false;
+	}
+	
+	function listenersAdd(owner,to, from) {
+			console.log("(CNT) @@@@@@@@@@   ADD LISTENERS");
+			owner._listenMove=moveForm.bind(owner);
+			owner._listenEnd=moveCompleted.bind(owner);
+			to.addEventListener("MoveEvent",owner._listenMove);
+			from.addEventListener("MoveEvent", owner._listenMove);
+			to.addEventListener("CommitEvent", owner._listenEnd);
+			from.addEventListener("CommitEvent", owner._listenEnd);
+		}	
+	function listenersRemove(owner,to, from) {
+			console.log("(CNT)  $$$$$$$$$$$$  REMOVE LISTENERS");
+			if (to){
+				to.removeEventListener("MoveEvent", owner._listenMove);
+				to.removeEventListener("CommitEvent", owner._listenEnd);
+			}
+			from.removeEventListener("MoveEvent", owner._listenMove);
+			from.removeEventListener("CommitEvent", owner._listenEnd);
+	}
+	
+	function moveForm(event){
+			console.log("(CNT) [[moveForm]] LISTENERS"+this);
+		console.log(event);
+	}
+	function moveCompleted(event){
+			console.log("(CNT) [[moveCompleted]] LISTENERS"+this);
+			if (event.action==window.WBdraw.FormProxy.DELETE){
+				this._commited=false;
+				this.commit(event.action);
+				if (this.parent)
+					this.parent.removeChild(this);
+				this.destroy(false);
+			}
+			//event.stopImmediatePropagation();
+			// var shape = event.currentTarget;
+			// if (shape == this.related.from){
+			//		update x,y from
+			//}else{
+			//		update x,y to
+			//}
+		console.log(event);
+	}
+	
+	
 
 	p.drawPerm= function (shape,init) {
 		if (shape.id !=this.id)
@@ -52,18 +162,16 @@
 			throw "[E] No function matches:"+this.type+"Perm() in FormLine (wbFormLine.js)";
 			
 		}
-		   var myevent = {
-			 type: "CommitEvent",
-			 param: this
-		   };
+		 
 		if (finalIn)
-			this.dispatchEvent(myevent);
+			this.commit("update");
 	}
 
 	p.commit = function (action){
 		   var myevent = {
 			 type: "CommitEvent",
-			 param: this
+			 param: this,
+			 action:action
 		   };
 		this.dispatchEvent(myevent);
 	}
@@ -81,13 +189,7 @@
 	p.getWidth = function(){
 		return width;
 	}
-	p.moveLocally = function(evt){
-		//Below is only needed to keep object in play
-		this.x=evt.stageX-this.rel.x+this.regX;
-		this.y=evt.stageY-this.rel.y+this.regY;
-		update=true;
-		evt.stopImmediatePropagation();
-	}
+
 	p.moveSTART = function (event){
 		event.stopImmediatePropagation();
 		var mStage = event.target;		
@@ -131,37 +233,23 @@
 	
 
 	
+	
 	p.handlePress = function(event){
-       // mainStage.addEventListener("stagemousemove", this.moveSTART);
-        mainStage.addEventListener("stagemouseup", this.moveEND.bind(this));
-		if (!this.scaled){
-		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
-		this.scaled=true;
-		
-		//this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
-		this.rel2=new createjs.Point(mainStage.mouseX-this.x,mainStage.mouseY-this.y);
-		//this.regStage = this.localToGlobal(this.regX,this.regY);
-		
-			
-			this.rel = new createjs.Point(this.width*.5+this.rel2.x,this.height*.5+this.rel2.y);
-		//this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
-		event.stopImmediatePropagation();
-		}
-	}
-	
-	
-	p.handleRelease = function(event){
-        mainStage.removeEventListener("stagemousemove", this.moveSTART);
-        mainStage.removeEventListener("stagemouseup", this.moveEND);
-		event.stopImmediatePropagation();
-		//this.skewX = -35;
-		//this.rotation= 35;
-		//this.rotation+= 35;
-		//console.log("handleRelease");
+		  console.log("...handlePress....");
 	   var mevt = {
-		 type: "SelectEvent",
+		 type: "PressEvent", 
 		 param: this
 	   };
+		if (!this.scaled)event.stopImmediatePropagation();
+	   this.dispatchEvent(mevt);
+	}
+	
+	p.handleRelease = function(event){
+	   var mevt = {
+		 type: "ReleaseEvent", 
+		 param: this
+	   };
+		event.stopImmediatePropagation();
 	   this.dispatchEvent(mevt);
 	}
 	
@@ -170,6 +258,15 @@
 	p.handleRollOver = function(event) {       
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
+	//if a target "object" is not selected then links should fail
+	p.links = function(owner,fx,fy){
+		console.log("links");
+	}
+	p.linksPerm = function(owner,fx,fy){
+		console.log("linksPerm");
+	}
+	
+	
 	p.straight =  function (owner,fx,fy){
 		
 		var lc=new createjs.Point(fx,fy);
@@ -407,12 +504,40 @@
 		owner.setDimension(owner,sPos.cx,sPos.fy);
 		return true;
 	}
-	
-	p.connector = function(owner,fx,fy){
-		
+	//connector
+	p.links = function(owner,fx,fy){		
+		var lc=new createjs.Point(fx,fy);
+		//var lc= owner.bg.globalToLocal(fx,fy);
+		var MC =owner.bg.graphics;
+		MC.clear();
+		//console.log(" connector connecting");
+		owner.points=[];
+		MC.setStrokeStyle(5);
+		d= Math.sqrt( (lc.x)*lc.x + (lc.y)*lc.y );
+		r = d%owner.segSize;
+		tot =d/owner.segSize;
+		var lastX=0;
+		var lastY=0;
+		for (var i=0;i<tot; ++i){
+			var x=lc.x*(i/tot);	
+			var y=lc.y*(i/tot);	
+			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
+			MC.moveTo(lastX,lastY); 
+			MC.lineTo(x, y);
+			lastX = x;
+			lastY = y;
+		}
+		MC.moveTo(lastX,lastY); 
+		MC.lineTo(lc.x, lc.y);
+		owner.points.push(lc);
+		MC.endStroke();
 	}	
-	p.connectorPerm = function(owner,fx,fy){
-		
+	p.linksPerm = function(owner,to,from,bidirection){
+		//set the arrow And ball...
+		//if bidirectional change ball to 2nd arrow
+		//use trig to moveby arrows accordingly
+		console.log(" links  PPPEEERRRMMM");
+		return true;
 	}
 	p.connectorFollowEdge = function(owner,toObj,fromObj){
 		//get all points on a line And find the intercept 
@@ -453,7 +578,15 @@
 		console.log(owner.width+"x"+owner.height);
 	}
 
-	
+	p.destroy = function(fromJMS){
+		this.uncache();
+		this._commited = false;
+		if (this.type=="links")
+			listenersRemove(this,this.related.to,this.related.from);
+			
+		console.log(" delete link in FormLine................................");
+		
+	}
 	
 
 	scope.FormLine = createjs.promote(FormLine, "Container");

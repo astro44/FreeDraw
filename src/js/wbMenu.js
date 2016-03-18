@@ -19,8 +19,8 @@
 		this.currentMenu="";
 		//menu items
 		this.options= new Object();
-		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"modify":true,"text":true};
-		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"modify":true,"text":true};
+		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"modify":true,"text":true,"undo":true,"redo":true};
+		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"modify":true,"text":true,"undo":true,"redo":true};
 		/**
 		* 
 		* Each name for main menu MUST match a "class" name like "menu" to match "Menu"
@@ -48,7 +48,9 @@
 			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
 					{"name":"color","icon":"ss.png","action":"method1","hint":""},
-					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
+					{"name":"alpha","icon":"ss.png","action":"method1","hint":""},
+					{"name":"undo","icon":"ss.png","action":"method1","hint":""},
+					{"name":"redu","icon":"ss.png","action":"method1","hint":""}]}}
 		];
 		this.options["EN"]=[ 
 			{"name":"select", "btns":{"icon":"ss.png","hint":"select opject","action":"select"}},
@@ -71,7 +73,9 @@
 			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
 					{"name":"color","icon":"ss.png","action":"method1","hint":""},
-					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
+					{"name":"alpha","icon":"ss.png","action":"method1","hint":""},
+					{"name":"undo","icon":"ss.png","action":"method1","hint":""},
+					{"name":"redu","icon":"ss.png","action":"method1","hint":""}]}}
 		];
 		
 		this.setup();

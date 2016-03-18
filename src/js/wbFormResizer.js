@@ -184,7 +184,9 @@
 	
 	p.wrapTarget = function(owner,obj){
 		var he = window.WBdraw.getCanvasDiv("editTxt");
+			var dd = window.WBdraw.getCanvasDiv("txt2edit");
 		if (obj==null){
+				dd.blur();
 			if (owner.formTarget!=null){
 				owner.formTarget.scaleState(false);
 				owner.formTargetLAST=owner.formTarget;
@@ -197,7 +199,6 @@
 		}else{
 			this.rotation=obj.rotation;
 			var isText=(obj.type=="text");
-			var dd = window.WBdraw.getCanvasDiv("txt2edit");
 			if (isText){
 				dd.blur();
 			}

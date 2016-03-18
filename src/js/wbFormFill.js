@@ -13,9 +13,12 @@
 		this.regY=0;
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
-		this.setup();
 		this.tempOrigin=null;
 		this.lastXY={x:0,y:0}
+		this.related=null;
+		this.biderectional=false;
+		this._commited = false;
+		this.setup();
 	}
 	createjs.EventDispatcher.initialize(FormFill.prototype);
 	var p = createjs.extend(FormFill, createjs.Container);
@@ -31,15 +34,16 @@
 		
 		this.on("mousedown", this.handlePress.bind(this));
 		this.on("pressup", this.handleRelease.bind(this));
-		this.on("pressmove", this.moveLocally.bind(this));
 		this.cursor = "pointer";
 		this.mouseChildren = false;
 		
 		this.offset = Math.random()*10;
 		this.count = 0;
+		this.status=window.WBdraw.FormProxy.NEW;
 	} ;
 
 	p.drawTemp= function (fx,fy) {
+		this._commited = false;
 		this.uncache();
 		p[this.type](this,fx,fy);
 	}
@@ -54,25 +58,20 @@
 			throw "[E] No function matches:"+this.type+"Perm() in FormFill (wbFormFill.js)";
 			
 		}
-		  // var myevent = {
-			// type: "CommitEvent",
-			// param: this
-		  // };
 		  console.log("...create....");
 		if (finalIn)
-			this.commit("create");
-			//this.dispatchEvent(myevent);
+			this.commit("update");
 	}
 	p.commit = function (action){
 		   var myevent = {
 			 type: "CommitEvent",
-			 param: this
+			 param: this,
+			 action:action
 		   };
 		this.dispatchEvent(myevent);
 	}
 
-	p.width=0;
-	p.height=0;
+
 	
 	p.scaleState = function (scld){
 		this.scaled=scld;
@@ -81,18 +80,8 @@
 	p.setSize = function (width,height,color){
 		
 	}
-	p.getWidth = function(){
-		return width;
-	}
-	p.moveLocally = function(evt){
-			var newX=evt.stageX-this.rel.x+this.regX;
-			var newY=evt.stageY-this.rel.y+this.regY;
 
-		this.x=newX;
-		this.y=newY;
-		update=true;
-		evt.stopImmediatePropagation();
-	}
+
 	p.moveSTART = function (event){
 		event.stopImmediatePropagation();
 		var mStage = event.target;		
@@ -142,39 +131,21 @@
 	
 	
 	p.handlePress = function(event){
-       // mainStage.addEventListener("stagemousemove", this.moveSTART);
 		  console.log("...handlePress....");
-        mainStage.addEventListener("stagemouseup", this.moveEND.bind(this));
-		if (!this.scaled){
-		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
-		this.scaled=true;
-		
-		//this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
-		this.rel2=new createjs.Point(mainStage.mouseX-this.x,mainStage.mouseY-this.y);
-		//this.regStage = this.localToGlobal(this.regX,this.regY);
-		
-			
-			this.rel = new createjs.Point(this.width*.5+this.rel2.x,this.height*.5+this.rel2.y);
-		//this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
-		event.stopImmediatePropagation();
-		}
-	}
-	
-	
-	
-	
-	p.handleRelease = function(event){
-        mainStage.removeEventListener("stagemousemove", this.moveSTART);
-        mainStage.removeEventListener("stagemouseup", this.moveEND);
-		event.stopImmediatePropagation();
-		//this.skewX = -35;
-		//this.rotation= 35;
-		//this.rotation+= 35;
-		
 	   var mevt = {
-		 type: "SelectEvent",
+		 type: "PressEvent", 
 		 param: this
 	   };
+		if (!this.scaled)event.stopImmediatePropagation();
+	   this.dispatchEvent(mevt);
+	}
+	
+	p.handleRelease = function(event){
+	   var mevt = {
+		 type: "ReleaseEvent", 
+		 param: this
+	   };
+		event.stopImmediatePropagation();
 	   this.dispatchEvent(mevt);
 	}
 	
@@ -267,6 +238,7 @@
 		MC.endFill(); 
 		//owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
 		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+		//owner.setBounds(owner.x,owner.y,owner.width+strokeIn*2,owner.height+strokeIn*2);
 		
 		return true;
 	}
@@ -410,5 +382,13 @@
 		MC.endFill(); 
 		return true;
 	}
+	
+	
+	p.destroy = function(fromJMS){
+		this.uncache();
+		this._commited = false;
+	}
+	
+	
 	scope.FormFill = createjs.promote(FormFill, "Container");
 }(window.WBdraw));

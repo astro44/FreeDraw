@@ -114,6 +114,31 @@
         }
         return result;
     }
+	
+	WBdraw.getCanvasDiv = function (newID){
+		
+		var oldDiv = document.getElementById(newID);
+		if (oldDiv == null){
+			console.log("$$$$$$ CREATE  CanvasTxt");
+			this.mainCanvas = document.getElementById("mainCanvas");
+			var parentdiv = this.mainCanvas.parentNode;
+			var newdiv = document.createElement('div');
+			newdiv.setAttribute('id',newID);
+			newdiv.style.zIndex=parentdiv.children.length;
+			var lastdiv=parentdiv.children[0];
+			parentdiv.insertBefore(newdiv,lastdiv);
+			return newdiv
+		}
+		
+			return oldDiv;
+	}
+	WBdraw.destroyCanvasDiv = function (divID){
+		console.log("!!!!!!!!DESTROY");
+		this.mainCanvas = document.getElementById("mainCanvas");
+		var parentdiv = this.mainCanvas.parentNode;
+		var oldDiv = document.getElementById(divID);
+		parentdiv.removeChild(oldDiv);
+	}
 
 	// The WBdraw namespace is the only object stored on Window
 	console.log(scope);

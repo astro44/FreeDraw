@@ -27,6 +27,7 @@
 		//action_delete=5;
 		//action_create=1;
 		//action_update=2;
+		
 		this.setup();
 	}
 	var p = createjs.extend(WBoard, createjs.Container);
@@ -41,7 +42,7 @@
 					switch (type){
 						case "delete":
 							if (this.shapeNOW!=null){
-								this.onDelete(this.shapeNOW,this.currentTab);
+								this.onDelete(this.shapeNOW,this.currentTab,false,false);
 								this.shapeNOW=null;
 							}
 							break;
@@ -74,32 +75,30 @@
 		p.shapeStart=  function (){
 			if (this.shapeNOW!=null){
 				console.log("...found shape in use...");
-					if (!this.shapeNOW._commited) {
+				if (!this.shapeNOW._commited) {
+					if (this.shapeNOW.type!="links"){
 						this.shapeNOW.drawPerm(this.shapeNOW,false);
+					}else{
+						this.onDelete(this.shapeNOW,this.currentTab,false,true);	
 					}
+				}
+				this.shapeNOW=null;
 			}
-			var mc = this.layers['cvsMAIN'];
+			console.log(this.shapeNOW);
 			var type =this._tempModel.type;
 			switch (this._tempModel.type) {
 				case "select":
 					break;
 				case "ungroup":
 					break;
+				case "links":
+					console.log("links[IN]");
+					//if 
+					break
 				default:
 					if (!this._objectInit){
 						window.WBdraw.trace(" Form"+window.WBdraw.toTitleCase(this._tempModel.classIn));
-						var nameIn="rcolvi_";
-						if (!this._isSynched){
-							nameIn+=this._int
-							++this._int;
-						}
-						var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(this._tempModel.classIn)](nameIn, type)
-						//var shape = new FormLine("rcolvi_"+type, type);
-						shape.x=mainStage.mouseX;
-						shape.y=mainStage.mouseY;
-						mc.addChild(shape);
-						this.shapeNOW=shape;
-						addListeners(shape,this);
+						shapeCreate(this);
 						//noncommited event
 					}
 					
@@ -119,13 +118,14 @@
 		},
 		p.drawdone=  function (owner){
 			window.WBdraw.trace("...done nwo",p);
-			if (owner.shapeNOW!=undefined)
-				owner.shapeNOW.drawPerm(owner.shapeNOW,false);
-			if (owner.shapeNOW.type=="text"){
-				if (owner.resizer.parent==undefined)
-					owner.addChild(this.resizer);
-					owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
-					owner.test_draw("line","free");
+			if (owner.shapeNOW!=undefined){
+					owner.shapeNOW.drawPerm(owner.shapeNOW,false);
+				if (owner.shapeNOW.type=="text"){
+					if (owner.resizer.parent==undefined)
+						owner.addChild(this.resizer);
+						owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
+						owner.test_draw("line","free");
+				}
 			}
 			owner.shapeNOW=null;
 			
@@ -217,6 +217,7 @@
         //mainStage.addEventListener("stagemousemove", this.drawLine);
         //mainStage.addEventListener("stagemouseup", this.endDraw);
 		console.log("pressing.33gfw...");
+		
 		this.shapeStart();
 		this.on("pressmove", this.drawLine.bind(this));
 		
@@ -237,7 +238,6 @@
 	p.endDraw = function(event){
 		window.WBdraw.trace("enddraw1");
 		this.off("pressmove", this.drawLine);
-		
 	};
 	
 	
@@ -245,16 +245,28 @@
 		window.WBdraw.trace("enddraw1");
 		this.drawinit(this,form,type);
 	};
-	p.onDelete=function(shape,tab,grouped){
+	/* when changing tabs fromJMS should be set to true
+	** when deleting And requires update to fromJMS set to false
+	*/
+	p.onDelete=function(ss,tab,grouped,fromJMS){
 		window.WBdraw.trace("8=========o");
-		console.log(shape);
-		if (!grouped)this.updateShape(shape,5,tab);
-		if(shape.parent != null){
-			console.log(shape.parent);
-			shape.uncache();
-			shape.parent.removeChild(shape);
-			window.WBdraw.trace("<<<<=======o");
-			delete shape;
+		console.log(ss);
+		var mc = this.layers['cvsMAIN'];
+		if (!grouped)this.updateShape(shape,window.WBdraw.FormProxy.DELETE,tab);
+		shape = mc.getChildByName(ss.name);
+		if (shape!=null){
+			if(shape.parent != null){
+				console.log(shape.parent);
+				shape.destroy(fromJMS);
+				window.WBdraw.trace("<<<<===delete...====o");
+				shape.commit(window.WBdraw.FormProxy.DELETE);
+				shape.removeAllEventListeners();
+				shape.parent.removeChild(shape);
+				delete shape;
+			}
+		}
+		if (!fromJMS){//send commited event
+			console.log("send to JMS server");
 		}
 		this.resizer.wrapTarget(this.resizer,null);
 	}
@@ -264,7 +276,7 @@
 			window.WBdraw.trace("<removeAll>");
 			var stot = this.allTabs[tab].length;
 			for (var i =0;i<stot;++i){
-				this.onDelete(this.allTabs[tab][i],tab,true);
+				this.onDelete(this.allTabs[tab][i],tab,true,false);
 			}
 		}
 		if (this.allTabs[tab]!=undefined)
@@ -283,55 +295,191 @@
 		var tot=this.allTabs[tab].length;
 		console.log(this.allTabs);
 		console.log(this.allTabs[tab]);
-		found=false;
+		
+		var flat = new window.WBdraw.FormProxy();
+		window.WBdraw.FormProxy.flattenForm(flat,shape);
 		for (var i=0;i<tot;++i){
-			if (this.allTabs[tab][i].name==shape.name){
-				if(action==5){//DELETE
+			if (this.allTabs[tab][i].name==flat.name){
+				if(action==window.WBdraw.FormProxy.DELETE){//DELETE
 					this.allTabs[tab].splice(i,1);
 				}else{
-					this.allTabs[tab][i]=shape;
+					this.allTabs[tab][i]=flat;
 				}
 				found=true;
 				break;
 			}
 		}
-		if (!found && action!=5){
-			this.allTabs[tab].push(shape);
-		}else if (action==5){
+		if (!found && action!=window.WBdraw.FormProxy.DELETE){
+			this.allTabs[tab].push(flat);
+		}else if (action==window.WBdraw.FormProxy.DELETE){
 			console.log("see if event already exists in undo/redo with SAME timeStamp");
 		}
 	}
-	
 
-	function onSelect(event){
-		window.WBdraw.trace(this.resizer);
-		window.WBdraw.trace("=========onSelect-=22222=======");
-		this.resizer.handleRollOver(event);
-		if (this.resizer.parent==undefined)
-			this.addChild(this.resizer);
-		this.resizer.wrapTarget(this.resizer,event.param);
-		console.log(event.param);
-		this.shapeNOW = event.param
-		//this.dispatchEvent(event);
+	p.uniqueLink = function (linkShape,tab){
+		console.log("~~~~!-link check-!~~~~"+tab);
+		//if (tab==undefined)return;
+		if (this.allTabs[tab]==undefined)this.allTabs[tab]=[];
+		var tot=this.allTabs[tab].length;
+		var rin=linkShape.related;
+		var rout=null;
+		for (var i=0;i<tot;++i){
+			if (this.allTabs[tab][i].type=="links"){
+				rout = this.allTabs[tab][i].related;
+				if (rout.from==rin.from || rout.from==rin.to){
+					if (rout.to==rin.to || rout.to==rin.from){
+						var link = this.allTabs[tab][i];
+						if (rout.from!=rin.from){ link.bidirectional=true;}
+						return link;
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
-	
+
 	
 	function addListeners (shape,owner){
-		shape.addEventListener("SelectEvent", onSelect.bind(owner));
 		shape.addEventListener("CommitEvent", onCommit.bind(owner));
+		//shape.addEventListener("NONCommitEvent", onNONCommit.bind(owner));
+		shape.addEventListener("PressEvent", onPress.bind(owner));
+		shape.addEventListener("ReleaseEvent", onRelease.bind(owner));
+		shape.on("pressmove", moveLocally.bind(owner));
+	}
+	
+	/*function onNONCommit(event){
+		
+	}*/
+	
+	function moveLocally (evt){
+		//console.log(evt);
+		var shape = evt.currentTarget;
+		if (this._tempModel.type=="links"){//You can't moveBy links... they Area tied down by binding objects
+			return;
+		}
+		var newX=evt.stageX-shape.rel.x+shape.regX;
+		var newY=evt.stageY-shape.rel.y+shape.regY;
+		shape.x=newX;
+		shape.y=newY;
+		update=true;
+		evt.stopImmediatePropagation();
+		
+	   var myevent = {
+		 type: "MoveEvent",
+		 param: shape
+	   };
+		shape.dispatchEvent(myevent);
+		//console.log("..............");
 	}
 	function onCommit(event){
 		window.WBdraw.trace("=========commited-========"+this.currentTab);
 		var shape = event.param;
 		console.log(shape);
+		
+		if (shape.type=="links" && event.action!=window.WBdraw.FormProxy.DELETE){//check to see if another link with SAME objects exists  
+			var isCopy=this.uniqueLink(shape,this.currentTab);
+			if (isCopy){//remove shape from Stage since its a copy
+				window.WBdraw.trace("========= C O P Y ========");
+				this.onDelete(shape,this.currentTab,false,true);//only delete locally fromJMS==true assumes server is up to Date.
+				shape=isCopy;
+			}
+		}
 		shape._commited=true;
 		//this.shapeNOW.parent.removeChild(this.shapeNOW);
 		
 		this.updateShape(shape,2,this.currentTab);
 		//window.WBdraw.trace(event);	
 	}
+	
+	function onPress(event){
+		window.WBdraw.trace("=========onPRESS-========"+this.currentTab);
+		
+		console.log("now target link to this shape if this is the type tool currently in use");
+		console.log("skip the rest of the function if type == links");
+		var shape = event.param;
+		if (this._tempModel.type=="links"){
+			console.log("ola links just happened");
+			var frshape = null;
+			if (this.shapeNOW == null){
+				frshape=shapeCreate(this);
+				console.log("=========  ( A )");
+			}else{
+				if (this.shapeNOW.type=="links"){
+					frshape = this.shapeNOW;
+					console.log("=========  ( B )"+frshape);
+					if (frshape.linked){//relationship complete create new NOW
+						//frshape=shapeCreate(this);
+						console.log("=========  ( C )");
+					}				
+				}else{//current shape is not links so create new oneshapeCreate
+					frshape=shapeCreate(this);
+					console.log("=========  ( D )");
+				}
+			}
+			
+			
+			//this.on("pressmove", this.drawLine.bind(this));
+			var finished=frshape.link(shape);
+			if (finished){
+				this.shapeNOW=null;
+				return;
+			}
+			this.shapeNOW=frshape;
+			frshape.x=shape.x;
+			frshape.y=shape.y;
+			mainStage.addEventListener("stagemousemove", this.drawLine.bind(this));
+			return;
+		}
+        mainStage.addEventListener("stagemouseup", shape.moveEND.bind(shape));
+		if (!shape.scaled){
+			createjs.Tween.get(shape,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
+			shape.scaled=true;
+			shape.rel2=new createjs.Point(mainStage.mouseX-shape.x,mainStage.mouseY-shape.y);
+			shape.rel = new createjs.Point(shape.width*.5+shape.rel2.x,shape.height*.5+shape.rel2.y);
+		}
+	}
+	/** ReleaseEvent is also selectevent**/
+	function onRelease(event){
+		window.WBdraw.trace("=========onRelease-========"+this.currentTab);
+		
+		var shape = event.param;
+		if (this._tempModel.type=="links"){
+			console.log("ola links just happened");
+			return;
+		}
+        mainStage.removeEventListener("stagemousemove", shape.moveSTART);
+        mainStage.removeEventListener("stagemouseup", shape.moveEND);
+		
 
+		window.WBdraw.trace(this.resizer);
+		window.WBdraw.trace("=========onSelect-=22222=======");
+		this.resizer.handleRollOver(event);
+		if (this.resizer.parent==undefined)
+			this.addChild(this.resizer);
+		this.resizer.wrapTarget(this.resizer,shape);
+		console.log(shape);
+		this.shapeNOW = shape
+	}
+	
+	function shapeCreate(owner){
+		console.log("!!!!! create    !!!"+owner._tempModel.classIn);
+		var mc = owner.layers['cvsMAIN'];
+		var type =owner._tempModel.type
+		var nameIn="rcolvi_";
+		if (!owner._isSynched){
+			nameIn+=owner._int
+			++owner._int;
+		}
+		var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(owner._tempModel.classIn)](nameIn, type)
+		//var shape = new FormLine("rcolvi_"+type, type);
+		shape.x=mainStage.mouseX;
+		shape.y=mainStage.mouseY;
+		mc.addChild(shape);
+		owner.shapeNOW=shape;
+		addListeners(shape,owner);	
+		return shape;
+	}
 
 
 	
