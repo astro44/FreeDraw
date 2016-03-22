@@ -19,8 +19,8 @@
 		this.currentMenu="";
 		//menu items
 		this.options= new Object();
-		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"modify":true};
-		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"modify":true};
+		this.subscriberWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":false,"print":true,"clear":true,"modify":true,"text":true,"undo":true,"redo":true};
+		this.hostWL = {"select":true,"line":true,"fill":true,"math":true,"media":true,"select":true,"print":true,"clear":true,"modify":true,"text":true,"undo":true,"redo":true};
 		/**
 		* 
 		* Each name for main menu MUST match a "class" name like "menu" to match "Menu"
@@ -31,7 +31,8 @@
 			{"name":"select", "btns":{"icon":"ss.png","hint":"select opject","action":"select"}},
 			{"name":"line", "btns":{"icon":"ss.png","hint":"line",">":[{"name":"free","icon":"ss.png","action":"method1","hint":""},
 					{"name":"straight","icon":"ss.png","action":"method1","hint":""},
-					{"name":"bezier","icon":"ss.png","action":"method1","hint":""}]}},
+					{"name":"bezier","icon":"ss.png","action":"method1","hint":""},
+					{"name":"links","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"fill", "btns":{"icon":"ss.png","hint":"fill",">":[{"name":"square","icon":"ss.png","action":"method1","hint":""},
 					{"name":"circle","icon":"ss.png","action":"method1","hint":""},
 					{"name":"star","icon":"ss.png","action":"method1","hint":""}]}},
@@ -42,17 +43,21 @@
 					{"name":"video","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"select_area", "btns":{"icon":"ss.png","hint":"selectable area",">":[{"name":"add","icon":"ss.png","action":"method1","hint":""},
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
+			{"name":"text", "btns":{"icon":"ss.png","hint":"text area","action":"method1"}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
-			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
+			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
 					{"name":"color","icon":"ss.png","action":"method1","hint":""},
-					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
+					{"name":"alpha","icon":"ss.png","action":"method1","hint":""},
+					{"name":"undo","icon":"ss.png","action":"method1","hint":""},
+					{"name":"redu","icon":"ss.png","action":"method1","hint":""}]}}
 		];
 		this.options["EN"]=[ 
 			{"name":"select", "btns":{"icon":"ss.png","hint":"select opject","action":"select"}},
 			{"name":"line", "btns":{"icon":"ss.png","hint":"line",">":[{"name":"free","icon":"ss.png","action":"method1","hint":""},
 					{"name":"straight","icon":"ss.png","action":"method1","hint":""},
-					{"name":"bezier","icon":"ss.png","action":"method1","hint":""}]}},
+					{"name":"bezier","icon":"ss.png","action":"method1","hint":""},
+					{"name":"links","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"fill", "btns":{"icon":"ss.png","hint":"fill",">":[{"name":"square","icon":"ss.png","action":"method1","hint":""},
 					{"name":"circle","icon":"ss.png","action":"method1","hint":""},
 					{"name":"star","icon":"ss.png","action":"method1","hint":""}]}},
@@ -63,11 +68,14 @@
 					{"name":"video","icon":"ss.png","action":"method1","hint":""}]}},
 			{"name":"select_area", "btns":{"icon":"ss.png","hint":"selectable area",">":[{"name":"add","icon":"ss.png","action":"method1","hint":""},
 					{"name":"remove","icon":"ss.png","action":"method1","hint":""}]}},
+			{"name":"text", "btns":{"icon":"ss.png","hint":"text area","action":"method1"}},
 			{"name":"print", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
-			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"print"}},
+			{"name":"clear", "btns":{"icon":"ss.png","hint":"selectable area","action":"method1"}},
 			{"name":"modify", "btns":{"icon":"ss.png","hint":"modify",">":[{"name":"delete","icon":"ss.png","action":"method1","hint":""},
 					{"name":"color","icon":"ss.png","action":"method1","hint":""},
-					{"name":"alpha","icon":"ss.png","action":"method1","hint":""}]}}
+					{"name":"alpha","icon":"ss.png","action":"method1","hint":""},
+					{"name":"undo","icon":"ss.png","action":"method1","hint":""},
+					{"name":"redu","icon":"ss.png","action":"method1","hint":""}]}}
 		];
 		
 		this.setup();
@@ -92,6 +100,7 @@
 		hi.name=hi.id="hi";
 		
 		this.menucontain= new WBdraw.MenuBar("wbmenu");
+		this.menucontain.scaleX=1;
 		this.submenu= new WBdraw.MenuBar("sub_wbmenu");
 		this.menubuttons(this.options);
 		this.addChild(bg,this.menucontain,hi,this.submenu);
@@ -307,28 +316,29 @@
 	function oInvoke(btn,btnID){
 		//alert(" execute   function directly in controller for immediate or subMenu effect:: "+btnID);
 		var owner = btn.parent.parent;
-		console.log(btn.height);
 		var hi=owner.getChildByName("hi");
-		console.log(owner.submenu);
 		var form="";
 		var subType="";
 		var mbtn;
-		if (owner.submenu.currentMenu==""){
+		if (owner.submenu.scaleX==0){
 			form=btn.name;
 			mbtn=btn;
 		}else{
 			mbtn=owner.menucontain.getChildByName(owner.submenu.currentMenu);
 			var w=4;
 			var types = getMainByBtn(owner,btn);
+			console.log("....submenu Button pressed...");
 			if (types.length>1){
 				form=types[0];
 				subType=types[1];
 			}
 		}
 		hi.x = owner.menucontain.x + owner.menucontain.width;
-		owner.hi_Y = mbtn.y;
+		if (mbtn!=null){
+			owner.hi_Y = mbtn.y;
 			//hi.y = mbtn.y;
-		owner.setHiSize(w,mbtn.height,'#FF0000');
+			owner.setHiSize(w,mbtn.height,'#FF0000');
+		}
 		window.WBdraw.trace("---==>> ||>>  main:"+ form +"  sub:"+ subType);
 		
 		//owner.controller.drawinit(form,subType);

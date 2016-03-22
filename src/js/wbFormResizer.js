@@ -113,7 +113,7 @@
 			return;
 		}
 		positionBoxes(this,midW*2,midH*2,bx)
-		miniWrap(this.bg,Math.ceil(nX) ,Math.ceil(nY))
+		miniWrap(this,Math.ceil(nX) ,Math.ceil(nY))
 	
 	}
 	
@@ -208,9 +208,12 @@
 			owner.y=obj.y;
 			var midW=Math.ceil(obj.width*.5)+owner.tolerance;
 			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
+			
+			owner.box4.visible=owner.box3.visible=owner.box2.visible=owner.box1.visible = obj.elastic;
+			owner.boxr.visible = obj.rotary;
 			resizeEditor(owner,obj);
 			positionBoxes(owner,midW,midH,"")
-			miniWrap(this.bg,midW,midH);
+			miniWrap(owner,midW,midH);
 			if (owner.formTarget!=null){
 				if (isText){
 					owner.formTargetLAST=owner.formTarget
@@ -246,7 +249,7 @@
 	}
 	
 	function positionBoxes(owner,midW,midH,bx){
-		
+			
 		if (bx.name!="bx4"){
 			owner.box4.x=midW;
 			owner.box4.y=midH;
@@ -263,13 +266,13 @@
 			owner.box1.x=0-midW;
 			owner.box1.y=0-midH;
 		}
-
+		
 		owner.boxr.x=0;
 		owner.boxr.y=-60-midH;
 	}
 		
-	function miniWrap(bg,midW,midH){
-		var MC = bg.graphics;
+	function miniWrap(owner,midW,midH){
+		var MC = owner.bg.graphics;
 		MC.clear();
 		MC.beginStroke('red'); 
 		MC.setStrokeStyle(2);
@@ -285,7 +288,8 @@
 		createLineSegments(MC,origin,lft,true);		//LEFT
 		createLineSegments(MC,lft,btm,false);		//BOTTOM
 		createLineSegments(MC,tp,rt, true);			//RIGHT
-		createLineSegments(MC,rot,midtp,true);		//ROTATION
+		if (owner.boxr.visible)
+			createLineSegments(MC,rot,midtp,true);		//ROTATION
 	};
 		
 	

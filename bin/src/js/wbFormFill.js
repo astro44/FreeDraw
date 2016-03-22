@@ -13,9 +13,14 @@
 		this.regY=0;
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
-		this.setup();
 		this.tempOrigin=null;
 		this.lastXY={x:0,y:0}
+		this.related=null;
+		this.biderectional=false;
+		this._commited = false;
+		this.elastic=true;
+		this.rotary=true;
+		this.setup();
 	}
 	createjs.EventDispatcher.initialize(FormFill.prototype);
 	var p = createjs.extend(FormFill, createjs.Container);
@@ -31,15 +36,16 @@
 		
 		this.on("mousedown", this.handlePress.bind(this));
 		this.on("pressup", this.handleRelease.bind(this));
-		this.on("pressmove", this.moveLocally.bind(this));
 		this.cursor = "pointer";
 		this.mouseChildren = false;
 		
 		this.offset = Math.random()*10;
 		this.count = 0;
+		this.status=window.WBdraw.FormProxy.NEW;
 	} ;
 
 	p.drawTemp= function (fx,fy) {
+		this._commited = false;
 		this.uncache();
 		p[this.type](this,fx,fy);
 	}
@@ -50,45 +56,34 @@
 		try{
 			var finalIn=p[this.type+"Perm"](this,shape,init);
 		}catch(err){
-			console.log(err);
-			throw "[E] No function matches:"+this.type+"Perm() in FormLine (wbFormLine.js)";
+			//console.log(err);
+			throw "[E] No function matches:"+this.type+"Perm() in FormFill (wbFormFill.js)";
 			
 		}
-		  // var myevent = {
-			// type: "CommitEvent",
-			// param: this
-		  // };
-		  console.log("...create....");
+		 // console.log("...create....");
 		if (finalIn)
-			this.commit("create");
-			//this.dispatchEvent(myevent);
+			this.commit(window.WBdraw.FormProxy.UPDATE);
 	}
 	p.commit = function (action){
 		   var myevent = {
 			 type: "CommitEvent",
-			 param: this
+			 param: this,
+			 action:action
 		   };
 		this.dispatchEvent(myevent);
 	}
 
-	p.width=0;
-	p.height=0;
+
 	
+	p.scaleState = function (scld){
+		this.scaled=scld;
+		this.scaleX=this.scaleY=1;
+	}
 	p.setSize = function (width,height,color){
 		
 	}
-	p.getWidth = function(){
-		return width;
-	}
-	p.moveLocally = function(evt){
-			var newX=evt.stageX-this.rel.x+this.regX;
-			var newY=evt.stageY-this.rel.y+this.regY;
 
-		this.x=newX;
-		this.y=newY;
-		update=true;
-		evt.stopImmediatePropagation();
-	}
+
 	p.moveSTART = function (event){
 		event.stopImmediatePropagation();
 		var mStage = event.target;		
@@ -103,8 +98,8 @@
         if (target != null) {
 			//target.x=mStage.mouseX-target.rel.x+target.regX;
 			//target.y=mStage.mouseY-target.rel.y+target.regY;
-			console.log(target.rel+","+target.regX);
-			console.log(event);
+			//console.log(target.rel+","+target.regX);
+			//console.log(event);
 			console.log("@@@  start 9 @@@@");
 			//mainStage.update();
 			//event.target.update();
@@ -128,8 +123,8 @@
 		createjs.Tween.get(target,{override:true}).to({scaleX:1, scaleY:1},100,createjs.Ease.quadIn);
 		}
 		
-		  console.log("...moved....");
-		this.commit("moved");
+		  //console.log("...moved....");
+		this.commit(window.WBdraw.FormProxy.MOVED);
 		this.lastXY.x=this.x;
 		this.lastXY.y=this.y;
 		//event.stopImmediatePropagation();
@@ -138,39 +133,21 @@
 	
 	
 	p.handlePress = function(event){
-       // mainStage.addEventListener("stagemousemove", this.moveSTART);
-		  console.log("...handlePress....");
-        mainStage.addEventListener("stagemouseup", this.moveEND.bind(this));
-		if (!this.scaled){
-		createjs.Tween.get(this,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
-		this.scaled=true;
-		
-		//this.rel=this.globalToLocal(mainStage.mouseX,mainStage.mouseY);
-		this.rel2=new createjs.Point(mainStage.mouseX-this.x,mainStage.mouseY-this.y);
-		//this.regStage = this.localToGlobal(this.regX,this.regY);
-		
-			
-			this.rel = new createjs.Point(this.width*.5+this.rel2.x,this.height*.5+this.rel2.y);
-		//this.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
-		event.stopImmediatePropagation();
-		}
-	}
-	
-	
-	
-	
-	p.handleRelease = function(event){
-        mainStage.removeEventListener("stagemousemove", this.moveSTART);
-        mainStage.removeEventListener("stagemouseup", this.moveEND);
-		event.stopImmediatePropagation();
-		//this.skewX = -35;
-		//this.rotation= 35;
-		//this.rotation+= 35;
-		
+		  //console.log("...handlePress....");
 	   var mevt = {
-		 type: "SelectEvent",
+		 type: "PressEvent", 
 		 param: this
 	   };
+		if (!this.scaled)event.stopImmediatePropagation();
+	   this.dispatchEvent(mevt);
+	}
+	
+	p.handleRelease = function(event){
+	   var mevt = {
+		 type: "ReleaseEvent", 
+		 param: this
+	   };
+		event.stopImmediatePropagation();
 	   this.dispatchEvent(mevt);
 	}
 	
@@ -183,7 +160,6 @@
 	
 	p.square = function(owner,fx,fy){
 		var lc=new createjs.Point(fx,fy);
-		//var lc= owner.bg.globalToLocal(fx,fy);
 		var MC =owner.bg.graphics;
 		MC.clear();
 		owner.points=[];
@@ -196,6 +172,19 @@
 		MC.endFill(); 
 		//this.cache(0,0,inX,inY);
 	}
+	
+	
+	function convert2pos(owner,lc){
+		if (lc.x<0){//moveBy in the + direction X
+			lc.x=Math.abs(lc.x);
+			owner.x-=lc.x;
+		}
+		if (lc.y<0){//moveBy in the + direction Y
+			lc.y=Math.abs(lc.y);
+			owner.y-=lc.y;
+		}
+		return lc;
+	}
 	p.squarePerm = function(owner,shape,init){
 		
 		var MC =owner.bg.graphics;
@@ -205,12 +194,13 @@
 		var tot = owner.points.length;
 		if (tot==0){
 			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			return false;
 		}
-		lc = owner.points[0];
+		olc = owner.points[0];
+		lc = convert2pos(owner,olc);
 		var strokeIn=5;
 		if (lc.x<0){//moveBy in the + direction X
 			owner.regX=-Math.abs(lc.x*.5);
@@ -230,6 +220,11 @@
 		var inY=Math.floor(lc.y)
 		owner.width=Math.abs(inX);
 		owner.height=Math.abs(inY);
+		if (owner.width<10 || owner.height<10){
+			owner.parent.removeChild(owner);
+			delete owner;
+			return false;
+		}
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -243,7 +238,9 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
-		owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
+		//owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
+		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+		//owner.setBounds(owner.x,owner.y,owner.width+strokeIn*2,owner.height+strokeIn*2);
 		
 		return true;
 	}
@@ -275,12 +272,14 @@
 		var tot = owner.points.length;
 		if (tot==0){
 			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			return false;
 		}
-		lc = owner.points[0];
+		
+		olc = owner.points[0];
+		lc = convert2pos(owner,olc);
 		var strokeIn=5;
 		if (lc.x<0){//moveBy in the + direction X
 			owner.regX=-Math.abs(lc.x*.5);
@@ -301,6 +300,12 @@
 		var inY=Math.floor(lc.y)
 		owner.width=Math.abs(inX);
 		owner.height=Math.abs(inY);
+		if (owner.width<10 || owner.height<10){
+			owner.parent.removeChild(owner);
+			delete owner;
+			return false;
+		}
+		//owner.setBounds(owner.x,owner.y,Math.abs(inX),Math.abs(inY));
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
@@ -310,13 +315,14 @@
         HTC.drawEllipse(0,0,inX,inY);
 		MC.drawEllipse(0,0,inX,inY);
 		
-		window.WBdraw.trace();
+		//window.WBdraw.trace();
 		
         MC.endStroke();
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
-		owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
+		
+		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		return true;
 	}
 	
@@ -378,5 +384,13 @@
 		MC.endFill(); 
 		return true;
 	}
+	
+	
+	p.destroy = function(fromJMS){
+		this.uncache();
+		this._commited = false;
+	}
+	
+	
 	scope.FormFill = createjs.promote(FormFill, "Container");
 }(window.WBdraw));

@@ -251,9 +251,13 @@
 	p.onDelete=function(ss,tab,grouped,fromJMS){
 		window.WBdraw.trace("8=========o");
 		console.log(ss);
+		if (ss == undefined){
+			window.WBdraw.trace("<<<<<<<<<< undefined in DELETE >>>>>>>>>>");
+			return;
+		}
 		var mc = this.layers['cvsMAIN'];
+		var shape = mc.getChildByName(ss.name);
 		if (!grouped)this.updateShape(shape,window.WBdraw.FormProxy.DELETE,tab);
-		shape = mc.getChildByName(ss.name);
 		if (shape!=null){
 			if(shape.parent != null){
 				console.log(shape.parent);
@@ -273,12 +277,18 @@
 	p.onDeleteAll=function(tab){
 		if (tab==this.currentTab){
 			//remove from view
-			window.WBdraw.trace("<removeAll>");
+			window.WBdraw.trace("< [START] removeAll>");
+			console.log(this.allTabs);
 			var stot = this.allTabs[tab].length;
-			for (var i =0;i<stot;++i){
-				this.onDelete(this.allTabs[tab][i],tab,true,false);
+			var i = this.allTabs[tab].length;
+			while (this.allTabs[tab].length>0){
+				console.log(this.allTabs[tab][i-1]);
+				this.onDelete(this.allTabs[tab][i-1],tab,true,false);
+				--i;
 			}
 		}
+			window.WBdraw.trace("< [END] removeAll>");
+			console.log(this.allTabs[tab]);
 		if (this.allTabs[tab]!=undefined)
 			this.allTabs[tab].splice(0);
 		//remove from memory the given tab
@@ -290,6 +300,12 @@
 		//does tab exists?
 		var found=false;
 		console.log("~~~~!-updateShape-!~~~~"+tab);
+		if (shape==undefined){
+			window.WBdraw.trace("<<<<<<<  [1] ???????????   >>>>>>>>>"+shape);
+			window.WBdraw.trace("<<<<<<<<<<      >>>>>>>>>>");
+			window.WBdraw.trace("<<<<<<<<<<      >>>>>>>>>>");
+			window.WBdraw.trace("<<<<<<<<<< undefined in updateShape >>>>>>>>>>");
+		}
 		//if (tab==undefined)return;
 		if (this.allTabs[tab]==undefined)this.allTabs[tab]=[];
 		var tot=this.allTabs[tab].length;
@@ -298,6 +314,12 @@
 		
 		var flat = new window.WBdraw.FormProxy();
 		window.WBdraw.FormProxy.flattenForm(flat,shape);
+		if (flat==undefined){
+			window.WBdraw.trace("     [2]   <<<<<<<   ???????????   >>>>>>>>>"+flat);
+			window.WBdraw.trace("        <<<<<<<<<<      >>>>>>>>>>");
+			window.WBdraw.trace("        <<<<<<<<<<      >>>>>>>>>>");
+			window.WBdraw.trace("        <<<<<<<<<< undefined in updateShape >>>>>>>>>>");
+		}
 		for (var i=0;i<tot;++i){
 			if (this.allTabs[tab][i].name==flat.name){
 				if(action==window.WBdraw.FormProxy.DELETE){//DELETE
@@ -315,7 +337,9 @@
 			console.log("see if event already exists in undo/redo with SAME timeStamp");
 		}
 	}
-
+	/**
+	** any links connected to SAME objects?
+	**/
 	p.uniqueLink = function (linkShape,tab){
 		console.log("~~~~!-link check-!~~~~"+tab);
 		//if (tab==undefined)return;
@@ -323,13 +347,28 @@
 		var tot=this.allTabs[tab].length;
 		var rin=linkShape.related;
 		var rout=null;
+		var curT=null;
 		for (var i=0;i<tot;++i){
-			if (this.allTabs[tab][i].type=="links"){
-				rout = this.allTabs[tab][i].related;
-				if (rout.from==rin.from || rout.from==rin.to){
-					if (rout.to==rin.to || rout.to==rin.from){
+			if (this.allTabs[tab][i].type=="links" && this.allTabs[tab][i].id != linkShape.id){
+				//could still be linked to similar object if connected to link
+				curT = this.allTabs[tab][i];
+				rout = curT.related;
+				console.log("~~~~rout:~~~~"+curT.id);
+				console.log("   ~~~~TO:~~~~"+rout.to);
+				console.log("   ~~~~FROM:~~~~"+rout.from);
+				console.log("  >>>in-->TO:~~~>"+rin.to);
+				console.log("  >>>in-->FROM:~~~>"+rin.from);
+				if (rin.to.id == curT.id || rin.from.id == curT.id){//it is connecting to another link /// NOW check to see if from or to objects R the same
+					if (rin.from.id == rout.to.id || rin.from.id == rout.from.id || rin.to.id == rout.to.id || rin.to.id == rout.from.id){
+						console.log("  @@!!@@!!@@found same And ITS A copy");
+						return curT;
+					}
+				}	
+				
+				if (rout.from.id==rin.from.id || rout.from.id==rin.to.id){
+					if (rout.to.id==rin.to.id || rout.to.id==rin.from.id){
 						var link = this.allTabs[tab][i];
-						if (rout.from!=rin.from){ link.bidirectional=true;}
+						if (rout.from.id!=rin.from.id){ link.bidirection=true;}
 						return link;
 					}
 				}
@@ -388,7 +427,7 @@
 		shape._commited=true;
 		//this.shapeNOW.parent.removeChild(this.shapeNOW);
 		
-		this.updateShape(shape,2,this.currentTab);
+		this.updateShape(shape,event.action,this.currentTab);
 		//window.WBdraw.trace(event);	
 	}
 	

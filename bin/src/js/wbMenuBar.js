@@ -68,7 +68,7 @@
 		//scope = this;
 		//text.x = width/2;
 		//text.y = 10;
-		
+		this.scaleX=0;
 		var bg = new createjs.Shape();
 		bg.name=bg.id="bg";
 		bg.alpha=.5;

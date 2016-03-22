@@ -18,7 +18,9 @@
 		this._listenMove=null;
 		this._listenEnd=null;
 		this.related=null;
-		this.biderectional=false;
+		this.bidirection=false;
+		this.elastic=true;
+		this.rotary=true;
 		this.setup();
 	}
 	createjs.EventDispatcher.initialize(FormLine.prototype);
@@ -45,6 +47,8 @@
 	} ;
 	
 	function drawArrow(owner){
+		owner.rotary=false;
+		owner.elastic=false;
 		owner.arrow  = new createjs.Shape();
 		owner.ball  = new createjs.Shape();
 		owner.addChild(owner.arrow, owner.ball); 
@@ -94,10 +98,10 @@
 				Obj.to=shape;
 				console.log(Obj);
 				listenersAdd(this,Obj.to,Obj.from);
-				finalIn = this.linksPerm(this,Obj.to,Obj.from,this.biderectional);
+				finalIn = this.linksPerm(this,Obj.to,Obj.from,this.bidirection);
 				
 				if (finalIn)
-					this.commit("update");
+					this.commit(window.WBdraw.FormProxy.UPDATE);
 							
 							return true;
 				//TODO: draw final And commit
@@ -109,7 +113,7 @@
 	}
 	
 	function listenersAdd(owner,to, from) {
-			console.log("(CNT) @@@@@@@@@@   ADD LISTENERS");
+			//console.log("(CNT) @@@@@@@@@@   ADD LISTENERS");
 			owner._listenMove=moveForm.bind(owner);
 			owner._listenEnd=moveCompleted.bind(owner);
 			to.addEventListener("MoveEvent",owner._listenMove);
@@ -118,7 +122,7 @@
 			from.addEventListener("CommitEvent", owner._listenEnd);
 		}	
 	function listenersRemove(owner,to, from) {
-			console.log("(CNT)  $$$$$$$$$$$$  REMOVE LISTENERS");
+			//console.log("(CNT)  $$$$$$$$$$$$  REMOVE LISTENERS");
 			if (to){
 				to.removeEventListener("MoveEvent", owner._listenMove);
 				to.removeEventListener("CommitEvent", owner._listenEnd);
@@ -128,25 +132,35 @@
 	}
 	
 	function moveForm(event){
-			console.log("(CNT) [[moveForm]] LISTENERS"+this);
+		//console.log("(CNT) [[moveForm]] LISTENERS"+this);
 		console.log(event);
+		moveLink(this,null);
+	}
+	function moveLink(owner,action){
+		var a=owner.related.to;
+		var b =  owner.related.from;
+		owner.x= b.x;
+		owner.y=b.y;
+			owner.points=[];
+			owner.points.push(new createjs.Point(a.x-b.x,a.y-b.y));
+			owner.linksPerm(owner,a,b,owner.bidirection);
+			//moveBy arrow And ball accordingly
+		if (action!=null){//now find hit points to correctly resize the line between the objects
+			
+			owner.commit(action);
+		}
 	}
 	function moveCompleted(event){
-			console.log("(CNT) [[moveCompleted]] LISTENERS"+this);
+			//console.log("(CNT) [[moveCompleted]] LISTENERS"+this);
 			if (event.action==window.WBdraw.FormProxy.DELETE){
 				this._commited=false;
 				this.commit(event.action);
 				if (this.parent)
 					this.parent.removeChild(this);
 				this.destroy(false);
+			}else{
+				moveLink(this,window.WBdraw.FormProxy.UPDATE);	
 			}
-			//event.stopImmediatePropagation();
-			// var shape = event.currentTarget;
-			// if (shape == this.related.from){
-			//		update x,y from
-			//}else{
-			//		update x,y to
-			//}
 		console.log(event);
 	}
 	
@@ -164,7 +178,7 @@
 		}
 		 
 		if (finalIn)
-			this.commit("update");
+			this.commit(window.WBdraw.FormProxy.UPDATE);
 	}
 
 	p.commit = function (action){
@@ -204,7 +218,7 @@
         if (target != null) {
 			target.x=mStage.mouseX-target.rel.x+target.regX;
 			target.y=mStage.mouseY-target.rel.y+target.regY;
-			console.log(target.rel+","+target.regX);
+			//console.log(target.rel+","+target.regX);
 			//mainStage.update();
 		}
 	}
@@ -224,8 +238,8 @@
 			target.scaled=false;
 		createjs.Tween.get(target,{override:true}).to({scaleX:1, scaleY:1},100,createjs.Ease.quadIn);
 		}
-		  console.log("...moved....");
-		this.commit("moved");
+		 // console.log("...moved....");
+		this.commit(window.WBdraw.FormProxy.MOVED);
 		this.lastXY.x=this.x;
 		this.lastXY.y=this.y;
 		//event.stopImmediatePropagation();
@@ -235,7 +249,7 @@
 	
 	
 	p.handlePress = function(event){
-		  console.log("...handlePress....");
+		  //console.log("...handlePress....");
 	   var mevt = {
 		 type: "PressEvent", 
 		 param: this
@@ -258,13 +272,7 @@
 	p.handleRollOver = function(event) {       
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
-	//if a target "object" is not selected then links should fail
-	p.links = function(owner,fx,fy){
-		console.log("links");
-	}
-	p.linksPerm = function(owner,fx,fy){
-		console.log("linksPerm");
-	}
+
 	
 	
 	p.straight =  function (owner,fx,fy){
@@ -301,11 +309,13 @@
 		MC.clear();
 		HTC.clear();
 		var tot = owner.points.length;
+		//console.log(tot);
+		//console.log(">>>>>>>>>>>>> what???>>>>>>>"+owner.points);
 		if (tot==0){
 			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			return false;
 		}
 		lc = owner.points[0];
@@ -373,13 +383,13 @@
 	p.freePerm = function (owner,shape,init){
 		var MC =owner.bg.graphics;
 		var HTC =owner.bg.hitArea.graphics;
-		console.log(owner);
+		//console.log(owner);
 		var tot = owner.points.length;
 		if (tot==0){
 			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			return false;
 		}
 		var lp = new createjs.Point(0,0); 
@@ -536,7 +546,8 @@
 		//set the arrow And ball...
 		//if bidirectional change ball to 2nd arrow
 		//use trig to moveby arrows accordingly
-		console.log(" links  PPPEEERRRMMM");
+		owner.straightPerm(owner,owner,false)
+		//console.log(" links  PPPEEERRRMMM");
 		return true;
 	}
 	p.connectorFollowEdge = function(owner,toObj,fromObj){

@@ -18,6 +18,8 @@
 		this.related=null;
 		this.biderectional=false;
 		this._commited = false;
+		this.elastic=true;
+		this.rotary=true;
 		this.setup();
 	}
 	createjs.EventDispatcher.initialize(FormFill.prototype);
@@ -54,13 +56,13 @@
 		try{
 			var finalIn=p[this.type+"Perm"](this,shape,init);
 		}catch(err){
-			console.log(err);
+			//console.log(err);
 			throw "[E] No function matches:"+this.type+"Perm() in FormFill (wbFormFill.js)";
 			
 		}
-		  console.log("...create....");
+		 // console.log("...create....");
 		if (finalIn)
-			this.commit("update");
+			this.commit(window.WBdraw.FormProxy.UPDATE);
 	}
 	p.commit = function (action){
 		   var myevent = {
@@ -96,8 +98,8 @@
         if (target != null) {
 			//target.x=mStage.mouseX-target.rel.x+target.regX;
 			//target.y=mStage.mouseY-target.rel.y+target.regY;
-			console.log(target.rel+","+target.regX);
-			console.log(event);
+			//console.log(target.rel+","+target.regX);
+			//console.log(event);
 			console.log("@@@  start 9 @@@@");
 			//mainStage.update();
 			//event.target.update();
@@ -121,8 +123,8 @@
 		createjs.Tween.get(target,{override:true}).to({scaleX:1, scaleY:1},100,createjs.Ease.quadIn);
 		}
 		
-		  console.log("...moved....");
-		this.commit("moved");
+		  //console.log("...moved....");
+		this.commit(window.WBdraw.FormProxy.MOVED);
 		this.lastXY.x=this.x;
 		this.lastXY.y=this.y;
 		//event.stopImmediatePropagation();
@@ -131,7 +133,7 @@
 	
 	
 	p.handlePress = function(event){
-		  console.log("...handlePress....");
+		  //console.log("...handlePress....");
 	   var mevt = {
 		 type: "PressEvent", 
 		 param: this
@@ -192,9 +194,9 @@
 		var tot = owner.points.length;
 		if (tot==0){
 			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			return false;
 		}
 		olc = owner.points[0];
@@ -270,9 +272,9 @@
 		var tot = owner.points.length;
 		if (tot==0){
 			var parentIN= owner.parent;
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			owner.parent.removeChild(this);
-			console.log(parentIN.getNumChildren());
+			//console.log(parentIN.getNumChildren());
 			return false;
 		}
 		

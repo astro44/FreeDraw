@@ -72,7 +72,7 @@ Main.prototype.initialize = function(){
 	this.mainStage.addChild(board1);
 
 }
-	
+
 	function tick(event){
 		var board1=mainStage.getChildByName("BASE_main");
 		
