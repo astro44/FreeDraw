@@ -134,7 +134,7 @@
 	function moveForm(event){
 		//console.log("(CNT) [[moveForm]] LISTENERS"+this);
 		console.log(event);
-		moveLink(this,null);
+		moveLink(this,"MoveEvent");
 	}
 	function moveLink(owner,action){
 		var a=owner.related.to;
@@ -254,7 +254,8 @@
 		 type: "PressEvent", 
 		 param: this
 	   };
-		if (!this.scaled)event.stopImmediatePropagation();
+		//if (!this.scaled)
+		event.stopImmediatePropagation();
 	   this.dispatchEvent(mevt);
 	}
 	

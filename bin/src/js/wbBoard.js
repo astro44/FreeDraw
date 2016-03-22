@@ -74,7 +74,7 @@
 		},
 		p.shapeStart=  function (){
 			if (this.shapeNOW!=null){
-				console.log("...found shape in use...");
+				console.log("...found shape in use..."+this.shapeNOW.id);
 				if (!this.shapeNOW._commited) {
 					if (this.shapeNOW.type!="links"){
 						this.shapeNOW.drawPerm(this.shapeNOW,false);
@@ -108,7 +108,7 @@
 			if (this._objectInit!=false){
 				return;
 			}
-			//console.log("..drawing nwo");
+			console.log("..drawing nwo");
 			if (this.shapeNOW!=undefined){
 				if (this.shapeNOW != this.resizer.formTarget){
 					var lc= this.shapeNOW.bg.globalToLocal(x,y);
@@ -353,18 +353,12 @@
 				//could still be linked to similar object if connected to link
 				curT = this.allTabs[tab][i];
 				rout = curT.related;
-				console.log("~~~~rout:~~~~"+curT.id);
-				console.log("   ~~~~TO:~~~~"+rout.to);
-				console.log("   ~~~~FROM:~~~~"+rout.from);
-				console.log("  >>>in-->TO:~~~>"+rin.to);
-				console.log("  >>>in-->FROM:~~~>"+rin.from);
 				if (rin.to.id == curT.id || rin.from.id == curT.id){//it is connecting to another link /// NOW check to see if from or to objects R the same
 					if (rin.from.id == rout.to.id || rin.from.id == rout.from.id || rin.to.id == rout.to.id || rin.to.id == rout.from.id){
 						console.log("  @@!!@@!!@@found same And ITS A copy");
 						return curT;
 					}
 				}	
-				
 				if (rout.from.id==rin.from.id || rout.from.id==rin.to.id){
 					if (rout.to.id==rin.to.id || rout.to.id==rin.from.id){
 						var link = this.allTabs[tab][i];
@@ -384,7 +378,8 @@
 		//shape.addEventListener("NONCommitEvent", onNONCommit.bind(owner));
 		shape.addEventListener("PressEvent", onPress.bind(owner));
 		shape.addEventListener("ReleaseEvent", onRelease.bind(owner));
-		shape.on("pressmove", moveLocally.bind(owner));
+		if (shape.type!="links")
+			shape.on("pressmove", moveLocally.bind(owner));
 	}
 	
 	/*function onNONCommit(event){
@@ -437,6 +432,7 @@
 		console.log("now target link to this shape if this is the type tool currently in use");
 		console.log("skip the rest of the function if type == links");
 		var shape = event.param;
+		console.log("   ===>"+shape.id);
 		if (this._tempModel.type=="links"){
 			console.log("ola links just happened");
 			var frshape = null;

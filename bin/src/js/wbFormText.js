@@ -164,7 +164,8 @@
 		 type: "PressEvent", 
 		 param: this
 	   };
-		if (!this.scaled)event.stopImmediatePropagation();
+		//if (!this.scaled)
+		event.stopImmediatePropagation();
 	   this.dispatchEvent(mevt);
 	}
 	

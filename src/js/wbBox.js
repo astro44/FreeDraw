@@ -27,7 +27,7 @@
 		this.on("click", this.handleClick);
 		this.on("mousedown", this.handlePress);
 		this.on("pressup", this.handleRelease);
-		this.on("pressmove", this.drawLine);
+		//this.on("pressmove", this.drawLine);
 		
 		console.log("box1");
 		//this.cursor = "pointer";
