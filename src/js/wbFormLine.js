@@ -51,11 +51,25 @@
 		owner.elastic=false;
 		owner.arrow  = new createjs.Shape();
 		owner.ball  = new createjs.Shape();
-		owner.addChild(owner.arrow, owner.ball); 
+		owner.sqr  = new createjs.Shape();
+		propArrow(owner.arrow,20,'#000000');
+		propBall(owner.ball,20,'#000000');
+		propSquare(owner.sqr,20,"#FF0000");
+		owner.addChild(owner.arrow, owner.ball, owner.sqr); 
 	}
-	
+	function propSquare(ball,size,color){
+		var MC = ball.graphics;
+		MC.clear();
+		var hlf=-size*.5;
+		MC.setStrokeStyle(5);
+			MC.beginStroke(color); 
+			//MC.beginFill(color); 
+			MC.drawEllipse(hlf,hlf,size,size);
+		MC.endStroke();
+	}
 	function propArrow(arrow,size, color){
 		var MC = arrow.graphics;
+		MC.clear();
 		MC.setStrokeStyle(5);
 			MC.beginStroke(color); 
 			MC.beginFill(color); 
@@ -65,15 +79,26 @@
 		MC.endStroke();
 		MC.endFill(); 
 	}
-	function propBall(arrow,size, color){
-		var MC = arrow.graphics;
+	function propBall(ball,size, color){
+		var MC = ball.graphics;
+		MC.clear();
+		var hlf=-size*.5;
 		MC.setStrokeStyle(5);
 			MC.beginStroke(color); 
 			MC.beginFill(color); 
-			MC.drawEllipse(0,0,size,size);
+			MC.drawEllipse(hlf,hlf,size,size);
+		MC.endStroke();
+		MC.endFill(); 
 	}
-	function positionEnds(owner){
-		
+	function positionEnds(owner,from,to){
+		var angle=window.WBdraw.rotateAngle(from,to);
+		console.log(angle);
+		owner.arrow.rotation=angle;
+		owner.ball.rotation=180+angle;
+		owner.ball.x=0;
+		owner.ball.y=0;
+		owner.arrow.x=to.x-from.x;
+		owner.arrow.y=to.y-from.y;
 	}
 
 	p.drawTemp= function (fx,fy) {
@@ -134,22 +159,9 @@
 	function moveForm(event){
 		//console.log("(CNT) [[moveForm]] LISTENERS"+this);
 		console.log(event);
-		moveLink(this,"MoveEvent");
+		this.moveLink(this, window.WBdraw.FormProxy.UPDATE);
 	}
-	function moveLink(owner,action){
-		var a=owner.related.to;
-		var b =  owner.related.from;
-		owner.x= b.x;
-		owner.y=b.y;
-			owner.points=[];
-			owner.points.push(new createjs.Point(a.x-b.x,a.y-b.y));
-			owner.linksPerm(owner,a,b,owner.bidirection);
-			//moveBy arrow And ball accordingly
-		if (action!=null){//now find hit points to correctly resize the line between the objects
-			
-			owner.commit(action);
-		}
-	}
+
 	function moveCompleted(event){
 			//console.log("(CNT) [[moveCompleted]] LISTENERS"+this);
 			if (event.action==window.WBdraw.FormProxy.DELETE){
@@ -159,13 +171,61 @@
 					this.parent.removeChild(this);
 				this.destroy(false);
 			}else{
-				moveLink(this,window.WBdraw.FormProxy.UPDATE);	
+				this.moveLink(this,window.WBdraw.FormProxy.UPDATE);	
 			}
+			
+		//positionEnds(this,this.related.from, this.related.to);
 		console.log(event);
 	}
 	
+	function pointOnLine(from,to,x){
+		var m = (from.y-to.y)/(from.x-to.x);
+		var c = from.y-from.x*m;
+		var y = m*x+c;
+		return y 
+	}
 	
-
+	p.moveLink = function (owner,action){
+		var a =  owner.related.to;
+		var b =  owner.related.from;
+		owner.x= b.x;
+		owner.y=b.y;
+		//loop through all points on line to find each to/from starting from endS moving to center
+		var tot = a.x-b.x;
+		var dy=0;
+		var dx=0;
+		for (var i=0;i<tot;++i){
+			dx = i;
+			dy = pointOnLine(b,a,dx);
+			
+			var pt = this.localToLocal(dx,dy,a);
+			var ptb = this.localToLocal(dx,dy,b);
+			if(a.hitTest(pt.x,pt.y)){
+				console.log("[TO] HHHHHITTTTTT:"+a.id);
+				console.log(dx+','+dy);
+			}else if (b.hitTest(ptb.x,ptb.y)){
+				console.log("[FROM] HHHHHITTTTTT:"+b.id);
+				console.log(dx+','+dy);
+				owner.sqr.x=dx;
+				owner.sqr.y=dy;
+			}
+		}
+		
+		
+		
+		
+			owner.points=[];
+			owner.points.push(new createjs.Point(a.x-b.x,a.y-b.y));
+			owner.linksPerm(owner,false);
+			//moveBy arrow And ball accordingly
+		if (action!=null){//now find hit points to correctly resize the line between the objects
+			
+			owner.commit(action);
+		}
+		//positionEnds(owner,owner.related.from, owner.related.to);
+	}
+	
+	
 	p.drawPerm= function (shape,init) {
 		if (shape.id !=this.id)
 			return;
@@ -335,8 +395,9 @@
 		owner.y=owner.y+owner.regY;
 		
 		var strokeIn=5;
-		MC.setStrokeStyle(strokeIn);
-		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
+		MC.setStrokeStyle(strokeIn); 
+		owner.color='#'+Math.floor(Math.random()*16777215).toString(16);
+		MC.beginStroke(owner.color);
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
@@ -521,34 +582,46 @@
 		//var lc= owner.bg.globalToLocal(fx,fy);
 		var MC =owner.bg.graphics;
 		MC.clear();
-		//console.log(" connector connecting");
+		console.log("     >>> >> >     connector connecting");
 		owner.points=[];
 		MC.setStrokeStyle(5);
 		d= Math.sqrt( (lc.x)*lc.x + (lc.y)*lc.y );
 		r = d%owner.segSize;
-		tot =d/owner.segSize;
 		var lastX=0;
 		var lastY=0;
+		var rX=(lc.x>0?-1:1)*10;
+		var rY=(lc.y>0?-1:1)*10;
+		tot =(d/owner.segSize);
 		for (var i=0;i<tot; ++i){
-			var x=lc.x*(i/tot);	
-			var y=lc.y*(i/tot);	
+			var x=lc.x*(i/tot)+rX;	
+			var y=lc.y*(i/tot)+rY;	
 			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
 			MC.moveTo(lastX,lastY); 
 			MC.lineTo(x, y);
 			lastX = x;
 			lastY = y;
 		}
-		MC.moveTo(lastX,lastY); 
-		MC.lineTo(lc.x, lc.y);
+		MC.moveTo(lastX+rX,lastY+rY); 
+		MC.lineTo(lc.x+rX, lc.y+rY);
 		owner.points.push(lc);
 		MC.endStroke();
+	    positionEnds(owner,{x:0,y:0}, {x:lc.x+rX, y:lc.y+rY});
 	}	
-	p.linksPerm = function(owner,to,from,bidirection){
+	p.linksPerm = function(owner,init){
 		//set the arrow And ball...
 		//if bidirectional change ball to 2nd arrow
 		//use trig to moveby arrows accordingly
+		positionEnds(owner,owner.related.from, owner.related.to);
+		owner.points=[];
+		owner.points.push({x:owner.arrow.x , y: owner.arrow.y});
 		owner.straightPerm(owner,owner,false)
-		//console.log(" links  PPPEEERRRMMM");
+		
+		propArrow(owner.arrow,20,owner.color);
+		if (owner.bidirection){
+			propArrow(owner.ball,20,owner.color);
+		}else{
+			propBall(owner.ball,20,owner.color);
+		}
 		return true;
 	}
 	p.connectorFollowEdge = function(owner,toObj,fromObj){
