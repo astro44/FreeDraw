@@ -50,6 +50,14 @@
 		return [nx, ny];
 	}*/
 	
+	WBdraw.rotateAngle = function(from,to){
+		 var deltaX = to.x - from.x;
+		 var deltaY = to.y - from.y;
+		 var angleRad = Math.atan2(deltaY, deltaX); // In radians
+		 angleDeg = angleRad * 180 / Math.PI;
+			return angleDeg
+	}
+	
 	
 	WBdraw.getContrast50 = function (hexcolor){
 		return (parseInt(hexcolor.substring(1), 16) > 0xffffff/2) ? 'black':'white';

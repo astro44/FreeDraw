@@ -51,13 +51,14 @@
 		owner.elastic=false;
 		owner.arrow  = new createjs.Shape();
 		owner.ball  = new createjs.Shape();
-		owner.sqr  = new createjs.Shape();
+		//owner.sqr  = new createjs.Shape();
+		//owner.sqr2  = new createjs.Shape();
 		propArrow(owner.arrow,20,'#000000');
 		propBall(owner.ball,20,'#000000');
-		propSquare(owner.sqr,20,"#FF0000");
-		owner.addChild(owner.arrow, owner.ball, owner.sqr); 
+		//propSquare(owner.sqr,20,"#FF0000");
+		owner.addChild(owner.arrow, owner.ball);//owner.sqr, owner.sqr2); 
 	}
-	function propSquare(ball,size,color){
+	/*function propSquare(ball,size,color){
 		var MC = ball.graphics;
 		MC.clear();
 		var hlf=-size*.5;
@@ -67,6 +68,20 @@
 			MC.drawEllipse(hlf,hlf,size,size);
 		MC.endStroke();
 	}
+	function propSquare2(dd,size,pt,color){
+		var MC = dd.graphics;
+		//MC.clear();
+		//console.log
+		var hlf=-size*.5;
+		MC.setStrokeStyle(5);
+			MC.beginStroke(color); 
+			 MC.setStrokeDash([20,10],3);
+			 console.log(pt);
+			MC.drawEllipse(pt.x,pt.y,size,size);
+			//MC.mt(20,20);  // same as moveTo
+			//MC.lineTo(260,20);
+		MC.endStroke();
+	}*/
 	function propArrow(arrow,size, color){
 		var MC = arrow.graphics;
 		MC.clear();
@@ -178,42 +193,61 @@
 		console.log(event);
 	}
 	
-	function pointOnLine(from,to,x){
+	function pointOnLine2(from,to,x){
 		var m = (from.y-to.y)/(from.x-to.x);
 		var c = from.y-from.x*m;
 		var y = m*x+c;
 		return y 
+	}	
+	function pointOnLine(from,to,x){
+		var ax=to.x-from.x;   
+		var ay=to.y-from.y;
+		var nz={x:0,y:0};
+		var m = (nz.y-ay)/(nz.x-ax);
+		return x*m; 
 	}
+	function lineInterpolate( owner,x2,y2, distance )
+		{
+		  var xabs = Math.abs( 0 - x2 );
+		  var yabs = Math.abs( 0 - y2 );
+		  var xdiff = x2 - 0;
+		  var ydiff = y2 - 0;
+		 
+		  var length = Math.sqrt( ( Math.pow( xabs, 2 ) + Math.pow( yabs, 2 ) ) );
+		  var steps = length / distance;
+		  var xstep = xdiff / steps;
+		  var ystep = ydiff / steps;
+		 
+		  var newx = 0;
+		  var newy = 0;
+		  var result = new Array();
+		 
+		var a =  owner.related.to;
+		var b =  owner.related.from;
+		  for( var s = 0; s < steps; s++ )
+		  {
+			newx =0 + ( xstep * s );
+			newy = 0 + ( ystep * s );
+		 
+			
+			
+			
+			result.push( {
+			  x: Math.round(newx),
+			  y: Math.round(newy)
+			} );
+		  }
+		 
+		  return result;
+		}
 	
 	p.moveLink = function (owner,action){
 		var a =  owner.related.to;
 		var b =  owner.related.from;
 		owner.x= b.x;
 		owner.y=b.y;
-		//loop through all points on line to find each to/from starting from endS moving to center
-		var tot = a.x-b.x;
-		var dy=0;
-		var dx=0;
-		for (var i=0;i<tot;++i){
-			dx = i;
-			dy = pointOnLine(b,a,dx);
+		
 			
-			var pt = this.localToLocal(dx,dy,a);
-			var ptb = this.localToLocal(dx,dy,b);
-			if(a.hitTest(pt.x,pt.y)){
-				console.log("[TO] HHHHHITTTTTT:"+a.id);
-				console.log(dx+','+dy);
-			}else if (b.hitTest(ptb.x,ptb.y)){
-				console.log("[FROM] HHHHHITTTTTT:"+b.id);
-				console.log(dx+','+dy);
-				owner.sqr.x=dx;
-				owner.sqr.y=dy;
-			}
-		}
-		
-		
-		
-		
 			owner.points=[];
 			owner.points.push(new createjs.Point(a.x-b.x,a.y-b.y));
 			owner.linksPerm(owner,false);
@@ -607,14 +641,74 @@
 		MC.endStroke();
 	    positionEnds(owner,{x:0,y:0}, {x:lc.x+rX, y:lc.y+rY});
 	}	
+	
+	
+	
 	p.linksPerm = function(owner,init){
-		//set the arrow And ball...
-		//if bidirectional change ball to 2nd arrow
-		//use trig to moveby arrows accordingly
-		positionEnds(owner,owner.related.from, owner.related.to);
+		
+		var to=owner.related.to;
+		var from=owner.related.from;
+		
+		
+		//positionEnds(owner,from, to);
+		owner.points=[];
+		positionEnds(owner,from, to);
+		owner.points.push({x:owner.arrow.x , y: owner.arrow.y});
+		owner.straightPerm(owner,owner,false);
+		
+		
+		// ## START SEARCH FOR TOUCH POINTS  ##//
+		var gaps=6;
+		 var zz=lineInterpolate(owner, to.x-from.x , to.y-from.y , gaps);
+		 owner.related.a = zz;
+		var a = (owner.related.a?owner.related.a:[]);
+		//var mc = owner.sqr2.graphics;
+		//this.sqr2.x=owner.sqr2.y=0;
+		
+		if (a.length>0)
+			var mpt = {x:a[a.length-1].x*.5,y:a[a.length-1].y*.5}
+		// mc.clear();
+		 var tor={x:0,y:0,d:10000000};
+		 var fromr={x:0,y:0,d:10000000};
+		 for (var i=0;i<a.length;++i){
+			var gx=a[i].x;
+			var gy=a[i].y;
+			
+			var pt = owner.bg.localToLocal(gx,gy,to.bg);
+			var ptb = owner.bg.localToLocal(gx,gy,from.bg); 
+			if(to.bg.hitTest(pt.x,pt.y)){//find smallest distance from MID point  (increasing or decreasing?)
+				var d = Math.sqrt( (mpt.x-gx)*(mpt.x-gx) + (mpt.y-gy)*(mpt.y-gy) );
+				if (d<tor.d){
+					tor.x=gx;
+					tor.y=gy;
+					tor.d=d;
+				}
+			}
+			if(from.bg.hitTest(ptb.x,ptb.y)){//find smallest distance from MID point  (increasing or decreasing?)
+				var d2 = Math.sqrt( (mpt.x-gx)*(mpt.x-gx) + (mpt.y-gy)*(mpt.y-gy) );
+				if (d2<fromr.d){
+					fromr.x=gx;
+					fromr.y=gy;
+					fromr.d=d2;
+				}
+			}
+		 }
+		// ## END SEARCH FOR TOUCH POINTS  ##//
+		
+		// propSquare2(owner.sqr2,20,{x:tor.x,y:tor.y},"#0000FF");
+		 //propSquare2(owner.sqr2,20,{x:fromr.x,y:fromr.y},"#0000FF");
+		 var ddpt2=owner.bg.localToLocal(tor.x,tor.y,owner.parent);
+		 var ddpt=owner.bg.localToLocal(fromr.x,fromr.y,owner.parent);
+		
+		
+		positionEnds(owner,fromr, tor);
+		//positionEnds(owner,from, to);
 		owner.points=[];
 		owner.points.push({x:owner.arrow.x , y: owner.arrow.y});
-		owner.straightPerm(owner,owner,false)
+		
+		owner.x=ddpt.x;
+		owner.y=ddpt.y;
+		owner.straightPerm(owner,owner,false);
 		
 		propArrow(owner.arrow,20,owner.color);
 		if (owner.bidirection){
@@ -624,37 +718,8 @@
 		}
 		return true;
 	}
-	p.connectorFollowEdge = function(owner,toObj,fromObj){
-		//get all points on a line And find the intercept 
-		var line=owner;
-		point=new createjs.Point(toObj.x+(toObj.width*.5),toObj.y+(toObj.height*.5));
-		target=new createjs.Point(fromObj.x+(fromObj.width*.5),fromObj.y+(fromObj.height*.5));
-		var maxX=point.x -target.x;
-		var maxY=point.y-target.y;
-		var total=maxY;
-		if (maxX>maxY){//checkError all points based on x coordinates
-			total=maxX;
-		}
-		var angle = Math.atan2(target.Y - point.Y, target.X - point.X);
-		var moveby = 2;
-		
-		var context = canvas.getContext("2d");
-		for (var i=0;i<total;++i){
-			//loop through each pixel to find color different
-			//use slope And http://stackoverflow.com/questions/13491676/get-all-pixel-coordinates-between-2-points
-			
-			var addY = Math.sin(angle) * moveby;
-			var addX = Math.cos(angle) * moveby;
-			var newPoint= new createjs.Point(fromObj.x+addX,fromObj.y+addY);
-			var  imgData = context.getImageData(newPoint.x, newPoint.y, 2, 2).data;
-			var color = "rgba(" + imgData[pos] + "," + imgData[pos+1] + "," + imgData[pos+2] + "," + imgData[pos+3] + ")";
-			if (color == "#CCCCCC"){
-				console.log("pixel found::"+color);
-			}
-				console.log(" found::"+color);
-		}
-	}
 	
+
 
 	
 	p.setDimension = function (owner,w,h){

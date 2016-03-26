@@ -24,6 +24,7 @@
 		this._tempModel=null;
 		this._isSynched=false;
 		this._int=0;
+		this._pressMove=null;
 		//action_delete=5;
 		//action_create=1;
 		//action_update=2;
@@ -172,6 +173,8 @@
 		this.offset = Math.random()*10;
 		this.count = 0;
 		this.test_draw("line","free");
+		
+		this._pressMove = this.drawLine.bind(this);
 	};
 	
 	p.width=0;
@@ -219,14 +222,14 @@
 		console.log("pressing.33gfw...");
 		
 		this.shapeStart();
-		this.on("pressmove", this.drawLine.bind(this));
+		this.on("pressmove", this._pressMove);
 		
 		this.resizer.wrapTarget(this.resizer,null);
 		event.stopImmediatePropagation();
 	};
 	p.handleRelease = function(event){
 		this.drawdone(this);
-		this.off("pressmove", this.drawLine);
+		this.off("pressmove", this._pressMove);
 	};
 	
 	
@@ -237,7 +240,7 @@
 	};
 	p.endDraw = function(event){
 		window.WBdraw.trace("enddraw1");
-		this.off("pressmove", this.drawLine);
+		this.off("pressmove", this._pressMove);
 	};
 	
 	
@@ -362,7 +365,18 @@
 				if (rout.from.id==rin.from.id || rout.from.id==rin.to.id){
 					if (rout.to.id==rin.to.id || rout.to.id==rin.from.id){
 						var link = this.allTabs[tab][i];
-						if (rout.from.id!=rin.from.id){ link.bidirection=true;}
+						if (rout.from.id!=rin.from.id){
+							var mc = this.layers['cvsMAIN'];
+							var sLink = mc.getChildByName(link.id);
+							sLink.bidirection = link.bidirection = true;
+							//sLink.drawPerm(sLink,false);
+							sLink.moveLink(sLink, window.WBdraw.FormProxy.UPDATE);
+						}
+						console.log("  @@!!@@!!@@f should it be bidirectionl?");
+						console.log(rout.from.id);
+						console.log(rin.from.id);
+						console.log(rin.to.id);
+						console.log("  @@!---------____________--------!!@@");
 						return link;
 					}
 				}
@@ -458,12 +472,13 @@
 			var finished=frshape.link(shape);
 			if (finished){
 				this.shapeNOW=null;
+				mainStage.removeEventListener("stagemousemove", this._pressMove);
 				return;
 			}
 			this.shapeNOW=frshape;
 			frshape.x=shape.x;
 			frshape.y=shape.y;
-			mainStage.addEventListener("stagemousemove", this.drawLine.bind(this));
+			mainStage.addEventListener("stagemousemove", this._pressMove);
 			return;
 		}
         mainStage.addEventListener("stagemouseup", shape.moveEND.bind(shape));

@@ -301,6 +301,7 @@
 		d= Math.sqrt( (dx2-=dx1)*dx2 + (dy2-=dy1)*dy2 );
 
 		tot =(d/12);
+		//myGraphics.setStrokeDash([20, 10], 0);  //20 px then 10px gap  0 marching ants effect
 		var lastX=begin.x;
 		var lastY=begin.y;
 		var diff=d/tot;
