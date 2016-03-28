@@ -14,6 +14,7 @@
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
 		this.lastXY={x:0,y:0};
+		this.cacheXY={x:0, y:0};
 		this._commited = false; 
 		this._listenMove=null;
 		this._listenEnd=null;
@@ -156,18 +157,18 @@
 			//console.log("(CNT) @@@@@@@@@@   ADD LISTENERS");
 			owner._listenMove=moveForm.bind(owner);
 			owner._listenEnd=moveCompleted.bind(owner);
-			to.addEventListener("MoveEvent",owner._listenMove);
-			from.addEventListener("MoveEvent", owner._listenMove);
+			//to.addEventListener("MoveEvent",owner._listenMove);
+			//from.addEventListener("MoveEvent", owner._listenMove);
 			to.addEventListener("CommitEvent", owner._listenEnd);
 			from.addEventListener("CommitEvent", owner._listenEnd);
 		}	
 	function listenersRemove(owner,to, from) {
 			//console.log("(CNT)  $$$$$$$$$$$$  REMOVE LISTENERS");
 			if (to){
-				to.removeEventListener("MoveEvent", owner._listenMove);
+				//to.removeEventListener("MoveEvent", owner._listenMove);
 				to.removeEventListener("CommitEvent", owner._listenEnd);
 			}
-			from.removeEventListener("MoveEvent", owner._listenMove);
+			//from.removeEventListener("MoveEvent", owner._listenMove);
 			from.removeEventListener("CommitEvent", owner._listenEnd);
 	}
 	
@@ -428,6 +429,8 @@
 		}
 		owner.y=owner.y+owner.regY;
 		
+		var inX=Math.floor(lc.x);
+		var inY=Math.floor(lc.y)
 		var strokeIn=5;
 		MC.setStrokeStyle(strokeIn); 
 		owner.color='#'+Math.floor(Math.random()*16777215).toString(16);
@@ -445,8 +448,11 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		
-		owner.setDimension(owner,lc.x,lc.y);
+		owner.setDimension(owner,lc.x,lc.y,(inX<0?inX:0),(inY<0?inY:0));
 		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+		
+		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+		//owner.cache(-strokeIn,-strokeIn,owner.rect.width+strokeIn*2, owner.rect.height+strokeIn*2);
 		return true;
 	}
 	
@@ -529,6 +535,7 @@
 		/*owner.bg.x=(lowX<0?Math.abs(lowX):0);
 		owner.bg.y=(lowY>0?Math.abs(lowY):0);
 		*/
+		
         MC.endStroke();
         HTC.endStroke();
 		HTC.endFill(); 
@@ -548,7 +555,9 @@
 			owner.regY=yMid;
 			owner.y+=yMid*2;
 		owner.setDimension(owner,owner.rect.width,owner.rect.height);
+		console.log(owner.points);
 		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+		owner.cache(-strokeIn,-strokeIn,owner.rect.width+strokeIn*2, owner.rect.height+strokeIn*2);
 		return true;
 	};
 
@@ -608,6 +617,9 @@
         MC.endStroke();
         HTC.endStroke();
 		owner.setDimension(owner,sPos.cx,sPos.fy);
+		//TODO:  set Bezier in positive space and use CACHE
+		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+		//owner.cache(-strokeIn,-strokeIn,sPos.cx+strokeIn*2, sPos.fy+strokeIn*2);
 		return true;
 	}
 	//connector
@@ -646,6 +658,7 @@
 	
 	p.linksPerm = function(owner,init){
 		
+		var strokeIn=5;
 		var to=owner.related.to;
 		var from=owner.related.from;
 		
@@ -716,15 +729,31 @@
 		}else{
 			propBall(owner.ball,20,owner.color);
 		}
+		
+		//var inX=Math.floor(lc.x);
+		//var inY=Math.floor(lc.y);
+		
+		//TODO:  set links in positive space and use CACHE
+		owner.uncache();
+		//if (owner.arrow.x<owner.arrow.ball){
+			//space based on arrow
+		///}
+		var chX=(owner.arrow.x<owner.ball.x?owner.arrow.x:owner.ball.x);
+		var chY=(owner.arrow.y<owner.ball.y?owner.arrow.y:owner.ball.y);
+		
+		
+		owner.cache(-strokeIn+owner.cacheXY.x-10,-strokeIn+owner.cacheXY.y-10, owner.width+strokeIn*2+20,owner.height+strokeIn*2+20);
+		
 		return true;
 	}
 	
 
 
 	
-	p.setDimension = function (owner,w,h){
+	p.setDimension = function (owner,w,h,cx,cy){
 		owner.width=Math.abs(w);
 		owner.height =Math.abs(h);
+		owner.cacheXY={x:cx,y:cy};
 		console.log(owner.width+"x"+owner.height);
 	}
 

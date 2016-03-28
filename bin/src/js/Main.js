@@ -17,14 +17,14 @@ Main.prototype.initialize = function(){
 	this.mainCanvas = document.getElementById("mainCanvas");
 	this.mainCanvas.setStrokeStyle="#FF0000"
 	/**
-	* mainStage
+	* mainStage -- CAN NOT USE WEBGL since it <shape> can NOT be added.
 	*/
 	this.mainStage = new createjs.Stage(this.mainCanvas);
+	//this.mainStage = new createjs.SpriteStage(this.mainCanvas,false,false);
 	this.mainStage.snapToPixelsEnabled = true;
 	this.mainStage.id="mainIn";
 	window.mainStage =this.mainStage;
 	this.mainStage.enableMouseOver(10);
-	
 	
 	var stats = new Stats();
 	var stats1 = new Stats();
@@ -79,12 +79,15 @@ Main.prototype.initialize = function(){
 		window.stats.begin();
 		window.stats1.begin();
 		window.stats2.begin();
-		if (board1.width != mainStage.canvas.width || board1.height != mainStage.canvas.height){
-			board1.setSize(mainStage.canvas.width,mainStage.canvas.height, '#CCC');
-			console.log("abc tick  width:"+board1.width+"  widthCvs:"+ mainStage.canvas.width+"  height:"+board1.height+"  heightCvs:"+mainStage.canvas.height)
-			
-			initSIZE(mainStage);
-		}
+		//below only works with canvas NOT WEBGL
+		//if (!mainStage.isWebGL){
+			if (board1.width != mainStage.canvas.width || board1.height != mainStage.canvas.height){
+				board1.setSize(mainStage.canvas.width,mainStage.canvas.height, '#CCC');
+				console.log("abc tick  width:"+board1.width+"  widthCvs:"+ mainStage.canvas.width+"  height:"+board1.height+"  heightCvs:"+mainStage.canvas.height)
+				
+				initSIZE(mainStage);
+			}
+		//}
 		//mainStage.update();		
 		
 		window.stats.end();
@@ -94,20 +97,24 @@ Main.prototype.initialize = function(){
 	/*primarily mobile fixed size*/
 	function initSIZE(stage){
 		var canvas = stage.canvas;
-		if (canvas !=undefined){
-			var board1=stage.getChildByName("BASE_main");
-			var wbInfo =new window.WBdraw.ConfigWB( BrowserDetect.os, board1.width, board1.height);
-			//var wbInfo = window.WBdraw.ConfigWB;
-			window.WBdraw.trace(wbInfo.width +", "+wbInfo.height+", "+wbInfo.scaleFactor);
-			// Set the Canvas size
-			canvas.width = wbInfo.width;
-			canvas.height = wbInfo.height;
-			// On hi-resolution platforms, we need to counter-scale.
-			canvas.style.width = wbInfo.width * wbInfo.scaleFactor + "px";
-			canvas.style.height = wbInfo.height * wbInfo.scaleFactor + "px";
-			
-			//now intialize WBoard
-		}
+		//below only works with canvas NOT WEBGL
+		
+		//if (!mainStage.isWebGL){
+			if (canvas !=undefined){
+				var board1=stage.getChildByName("BASE_main");
+				var wbInfo =new window.WBdraw.ConfigWB( BrowserDetect.os, board1.width, board1.height);
+				//var wbInfo = window.WBdraw.ConfigWB;
+				window.WBdraw.trace(wbInfo.width +", "+wbInfo.height+", "+wbInfo.scaleFactor);
+				// Set the Canvas size
+				canvas.width = wbInfo.width;
+				canvas.height = wbInfo.height;
+				// On hi-resolution platforms, we need to counter-scale.
+				canvas.style.width = wbInfo.width * wbInfo.scaleFactor + "px";
+				canvas.style.height = wbInfo.height * wbInfo.scaleFactor + "px";
+				
+				//now intialize WBoard
+			}
+		//}
 	}
 
 
