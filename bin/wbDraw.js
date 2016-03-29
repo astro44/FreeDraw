@@ -31,47 +31,10 @@
     WBdraw.username = function() {
 		return uname;
 	}
-	WBdraw.MidPoint= function( from, to ){
-	  var xs = 0;
-	  var ys = 0;
-	  xs = to.x - from.x;
-	  xs = xs * xs;
-	  ys = to.y - from.y;
-	  ys = ys * ys;
-	  return Math.sqrt( xs + ys );
-	}
-	/*
-	WBdraw.rotatePoint = function(cc, pp, angle) {
-		var radians = (Math.PI / 180) * angle,
-			cos = Math.cos(radians),
-			sin = Math.sin(radians),
-			nx = (cos * (pp.x - cc.x)) + (sin * (pp.y - cc.y)) + cc.x,
-			ny = (cos * (pp.y - cc.y)) - (sin * (pp.x - cc.x)) + cc.y;
-		return [nx, ny];
-	}*/
 	
-	WBdraw.rotateAngle = function(from,to){
-		 var deltaX = to.x - from.x;
-		 var deltaY = to.y - from.y;
-		 var angleRad = Math.atan2(deltaY, deltaX); // In radians
-		 angleDeg = angleRad * 180 / Math.PI;
-			return angleDeg
-	}
+
 	
-	
-	WBdraw.getContrast50 = function (hexcolor){
-		return (parseInt(hexcolor.substring(1), 16) > 0xffffff/2) ? 'black':'white';
-	}
-	
-	WBdraw.luma = function(hex/*#000000*/){
-		//console.log(hex);//#61fbf1 //#88d66 //#92ae2 //#cf2f9
-		var c = hex.substring(1);      // strip #
-		var rgb = parseInt(c, 16);   // convert rrggbb to decimal
-		var r = (rgb >> 16) & 0xff;  // extract red
-		var g = (rgb >>  8) & 0xff;  // extract green
-		var b = (rgb >>  0) & 0xff;  // extract blue
-		return  0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
-	}
+
     WBdraw.trace = function() {
 	    if (WBdraw.developerMode == false) {
 			//console.log("supress");

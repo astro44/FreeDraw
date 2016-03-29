@@ -65,6 +65,7 @@ Main.prototype.initialize = function(){
 	window.WBdraw.trace( BrowserDetect.browser);
 	window.WBdraw.trace( BrowserDetect.version);
 	window.WBdraw.trace( BrowserDetect.os);
+	window.WBdraw.trace( BrowserDetect.isIOS());
 	
 	var board1= new WBdraw.WBoard("BASE_main","#ccc");
 	WBdraw.currentBoard = board1;

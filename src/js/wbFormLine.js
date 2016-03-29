@@ -12,7 +12,7 @@
 		this.regX=0;
 		this.regY=0;
 		this.scaled=false;
-		this.rel=null;   		//relative coordinates
+		this.rel={x:0,y:0};   		//relative coordinates
 		this.lastXY={x:0,y:0};
 		this.cacheXY={x:0, y:0};
 		this._commited = false; 
@@ -107,7 +107,7 @@
 		MC.endFill(); 
 	}
 	function positionEnds(owner,from,to){
-		var angle=window.WBdraw.rotateAngle(from,to);
+		var angle=window.WBdraw.ConfigWB.rotateAngle(from,to);
 		console.log(angle);
 		owner.arrow.rotation=angle;
 		owner.ball.rotation=180+angle;
@@ -207,40 +207,7 @@
 		var m = (nz.y-ay)/(nz.x-ax);
 		return x*m; 
 	}
-	function lineInterpolate( owner,x2,y2, distance )
-		{
-		  var xabs = Math.abs( 0 - x2 );
-		  var yabs = Math.abs( 0 - y2 );
-		  var xdiff = x2 - 0;
-		  var ydiff = y2 - 0;
-		 
-		  var length = Math.sqrt( ( Math.pow( xabs, 2 ) + Math.pow( yabs, 2 ) ) );
-		  var steps = length / distance;
-		  var xstep = xdiff / steps;
-		  var ystep = ydiff / steps;
-		 
-		  var newx = 0;
-		  var newy = 0;
-		  var result = new Array();
-		 
-		var a =  owner.related.to;
-		var b =  owner.related.from;
-		  for( var s = 0; s < steps; s++ )
-		  {
-			newx =0 + ( xstep * s );
-			newy = 0 + ( ystep * s );
-		 
-			
-			
-			
-			result.push( {
-			  x: Math.round(newx),
-			  y: Math.round(newy)
-			} );
-		  }
-		 
-		  return result;
-		}
+
 	
 	p.moveLink = function (owner,action){
 		var a =  owner.related.to;
@@ -399,6 +366,8 @@
 		MC.endStroke();
 		
 	}
+		
+
 	p.straightPerm = function(owner,shape,init){
 		var MC =owner.bg.graphics;
 		var HTC =owner.bg.hitArea.graphics;
@@ -414,16 +383,23 @@
 			//console.log(parentIN.getNumChildren());
 			return false;
 		}
-		lc = owner.points[0];
+		olc = owner.points[0];
+		lc = window.WBdraw.ConfigWB.convert2pos(owner,olc);
+		var oc={x:0,y:0};
+		//this now means that 
 		if (lc.x<0){//moveBy in the + direction X
-			owner.regX=-Math.abs(lc.x*.5);
+			oc={x:0,y:lc.y};
+			lc={x:Math.abs(lc.x),y:0}
+			owner.regX=-lc.x*3;
 		}else{//moveBy in neg
 			owner.regX = Math.abs(lc.x*.5);
 		}
 		owner.x = owner.x+owner.regX;
 		
 		if (lc.y<0){//moveBy in the + direction Y
-			owner.regY =-Math.abs(lc.y*.5);
+			oc={x:0,y:Math.abs(lc.y)};
+			lc={x:lc.x,y:0}
+			owner.regY =-oc.y*3;
 		}else{//moveBy in neg
 			owner.regY=Math.abs(lc.y*.5);
 		}
@@ -438,8 +414,8 @@
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
-        HTC.moveTo(0, 0);
-        MC.moveTo(0, 0);
+        HTC.moveTo(oc.x,oc.y);
+        MC.moveTo(oc.x,oc.y);
 		MC.lineTo(lc.x, lc.y);
 		HTC.lineTo(lc.x, lc.y);
 		
@@ -449,10 +425,8 @@
 		HTC.endFill(); 
 		
 		owner.setDimension(owner,lc.x,lc.y,(inX<0?inX:0),(inY<0?inY:0));
-		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		
-		owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
-		//owner.cache(-strokeIn,-strokeIn,owner.rect.width+strokeIn*2, owner.rect.height+strokeIn*2);
+		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
 		return true;
 	}
 	
@@ -654,7 +628,45 @@
 	    positionEnds(owner,{x:0,y:0}, {x:lc.x+rX, y:lc.y+rY});
 	}	
 	
-	
+	function linkFinal(owner,shape,sych){
+		var MC =owner.bg.graphics;
+		var HTC =owner.bg.hitArea.graphics;
+		MC.clear();
+		HTC.clear();
+		lc = owner.points[0];
+		if (lc.x<0){//moveBy in the + direction X
+			owner.regX=-Math.abs(lc.x*.5);
+		}else{//moveBy in neg
+			owner.regX = Math.abs(lc.x*.5);
+		}
+		owner.x = owner.x+owner.regX;
+		if (lc.y<0){//moveBy in the + direction Y
+			owner.regY =-Math.abs(lc.y*.5);
+		}else{//moveBy in neg
+			owner.regY=Math.abs(lc.y*.5);
+		}
+		owner.y=owner.y+owner.regY;
+		
+		var inX=Math.floor(lc.x);
+		var inY=Math.floor(lc.y)
+		var strokeIn=5;
+		if (sych!=true){
+			MC.setStrokeStyle(strokeIn); 
+			owner.color='#'+Math.floor(Math.random()*16777215).toString(16);
+			MC.beginStroke(owner.color);
+			HTC.setStrokeStyle(strokeIn*2);
+			HTC.beginStroke('#000'); 
+			HTC.beginFill('red');  
+			HTC.moveTo(0, 0);
+			MC.moveTo(0, 0);
+			MC.lineTo(lc.x, lc.y);
+			HTC.lineTo(lc.x, lc.y);
+			MC.endStroke();
+			HTC.endStroke();
+			HTC.endFill(); 
+		owner.setDimension(owner,lc.x,lc.y,(inX<0?inX:0),(inY<0?inY:0));
+		}
+	}
 	
 	p.linksPerm = function(owner,init){
 		
@@ -667,12 +679,12 @@
 		owner.points=[];
 		positionEnds(owner,from, to);
 		owner.points.push({x:owner.arrow.x , y: owner.arrow.y});
-		owner.straightPerm(owner,owner,false);
+		linkFinal(owner,owner,true);
 		
 		
 		// ## START SEARCH FOR TOUCH POINTS  ##//
 		var gaps=6;
-		 var zz=lineInterpolate(owner, to.x-from.x , to.y-from.y , gaps);
+		 var zz=window.WBdraw.ConfigWB.lineInterpolate(owner, to.x-from.x , to.y-from.y , gaps);
 		 owner.related.a = zz;
 		var a = (owner.related.a?owner.related.a:[]);
 		//var mc = owner.sqr2.graphics;
@@ -721,7 +733,7 @@
 		
 		owner.x=ddpt.x;
 		owner.y=ddpt.y;
-		owner.straightPerm(owner,owner,false);
+		linkFinal(owner,owner,false);
 		
 		propArrow(owner.arrow,20,owner.color);
 		if (owner.bidirection){
@@ -730,16 +742,9 @@
 			propBall(owner.ball,20,owner.color);
 		}
 		
-		//var inX=Math.floor(lc.x);
-		//var inY=Math.floor(lc.y);
-		
-		//TODO:  set links in positive space and use CACHE
 		owner.uncache();
-		//if (owner.arrow.x<owner.arrow.ball){
-			//space based on arrow
-		///}
-		var chX=(owner.arrow.x<owner.ball.x?owner.arrow.x:owner.ball.x);
-		var chY=(owner.arrow.y<owner.ball.y?owner.arrow.y:owner.ball.y);
+		//var chX=(owner.arrow.x<owner.ball.x?owner.arrow.x:owner.ball.x);
+		//var chY=(owner.arrow.y<owner.ball.y?owner.arrow.y:owner.ball.y);
 		
 		
 		owner.cache(-strokeIn+owner.cacheXY.x-10,-strokeIn+owner.cacheXY.y-10, owner.width+strokeIn*2+20,owner.height+strokeIn*2+20);

@@ -219,10 +219,12 @@
 					owner.formTargetLAST=owner.formTarget
 					if (owner.formTarget.text.text!=""){
 						he.style.display='block';
-						dd.focus();
-						dd.value=owner.formTarget.text.text;
-						if (dd.value=="enter text here"){
-							dd.select();
+							dd.value=owner.formTarget.text.text;
+						if (!BrowserDetect.isIOS() && !BrowserDetect.isAndroid() ){
+							dd.focus();
+							if (dd.value=="enter text here"){
+								dd.select();
+							}
 						}
 					}
 				}else{

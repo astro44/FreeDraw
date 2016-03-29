@@ -12,7 +12,7 @@
 		this.regX=0;
 		this.regY=0;
 		this.scaled=false;
-		this.rel=null;   		//relative coordinates
+		this.rel={x:0,y:0};   		//relative coordinates
 		this.tempOrigin=null;
 		this.lastXY={x:0,y:0}
 		this.related=null;
@@ -175,17 +175,7 @@
 	}
 	
 	
-	function convert2pos(owner,lc){
-		if (lc.x<0){//moveBy in the + direction X
-			lc.x=Math.abs(lc.x);
-			owner.x-=lc.x;
-		}
-		if (lc.y<0){//moveBy in the + direction Y
-			lc.y=Math.abs(lc.y);
-			owner.y-=lc.y;
-		}
-		return lc;
-	}
+
 	p.squarePerm = function(owner,shape,init){
 		
 		var MC =owner.bg.graphics;
@@ -201,7 +191,7 @@
 			return false;
 		}
 		olc = owner.points[0];
-		lc = convert2pos(owner,olc);
+		lc = window.WBdraw.ConfigWB.convert2pos(owner,olc);
 		var strokeIn=5;
 		if (lc.x<0){//moveBy in the + direction X
 			owner.regX=-Math.abs(lc.x*.5);
@@ -280,7 +270,7 @@
 		}
 		
 		olc = owner.points[0];
-		lc = convert2pos(owner,olc);
+		lc = window.WBdraw.ConfigWB.convert2pos(owner,olc);
 		var strokeIn=5;
 		if (lc.x<0){//moveBy in the + direction X
 			owner.regX=-Math.abs(lc.x*.5);

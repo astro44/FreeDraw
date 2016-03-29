@@ -108,5 +108,100 @@
 		
 	}
 	
+	s.getContrast50 = function (hexcolor){
+		return (parseInt(hexcolor.substring(1), 16) > 0xffffff/2) ? 'black':'white';
+	}
+	
+	s.luma = function(hex/*#000000*/){
+		//console.log(hex);//#61fbf1 //#88d66 //#92ae2 //#cf2f9
+		var c = hex.substring(1);      // strip #
+		var rgb = parseInt(c, 16);   // convert rrggbb to decimal
+		var r = (rgb >> 16) & 0xff;  // extract red
+		var g = (rgb >>  8) & 0xff;  // extract green
+		var b = (rgb >>  0) & 0xff;  // extract blue
+		return  0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
+	}
+	
+	s.MidPoint= function( from, to ){
+	  var xs = 0;
+	  var ys = 0;
+	  xs = to.x - from.x;
+	  xs = xs * xs;
+	  ys = to.y - from.y;
+	  ys = ys * ys;
+	  return Math.sqrt( xs + ys );
+	}
+	/*
+	WBdraw.rotatePoint = function(cc, pp, angle) {
+		var radians = (Math.PI / 180) * angle,
+			cos = Math.cos(radians),
+			sin = Math.sin(radians),
+			nx = (cos * (pp.x - cc.x)) + (sin * (pp.y - cc.y)) + cc.x,
+			ny = (cos * (pp.y - cc.y)) - (sin * (pp.x - cc.x)) + cc.y;
+		return [nx, ny];
+	}*/
+	
+	s.rotateAngle = function(from,to){
+		 var deltaX = to.x - from.x;
+		 var deltaY = to.y - from.y;
+		 var angleRad = Math.atan2(deltaY, deltaX); // In radians
+		 angleDeg = angleRad * 180 / Math.PI;
+			return angleDeg
+	}
+	
+	s.convert2pos =function (owner,lc){
+		if (lc.x>0 && lc.y<0 || lc.y>0 && lc.x<0){//move 0,0 to (-lc.x,0) and lc.x,lc.y to (lc.x-lc.x,lc.y)
+			//then move the reg.x and reg.y points accordingly
+			console.log(owner.type)
+			if (owner.type== 'straight' || owner.type== 'links'){
+					console.log(">>>>>  +%+%+%--GOT IT HOOKED--%+%+%+%++"+owner.constructor.name +"   ::>> "+window.WBdraw.FormLine.name);
+				return lc;
+			}
+		}
+		if (lc.x<0){//moveBy in the + direction X
+			lc.x=Math.abs(lc.x);
+			owner.x-=lc.x;
+		}
+		if (lc.y<0){//moveBy in the + direction Y
+			lc.y=Math.abs(lc.y);
+			owner.y-=lc.y;
+		}
+		return lc;
+	}	
+	
+	s.lineInterpolate =function ( owner,x2,y2, distance ){
+		  var xabs = Math.abs( 0 - x2 );
+		  var yabs = Math.abs( 0 - y2 );
+		  var xdiff = x2 - 0;
+		  var ydiff = y2 - 0;
+		 
+		  var length = Math.sqrt( ( Math.pow( xabs, 2 ) + Math.pow( yabs, 2 ) ) );
+		  var steps = length / distance;
+		  var xstep = xdiff / steps;
+		  var ystep = ydiff / steps;
+		 
+		  var newx = 0;
+		  var newy = 0;
+		  var result = new Array();
+		var a =  owner.related.to;
+		var b =  owner.related.from;
+		  for( var s = 0; s < steps; s++ )
+		  {
+			newx =0 + ( xstep * s );
+			newy = 0 + ( ystep * s );
+		 
+			
+			
+			
+			result.push( {
+			  x: Math.round(newx),
+			  y: Math.round(newy)
+			} );
+		  }
+		 
+		  return result;
+	}
+	
+	
 	scope.ConfigWB = ConfigWB;
 }(window.WBdraw));
