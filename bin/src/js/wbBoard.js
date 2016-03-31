@@ -142,12 +142,17 @@
 	p.setup = function() {
 		
 		var bg = new createjs.Shape();
+		
+		bg.snapToPixel=true;
 		bg.alpha=1;
 		bg.name=bg.id="bg";
 
 		var DECK = new WBdraw.Box("cvsDECK", "#ccc", true);
 		var MAIN = new WBdraw.Box("cvsMAIN", "#ccc", true);
 		var SAND = new WBdraw.Box("cvsSAND", "#ccc", true);
+		DECK.snapToPixel=true;
+		MAIN.snapToPixel=true;
+		SAND.snapToPixel=true;
 		
 		this.layers[DECK.id]=DECK;
 		this.layers[MAIN.id]=MAIN;
@@ -156,10 +161,12 @@
 		this.resizer= new WBdraw.FormResize("rsize","rtool");
 		this.resizer.x=200;
 		this.resizer.y=20;
+		this.resizer.snapToPixel=true;
 		
 		
 		this.addChild(bg,DECK,MAIN,SAND);
 		this.menu=new WBdraw.Menu("m1",this); 
+		this.menu.snapToPixel=true;
 		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
 		this.addChild(this.menu); 
 		

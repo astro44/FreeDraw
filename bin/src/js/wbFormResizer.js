@@ -161,6 +161,13 @@
 			console.log(code);
 			}*/
 		this.TXT=new createjs.DOMElement(he);
+		this.bg.snapToPixel=true;
+		this.box1.snapToPixel=true;
+		this.box2.snapToPixel=true;
+		this.box3.snapToPixel=true;
+		this.box4.snapToPixel=true;
+		this.boxr.snapToPixel=true;
+		this.TXT.snapToPixel=true;
 		this.addChild(this.bg,this.box1,this.box2,this.box3,this.box4,this.boxr,this.TXT); 
 		
 		

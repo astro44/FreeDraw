@@ -29,7 +29,9 @@
 		this.points=[];
 		//this.l
 	this.bg = new createjs.Shape();
+	this.bg.snapToPixel=true;
 	this.hitHelper = new createjs.Shape();
+	this.hitHelper.snapToPixel=true;
 	this.bg.hitArea=this.hitHelper;
 	
 		this.addChild(this.bg); 

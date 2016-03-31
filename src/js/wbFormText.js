@@ -30,8 +30,11 @@
 	p.setup = function() {
 		//this.l
 	this.bg = new createjs.Shape();
+	this.bg.snapToPixel=true;
 	this.hitHelper = new createjs.Shape();
+	this.hitHelper.snapToPixel=true;
 			this.text = new createjs.Text(this.label, "20px Arial", "#000");
+	this.text.snapToPixel=true;
 	this.text.hitArea=this.hitHelper;
 		this.addChild(this.bg,this.text); 
 		

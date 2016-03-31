@@ -103,6 +103,10 @@
 		this.menucontain.scaleX=1;
 		this.submenu= new WBdraw.MenuBar("sub_wbmenu");
 		this.menubuttons(this.options);
+		bg.snapToPixel=true;
+		this.menucontain.snapToPixel=true;
+		hi.snapToPixel=true;
+		this.submenu.snapToPixel=true;
 		this.addChild(bg,this.menucontain,hi,this.submenu);
 		
 		this.on("mousedown", this.handlePress);

@@ -39,7 +39,8 @@
 		//background.graphics.setStrokeStyle(5);
 		//background.graphics.beginStroke("#000000");
 		//background.graphics.beginFill(this.color).drawRoundRect(0,0,width,height,10);
-		
+		background.snapToPixel=true;
+		text.snapToPixel=true;
 		this.addChild(background, text); 
 		this.on("click", this.handleClick);
 		this.on("rollover", this.handleRollOver);

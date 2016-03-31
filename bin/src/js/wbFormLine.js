@@ -31,10 +31,14 @@
 		this.points=[];
 		//this.l
 	this.bg = new createjs.Shape();
+	this.bg.snapToPixel=true;
 	this.hitHelper = new createjs.Shape();
+	this.hitHelper.snapToPixel=true;
 	this.bg.hitArea=this.hitHelper;
 	
-		this.addChild(this.bg); 
+		//this.sqr  = new createjs.Shape();
+		//propLine(this.sqr,{x:45,y:45},'#000000');
+		this.addChild(this.bg);//, this.sqr); 
 		
 		this.on("mousedown", this.handlePress.bind(this));
 		this.on("pressup", this.handleRelease.bind(this));
@@ -51,14 +55,29 @@
 		owner.rotary=false;
 		owner.elastic=false;
 		owner.arrow  = new createjs.Shape();
+		owner.arrow.snapToPixel=true;
 		owner.ball  = new createjs.Shape();
+		owner.ball.snapToPixel=true;
 		//owner.sqr  = new createjs.Shape();
 		//owner.sqr2  = new createjs.Shape();
 		propArrow(owner.arrow,20,'#000000');
 		propBall(owner.ball,20,'#000000');
 		//propSquare(owner.sqr,20,"#FF0000");
-		owner.addChild(owner.arrow, owner.ball);//owner.sqr, owner.sqr2); 
+		owner.addChild(owner.arrow, owner.ball);//, owner.sqr2); 
 	}
+	
+	/*function propLine(ball,size,color){
+		var MC = ball.graphics;
+		MC.clear();
+		var hlf=-size*.5;
+		MC.setStrokeStyle(5);
+			MC.beginStroke(color); 
+			MC.rect(0,0,size.x, size.y);
+			//MC.beginFill(color); 
+			//MC.drawEllipse(hlf,hlf,size,size);
+		MC.endStroke();
+	}*/
+	
 	/*function propSquare(ball,size,color){
 		var MC = ball.graphics;
 		MC.clear();
@@ -69,6 +88,7 @@
 			MC.drawEllipse(hlf,hlf,size,size);
 		MC.endStroke();
 	}
+	
 	function propSquare2(dd,size,pt,color){
 		var MC = dd.graphics;
 		//MC.clear();
@@ -388,18 +408,18 @@
 		var oc={x:0,y:0};
 		//this now means that 
 		if (lc.x<0){//moveBy in the + direction X
-			oc={x:0,y:lc.y};
-			lc={x:Math.abs(lc.x),y:0}
-			owner.regX=-lc.x*3;
+			owner.regX=Math.abs(lc.x)*.5;
+			owner.bg.x=Math.abs(lc.x);
+			owner.x=owner.x-owner.bg.x;
 		}else{//moveBy in neg
 			owner.regX = Math.abs(lc.x*.5);
 		}
 		owner.x = owner.x+owner.regX;
 		
 		if (lc.y<0){//moveBy in the + direction Y
-			oc={x:0,y:Math.abs(lc.y)};
-			lc={x:lc.x,y:0}
-			owner.regY =-oc.y*3;
+			owner.regY =Math.abs(lc.y)*.5;
+			owner.bg.y=Math.abs(lc.y);
+			owner.y=owner.y-owner.bg.y;
 		}else{//moveBy in neg
 			owner.regY=Math.abs(lc.y*.5);
 		}
@@ -414,8 +434,8 @@
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 
 		HTC.beginFill('red');  
-        HTC.moveTo(oc.x,oc.y);
-        MC.moveTo(oc.x,oc.y);
+        HTC.moveTo(0,0);
+        MC.moveTo(0,0);
 		MC.lineTo(lc.x, lc.y);
 		HTC.lineTo(lc.x, lc.y);
 		
@@ -426,7 +446,18 @@
 		
 		owner.setDimension(owner,lc.x,lc.y,(inX<0?inX:0),(inY<0?inY:0));
 		
-		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+		//owner.cache(-strokeIn+owner.bg.x*1,-strokeIn+owner.bg.y*1, (owner.bg.x>0?-1:1)*(owner.width+strokeIn*2),(owner.bg.y>0?-1:1)*(owner.height+strokeIn*2));
+		//owner.cache((owner.bg.x>0?-1:1)*-strokeIn+(inX<0?inX:0),(owner.bg.y>0?-1:1)*-strokeIn+(inY<0?inY:0), (owner.bg.x>0?-1:1)*(owner.width+strokeIn*2),(owner.bg.y>0?-1:1)*(owner.height+strokeIn*2));
+		//console.log(propLine);
+		//owner.sqr.x=owner.bg.x;
+		//owner.sqr.y=owner.bg.y;
+		//propLine(owner.sqr, {x:owner.width, y:owner.height}, "#0000FF");
+		
+		owner.cache(-strokeIn,-strokeIn, owner.width+strokeIn*2,owner.height+strokeIn*2);
+		
+		//owner.cache(-strokeIn-owner.bg.x,-strokeIn-owner.bg.y, (owner.bg.x>0?-1:1)*owner.width+strokeIn*2, (owner.bg.y>0?-1:1)*owner.height+strokeIn*2);
+		//owner.cache(-strokeIn+(owner.bg.x>0?-1:1)*owner.cacheXY.x,-strokeIn+(owner.bg.y>0?-1:1)*owner.cacheXY.y, (owner.bg.x>0?-1:1)*owner.width+strokeIn*2, (owner.bg.y>0?-1:1)*owner.height+strokeIn*2);
+		//owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), -owner.width+strokeIn*2,-owner.height+strokeIn*2);
 		return true;
 	}
 	

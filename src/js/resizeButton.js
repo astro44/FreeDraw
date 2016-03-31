@@ -22,7 +22,7 @@
 		
 		
 		var background = new createjs.Shape();
-		
+		background.snapToPixel=true;
 		background.graphics.beginStroke("#000");
 		background.graphics.beginFill(this.color).drawCircle(0,0,10);
 		

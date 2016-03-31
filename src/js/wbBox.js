@@ -17,6 +17,7 @@
 		//label2.hitArea = hit;
 		
 		var bg = new createjs.Shape();
+		bg.snapToPixel=true;
 		bg.alpha=1;
 		bg.name=bg.id="bg";
 		
