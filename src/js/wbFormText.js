@@ -34,6 +34,12 @@
 	this.hitHelper = new createjs.Shape();
 	this.hitHelper.snapToPixel=true;
 			this.text = new createjs.Text(this.label, "20px Arial", "#000");
+			this.text.font = "20px Arial";
+			//this.text.font = "bold 20px Arial";
+			this.text.color = "#000000";
+			this.text.padding="8px";
+			//this.text.y=-10;
+			//this.text.lineHeight= "1em";
 	this.text.snapToPixel=true;
 	this.text.hitArea=this.hitHelper;
 		this.addChild(this.bg,this.text); 
@@ -254,7 +260,7 @@
 		var inX=Math.floor(lc.x);
 		var inY=Math.floor(lc.y)
 		owner.width=Math.abs(inX);
-		owner.height=Math.abs(inY);
+		owner.height=Math.abs(inY)+strokeIn;
 	
 		
 		if (owner.width<30 || owner.height<20){	

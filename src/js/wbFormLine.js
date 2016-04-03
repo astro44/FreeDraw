@@ -177,18 +177,27 @@
 			//console.log("(CNT) @@@@@@@@@@   ADD LISTENERS");
 			owner._listenMove=moveForm.bind(owner);
 			owner._listenEnd=moveCompleted.bind(owner);
-			//to.addEventListener("MoveEvent",owner._listenMove);
-			//from.addEventListener("MoveEvent", owner._listenMove);
+			if (!BrowserDetect.isIOS()){
+				if (BrowserDetect.isChrome()){ 
+					to.addEventListener("MoveEvent",owner._listenMove);
+					from.addEventListener("MoveEvent", owner._listenMove);
+			}}
 			to.addEventListener("CommitEvent", owner._listenEnd);
 			from.addEventListener("CommitEvent", owner._listenEnd);
 		}	
 	function listenersRemove(owner,to, from) {
 			//console.log("(CNT)  $$$$$$$$$$$$  REMOVE LISTENERS");
 			if (to){
-				//to.removeEventListener("MoveEvent", owner._listenMove);
+				if (!BrowserDetect.isIOS()){
+					if (BrowserDetect.isChrome()){ 
+					to.removeEventListener("MoveEvent", owner._listenMove);
+				}}
 				to.removeEventListener("CommitEvent", owner._listenEnd);
 			}
-			//from.removeEventListener("MoveEvent", owner._listenMove);
+			if (!BrowserDetect.isIOS()){
+				if (BrowserDetect.isChrome()){ 
+				from.removeEventListener("MoveEvent", owner._listenMove);
+			}}
 			from.removeEventListener("CommitEvent", owner._listenEnd);
 	}
 	

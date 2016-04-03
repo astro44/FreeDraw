@@ -129,13 +129,23 @@
 		
 		var he = window.WBdraw.getCanvasDiv("editTxt");
 		he.style.display="none";
-		he.innerHTML='<textarea name="txt2edit" id="txt2edit" cols="" rows="" style="width:inherit" readOnly>dfasf</textarea>';
+		he.innerHTML='<textarea name="txt2edit" id="txt2edit" cols="" rows="" style="width:inherit;font-size:20px; lineHeight:1.0em" readOnly>dfasf</textarea>';
 		//he.readOnly=false;
 		//he.style.width='60%';
 		
 		var dd = window.WBdraw.getCanvasDiv("txt2edit");
+		
+
+		dd.style.background="rgba(0,0,0,0)";
+		dd.style.color = "black";
+		dd.style.border = "none";
+		dd.style.overflow = "hidden";
+		dd.style.fontFamily="Arial";
+		dd.style.padding="8px";
+		dd.style.fontSize="20px";
+		dd.style.lineHeight="1.0em";
+		
 		var owner=this;
-		//dd.style.background="rgba(0,0,0,.5)"
 		dd.onclick=function (e){dd.readOnly=false;
 		
 		
@@ -146,6 +156,8 @@
 			if (owner.formTargetLAST!=null){
 				owner.formTargetLAST.setText(dd.value);
 				owner.formTargetLAST.commit("text");
+				if (owner.parent==null)
+					owner.formTargetLAST.visible=true;
 			}
 			owner.formTargetLAST=null;
 		}
@@ -196,6 +208,9 @@
 				dd.blur();
 			if (owner.formTarget!=null){
 				owner.formTarget.scaleState(false);
+				if(owner.formTarget.type=="text"){
+					owner.formTarget.visible=true;
+				}
 				owner.formTargetLAST=owner.formTarget;
 			}
 			owner.formTarget=null;
@@ -208,6 +223,7 @@
 			var isText=(obj.type=="text");
 			if (isText){
 				dd.blur();
+				//owner.formTarget.visible=true;
 			}
 			owner.formTargetLAST=owner.formTarget;
 			owner.formTarget=obj;
@@ -226,7 +242,8 @@
 					owner.formTargetLAST=owner.formTarget
 					if (owner.formTarget.text.text!=""){
 						he.style.display='block';
-							dd.value=owner.formTarget.text.text;
+						dd.value=owner.formTarget.text.text;
+						owner.formTarget.visible=false;
 						if (!BrowserDetect.isIOS() && !BrowserDetect.isAndroid() ){
 							dd.focus();
 							if (dd.value=="enter text here"){
