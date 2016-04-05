@@ -21,6 +21,7 @@
 		this.box3=null;
 		this.box4=null;
 		this.boxr=null;
+		this.boxm=null;
 		this.TXT=null
 		this.setup();
 		console.log ("@@@@@@  NEW FormResize  ");
@@ -30,9 +31,12 @@
 	
 	function bx1_move(btn,btn_name){
 		if (this.TXT!==null)
-			this.TXT.visible=false;
+			//this.TXT.visible=false;
+			console.log("<<<<<<<<<<   003  >>>>>>>>>>");
 		if (btn_name.indexOf("r")!=-1)
 			btn.on("pressmove", moveitR.bind(this));  //btn.on("pressmove", moveitR.bind(this));
+		else if (btn_name.indexOf("m")!=-1)
+			btn.on("pressmove", moveitM.bind(this));
 		else
 			btn.on("pressmove", moveit.bind(this));
 		return "";
@@ -66,6 +70,19 @@
 		var pt = this.globalToLocal(event.stageX,event.stageY);
 		var angle=cAngle({x:0,y:0},pt);
 		this.formTarget.rotation=angle+this.rotation;//this.rotation;
+		if (this.formTarget.type=="text")
+			this.rotation=angle+this.rotation;//this.rotation;
+			
+	}	
+	function moveitM(event){
+		//var pt = this.globalToLocal(event.stageX,event.stageY);
+		this.x=event.stageX;
+		this.y=event.stageY+this.formTarget.height*.5+10;
+		
+		this.formTarget.x =this.x;
+		this.formTarget.y =this.y;
+		
+			
 	}
 	function moveit(event){
 		var bx = event.currentTarget;
@@ -126,10 +143,11 @@
 		this.box3=new WBdraw.resizeBtn("bx3", "#FFF",bx1_move.bind(this),bx1_stop.bind(this));
 		this.box4=new WBdraw.resizeBtn("bx4", "#FFF",bx1_move.bind(this),bx1_stop.bind(this));
 		this.boxr=new WBdraw.resizeBtn("bxr", "#FFF",bx1_move.bind(this),bx1_stop.bind(this));
+		this.boxm=new WBdraw.resizeBtn("bxm", "#FFF",bx1_move.bind(this),bx1_stop.bind(this));
 		
 		var he = window.WBdraw.getCanvasDiv("editTxt");
 		he.style.display="none";
-		he.innerHTML='<textarea name="txt2edit" id="txt2edit" cols="" rows="" style="width:inherit;font-size:20px; lineHeight:1.0em" readOnly>dfasf</textarea>';
+		he.innerHTML='<textarea name="txt2edit" id="txt2edit" placeholder="enter text here" cols="" rows="" style="width:inherit;font-size:20px; lineHeight:1.0em" readOnly></textarea>';
 		//he.readOnly=false;
 		//he.style.width='60%';
 		
@@ -155,9 +173,18 @@
 			//commit change
 			if (owner.formTargetLAST!=null){
 				owner.formTargetLAST.setText(dd.value);
+				
+				
+				owner.formTarget.x=owner.x-owner.box4.x+owner.tolerance;
+				owner.formTarget.y=owner.y-owner.box4.y+owner.tolerance;
+				owner.formTarget.drawTemp((owner.box4.x*2)-owner.tolerance*2,(owner.box4.y*2)-owner.tolerance*2);
+				owner.formTarget.drawPerm(owner.formTarget);
+				
 				owner.formTargetLAST.commit("text");
-				if (owner.parent==null)
+				if (owner.formTarget!=owner.formTargetLAST)
 					owner.formTargetLAST.visible=true;
+				//if (owner.parent==null)
+					//owner.formTargetLAST.visible=true;
 			}
 			owner.formTargetLAST=null;
 		}
@@ -179,13 +206,22 @@
 		this.box3.snapToPixel=true;
 		this.box4.snapToPixel=true;
 		this.boxr.snapToPixel=true;
+		
+		this.boxm.resize(50,20);
+		this.boxm.snapToPixel=true;
+		
 		this.TXT.snapToPixel=true;
-		this.addChild(this.bg,this.box1,this.box2,this.box3,this.box4,this.boxr,this.TXT); 
+		this.addChild(this.bg,this.box1,this.box2,this.box3,this.box4,this.boxr,this.boxm,this.TXT); 
 		
 		
 	} ;
 
-
+	p.EMPTY = function (){
+		if (this.formTarget!=null){
+				return this.formTarget.EMPTY();
+		}
+		return false;
+	}
 
 	p.width=0;
 	p.height=0;
@@ -211,12 +247,12 @@
 				if(owner.formTarget.type=="text"){
 					owner.formTarget.visible=true;
 				}
+				 
 				owner.formTargetLAST=owner.formTarget;
 			}
 			owner.formTarget=null;
 			if (owner.parent)
 				owner.parent.removeChild(this);
-			
 			he.style.display='none';
 		}else{
 			this.rotation=obj.rotation;
@@ -225,6 +261,7 @@
 				dd.blur();
 				//owner.formTarget.visible=true;
 			}
+			
 			owner.formTargetLAST=owner.formTarget;
 			owner.formTarget=obj;
 			owner.x=obj.x;
@@ -233,7 +270,7 @@
 			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
 			
 			owner.box4.visible=owner.box3.visible=owner.box2.visible=owner.box1.visible = obj.elastic;
-			owner.boxr.visible = obj.rotary;
+			owner.boxr.visible =owner.boxm.visible = obj.rotary;
 			resizeEditor(owner,obj);
 			positionBoxes(owner,midW,midH,"")
 			miniWrap(owner,midW,midH);
@@ -242,13 +279,15 @@
 					owner.formTargetLAST=owner.formTarget
 					if (owner.formTarget.text.text!=""){
 						he.style.display='block';
-						dd.value=owner.formTarget.text.text;
+						console.log("<<<<<<<<<<   001  >>>>>>>>>>");
+						if (owner.formTarget.text.text !="enter text here")
+							dd.value=owner.formTarget.text.text;
 						owner.formTarget.visible=false;
 						if (!BrowserDetect.isIOS() && !BrowserDetect.isAndroid() ){
 							dd.focus();
-							if (dd.value=="enter text here"){
-								dd.select();
-							}
+							//if (dd.value=="enter text here"){
+								//dd.select();
+							//}
 						}
 					}
 				}else{
@@ -266,11 +305,16 @@
 		var te=window.WBdraw.getCanvasDiv("txt2edit");
 		te.style.width="inherit";
 			he.style.width=obj.width+"px";
+		te.style.height="inherit";
+			var lh=obj.height-10;
+			he.style.height=lh+"px";
 			
 			var midW=Math.ceil(obj.width*.5)+owner.tolerance;
 			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
 			owner.TXT.x=-midW+5;
 			owner.TXT.y=-midH+5;
+		//if (owner.formTarget.type == "text")
+		//	owner.formTargetLAST.visible=true;
 			
 	}
 	
@@ -294,6 +338,8 @@
 		}
 		
 		owner.boxr.x=0;
+		owner.boxm.x=0;
+		owner.boxm.y=-midH;
 		owner.boxr.y=-60-midH;
 	}
 		

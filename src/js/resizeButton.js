@@ -9,7 +9,8 @@
 		this.type="btn";
 		this.width=0;
 		this.height=0;
-		
+		this.background=null;
+		this.stroke=1;
 		this.setup();
 	}
 	var p = createjs.extend(resizeBtn, createjs.Container);
@@ -17,16 +18,20 @@
 
 	p.setup = function() {
 		
-		this.width = 30;
-		this.height = 30;
+		this.width = this.height = 30;
 		
 		
-		var background = new createjs.Shape();
-		background.snapToPixel=true;
-		background.graphics.beginStroke("#000");
-		background.graphics.beginFill(this.color).drawCircle(0,0,10);
+		this.background = new createjs.Shape();
+		this.background.snapToPixel=true;
+		this.background.graphics.beginStroke("#000");
+		this.background.graphics.beginFill(this.color).drawCircle(0,0,this.height*.5);
+		this.background.graphics.endFill();
 		
-		this.addChild(background); 
+		this.addChild(this.background); 
+		
+		//this.cache(0,0, this.width,this.width);
+		this.cache(-this.width*.5-this.stroke,-this.width*.5-this.stroke, this.width+this.stroke,this.width+this.stroke);
+		
 		this.on("click", this.handleClick);
 		this.on("mousedown", this.handlePress);
 		//this.on("mousedown", this.handlePress);
@@ -40,6 +45,19 @@
 		this.offset = Math.random()*10;
 		this.count = 0;
 	} ;
+	
+	p.resize = function(w,h){
+		this.uncache();
+		this.width = w;
+		this.height = w;
+		this.background.graphics.clear();
+		this.background.graphics.beginStroke("#000");
+		this.background.graphics.beginFill(this.color).drawEllipse(0, 0, w, h);
+		this.background.graphics.endFill();
+		this.background.x=-w*.5;
+		this.background.y=-h*.5;
+		this.cache(-this.width*.5-this.stroke,-this.height*.5-this.stroke, this.width+this.stroke,this.height+this.stroke);
+	}
 	
 	
 	p.handlePress = function(event){ 

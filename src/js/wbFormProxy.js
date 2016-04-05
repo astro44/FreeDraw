@@ -11,6 +11,7 @@
 		this.id=this.name=null;
 		this.color = EMPTY;
 		this.type=null;
+		this.label=EMPTY;
 		this.status=EMPTY;
 		this.tab=null;
 		this.pod=null;
@@ -98,6 +99,7 @@
 		flat.ball = shape.ball;
 		flat.tab = shape.tab;
 		flat.pod = shape.pod;
+		flat.label = shape.label;
 		return flat;
 	}
 

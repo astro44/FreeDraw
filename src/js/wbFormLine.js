@@ -13,6 +13,8 @@
 		this.regY=0;
 		this.scaled=false;
 		this.rel={x:0,y:0};   		//relative coordinates
+		this.text=null;
+		this.label="";
 		this.lastXY={x:0,y:0};
 		this.cacheXY={x:0, y:0};
 		this._commited = false; 
@@ -272,7 +274,12 @@
 			this.commit(window.WBdraw.FormProxy.UPDATE);
 	}
 
+	p.EMPTY = function (){
+		return false;
+	}
 	p.commit = function (action){
+		if (action=="blur")
+			return;
 		   var myevent = {
 			 type: "CommitEvent",
 			 param: this,

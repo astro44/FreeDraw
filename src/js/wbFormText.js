@@ -14,6 +14,7 @@
 		this.scaled=false;
 		this.rel=null;   		//relative coordinates
 		this.text=null;
+		this.label="";
 		this.tempOrigin=null;
 		this.lastXY={x:0,y:0};
 		this.points=[];
@@ -37,13 +38,13 @@
 			this.text.font = "20px Arial";
 			//this.text.font = "bold 20px Arial";
 			this.text.color = "#000000";
-			this.text.padding="8px";
-			//this.text.y=-10;
+			this.text.padding="10px";
+			this.text.y=-10;
 			//this.text.lineHeight= "1em";
 	this.text.snapToPixel=true;
 	this.text.hitArea=this.hitHelper;
 		this.addChild(this.bg,this.text); 
-		
+		//this.on("dblclick ", this.dblclick.bind(this));
 		this.on("mousedown", this.handlePress.bind(this));
 		this.on("pressup", this.handleRelease.bind(this));
 		//this.on("pressmove", this.moveLocally.bind(this));
@@ -66,8 +67,7 @@
 	} ;
 
 	p.setText=function(text){
-		this.text.text=text;
-		this.updateCache();
+		this.text.text=this.label=text;
 	}
 	
 	p.drawTemp= function (fx,fy) {
@@ -96,7 +96,15 @@
 			this.commit(window.WBdraw.FormProxy.UPDATE);
 			//this.dispatchEvent(myevent);
 	}
+	p.EMPTY = function (){
+		if (this.text.text=="")
+			return true;
+		return false;
+	}
 	p.commit = function (action){
+		if (action=="blur"){
+				return;	
+		}
 		   var myevent = {
 			 type: "CommitEvent",
 			 param: this,
@@ -166,6 +174,17 @@
 	}
 	
 	
+	/*
+	p.dblclick  = function(event){
+		  console.log("...doubleclicked....");
+	   var mevt = {
+		 type: "DblCEvent", 
+		 param: this
+	   };
+		//if (!this.scaled)
+		event.stopImmediatePropagation();
+	   this.dispatchEvent(mevt);
+	}*/
 	
 	p.handlePress = function(event){
 		  console.log("...handlePress....");
@@ -211,17 +230,6 @@
 	}
 	
 	
-	function convert2pos(owner,lc){
-		if (lc.x<0){//moveBy in the + direction X
-			lc.x=Math.abs(lc.x);
-			owner.x-=lc.x;
-		}
-		if (lc.y<0){//moveBy in the + direction Y
-			lc.y=Math.abs(lc.y);
-			owner.y-=lc.y;
-		}
-		return lc;
-	}
 	p.squarePerm = function(owner,shape,init){
 		
 		var MC =owner.bg.graphics;
@@ -241,7 +249,7 @@
 		
 		
 		olc = owner.points[0];
-		lc = convert2pos(owner,olc);
+		lc = window.WBdraw.ConfigWB.convert2pos(owner,olc);
 		var strokeIn=5;
 		if (lc.x<0){//moveBy in the + direction X
 			owner.regX=-Math.abs(lc.x*.5);
@@ -271,6 +279,9 @@
 				owner.height = owner.text.getMeasuredHeight()+20;
 			}
 		}
+			if (owner.height<30){
+				owner.height  = 40;
+			}
 		MC.setStrokeStyle(strokeIn);
 		MC.beginStroke('#000');  
 		MC.beginFill('#FFF'); 
@@ -284,7 +295,8 @@
         HTC.endStroke();
 		HTC.endFill(); 
 		MC.endFill(); 
-		owner.text.x=owner.text.y=strokeIn;
+		owner.text.x=owner.text.y=strokeIn-1;
+		owner.text.y=-1;
 		owner.text.lineWidth=inX;
 		owner.text.width=inX;
 		owner.text.height=inY;

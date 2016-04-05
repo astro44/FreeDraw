@@ -230,7 +230,12 @@
 		
 		this.shapeStart();
 		this.on("pressmove", this._pressMove);
-		
+		if (this.resizer.EMPTY()){
+			if (this.shapeNOW.id==this.resizer.formTarget.id)
+				this.shapeNOW=null;
+			//this.resizer.formTarget.action=
+			this.onDelete(this.resizer.formTarget,this.currentTab,false,false);
+		}
 		this.resizer.wrapTarget(this.resizer,null);
 		event.stopImmediatePropagation();
 	};
@@ -345,6 +350,8 @@
 			this.allTabs[tab].push(flat);
 		}else if (action==window.WBdraw.FormProxy.DELETE){
 			console.log("see if event already exists in undo/redo with SAME timeStamp");
+			//console.log(shape);
+			//console.log(this.allTabs[tab]);
 		}
 	}
 	/**
@@ -439,6 +446,7 @@
 				this.onDelete(shape,this.currentTab,false,true);//only delete locally fromJMS==true assumes server is up to Date.
 				shape=isCopy;
 			}
+			shape.visible=true;
 		}
 		shape._commited=true;
 		//this.shapeNOW.parent.removeChild(this.shapeNOW);
@@ -450,8 +458,11 @@
 	function onPress(event){
 		window.WBdraw.trace("=========onPRESS-========"+this.currentTab);
 		
-		console.log("now target link to this shape if this is the type tool currently in use");
-		console.log("skip the rest of the function if type == links");
+		if (this.shapeNOW!=null)
+			this.shapeNOW.visible=true;
+		//this.resizer.wrapTarget(this.resizer,null);
+		//console.log("now target link to this shape if this is the type tool currently in use");
+		//console.log("skip the rest of the function if type == links");
 		var shape = event.param;
 		console.log("   ===>"+shape.id);
 		if (this._tempModel.type=="links"){
