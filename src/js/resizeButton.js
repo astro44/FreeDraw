@@ -30,7 +30,7 @@
 		this.addChild(this.background); 
 		
 		//this.cache(0,0, this.width,this.width);
-		this.cache(-this.width*.5-this.stroke,-this.width*.5-this.stroke, this.width+this.stroke,this.width+this.stroke);
+		this.cache(-this.width*.5-this.stroke,-this.width*.5-this.stroke, this.width+this.stroke*1.7,this.width+this.stroke*1.7);
 		
 		this.on("click", this.handleClick);
 		this.on("mousedown", this.handlePress);

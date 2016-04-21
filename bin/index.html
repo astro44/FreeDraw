@@ -13,6 +13,18 @@
 		  height: 100%;
 		  margin: 0px;
 		}
+
+		#overlayDiv {
+			position: fixed;
+			bottom: 0;
+			right: 0;
+			z-index:99;
+		}
+		
+		  a.svg {
+		  position: relative;
+		  display: inline-block;
+		}
 		</style>
 	<!-- EaselJS 0.7.1, TweenJS 0.5.1, SoundJS 0.5.2, PreloadJS 0.4.1
 	<script src="http://code.createjs.com/createjs-2015.05.21.min.js"></script> -->
@@ -67,13 +79,41 @@ Main.main();
 				
 			
 			function resizeCanvas() {
-				createjsin.width = window.innerWidth-5;
-				createjsin.height = window.innerHeight-5;
 				//redraw();
+				
+				var w=window.innerWidth-5;
+				var h=window.innerHeight-5;
+				var newH=h, newW=w, maxR=1.33,i=1;
+				/**/if (BrowserDetect.os != "Windows" && BrowserDetect.os != "Mac"){
+					var ratio = Math.round(w/h*100);
+					if (ratio<75 || ratio>133){
+							i=maxR;
+						if (w>h){//keep canvas at 3/4 and ~**4/3**. .75~1.33
+							newW=h*i;
+							while (newW>=w){
+								i=i-.1;
+								newW=h*i;
+							}
+						}else{//keep canvas at **3/4** and ~4/3.
+							newH=w*i;
+							while (newH>=h){
+								i=i-.1;
+								newH=w*i;
+							}
+						}
+					}
+				}
+				createjsin.width = newW;
+				createjsin.height = newH;
 			}
 		
 		})();
 </script>
-	
+	<div id="overlayDiv" class="link-image-short img svg">
+		<a href="http://createjs.com/" class="svg" target="_blank">
+		<object type="image/svg+xml" data="img/createjs-badge-light.svg" width="150px" height="60px" style="pointer-events: none;">
+		  Made with CreateJS
+		</object></a>
+	</div>
 </body>
 </html>

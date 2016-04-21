@@ -12,7 +12,7 @@ Main.main = function(){
 
 Main.prototype.initialize = function(){
 	/**
-	* mainCanvas
+	* mainCanvas  keep canvas at 3/4 and ~4/3.
 	*/
 	this.mainCanvas = document.getElementById("mainCanvas");
 	this.mainCanvas.setStrokeStyle="#FF0000"
@@ -81,7 +81,7 @@ Main.prototype.initialize = function(){
 		window.stats.begin();
 		window.stats1.begin();
 		window.stats2.begin();
-		//below only works with canvas NOT WEBGL
+		//below only works with canvas NOT WEBGL  (*
 		//if (!mainStage.isWebGL){
 			if (board1.width != mainStage.canvas.width || board1.height != mainStage.canvas.height){
 				board1.setSize(mainStage.canvas.width,mainStage.canvas.height, '#CCC');
