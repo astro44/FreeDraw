@@ -4,10 +4,7 @@
 	function FormText(id,type) {
 		this.Container_constructor();
 		this.id=this.name=id;
-		this.rotation=0;
-		this.color = "000000";
-		this.alpha=0;
-		this.weight=5;
+		this.color = "000";
 		this.type=type;
 		this.limitDraw=false;
 		this.rect=null;

@@ -1,5 +1,5 @@
 (function(scope) {
- // 'use strict';
+ 'use strict';
  	/**
 	 * ...
 	 * @author R Colvin
@@ -328,7 +328,7 @@
 		console.log(this.allTabs[tab]);
 		
 		var flat = new window.WBdraw.FormProxy();
-		window.WBdraw.FormProxy.flattenForm(flat,shape,tab);
+		window.WBdraw.FormProxy.flattenForm(flat,shape);
 		if (flat==undefined){
 			window.WBdraw.trace("     [2]   <<<<<<<   ???????????   >>>>>>>>>"+flat);
 			window.WBdraw.trace("        <<<<<<<<<<      >>>>>>>>>>");

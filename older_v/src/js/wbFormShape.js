@@ -141,15 +141,6 @@
 			
         }
 	}
-
-	// p.commitDraw=function(points){
-	// 		var bg=target.getChildByName("bg");
-	// 		bg.graphics.clear()
-	// 			.beginStroke('#'+Math.floor(Math.random()*16777215))
-	// 			.beginFill('#'+Math.floor(Math.random()*16777215))
-	// 			.drawRect(0,0,mStage.mouseX,mStage.mouseY)
-
-	// }
 	
 
 	p.handleRollOver = function(event) {       

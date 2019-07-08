@@ -4,10 +4,7 @@
 	function FormFill(id,type) {
 		this.Container_constructor();
 		this.id=this.name=id;
-		this.rotation=0;
-		this.color = "000000";
-		this.alpha=0;
-		this.weight=5;
+		this.color = "";
 		this.type=type;
 		this.limitDraw=false;
 		this.rect=null;
@@ -310,9 +307,7 @@
 		}
 		//owner.setBounds(owner.x,owner.y,Math.abs(inX),Math.abs(inY));
 		MC.setStrokeStyle(strokeIn);
-		MC.beginStroke('#'+'000000');  
-		// MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
-		//MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 

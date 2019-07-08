@@ -1,0 +1,1 @@
+build.cmd --define BUILD='$(BuildConfig)' --compilation_level SIMPLE_OPTIMIZATIONS --js_output_file "bin/WB5.js"

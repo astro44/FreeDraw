@@ -4,7 +4,6 @@
 	function FormResize(id,type) {
 		this.Container_constructor();
 		this.id=this.name=id;
-		this.rotation=0;
 		this.color = "";
 		this.type=type;
 		this.limitDraw=false;

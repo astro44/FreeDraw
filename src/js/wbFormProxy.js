@@ -86,7 +86,7 @@
 	/**
 	**static function only below
 	**/
-	s.flattenForm = function(flat,shape){
+	s.flattenForm = function(flat,shape,tab){
 		flat.id = flat.name=shape.name;
 		flat.x = shape.x;
 		flat.y = shape.y;
@@ -97,9 +97,13 @@
 		flat.biderectional = shape.biderectional;
 		flat.arrow = shape.arrow;
 		flat.ball = shape.ball;
-		flat.tab = shape.tab;
+		flat.tab = tab;
 		flat.pod = shape.pod;
 		flat.label = shape.label;
+		flat.weight=shape.weight;
+		flat.alpha=shape.alpha;
+		flat.color = shape.color;
+		flat.rotation=shape.rotation;
 		return flat;
 	}
 

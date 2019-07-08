@@ -211,8 +211,52 @@
 	p.clear = function(type,wbid){
 		//clear all objects in view based on type  ;
 	}
+	p.wbImport=function(wbList){
+		var tot = wbList.length;
+		for (var i=0;i<tot; ++i){ //create each virtual tab....
+			var items=wbList[i];
+			var itot=items.length;
+			var currTab = i;
+			for (var j=0;j<itot;++j){
+				var cTab = wbList[i][j].tab
+				var shape=wbList[i][j];
+				var action=window.WBdraw.FormProxy.NEW
+				this.updateShape(shape,action,cTab);
+			}
+		} 
+
+		var tab = wbList[0]
+		var tot = tab.length
+		for (var i=0;i<tot; ++i){
+			var shape=tab[i];
+			var classIn = shape['class']
+			var type = shape['type']
+			var nameIn = shape['name']
+
+			
+			this.shapeInsert(this,classIn,type,nameIn,shape)
+			//this.shapeInsert(this,"line","free",nameIn)
+		}
+	}
 	p.wbSwitch = function (wbid){
-		
+		//remove existing components and build from the target tab
+		if (wbid==this.currentTab){
+			return
+		}
+		var tab =this.currentTab
+		var i = this.allTabs[tab].length;
+		while (this.allTabs[tab].length>0){
+			console.log(this.allTabs[tab][i-1]);
+			//REMOVE all ITems from the view....
+			this.onDelete(this.allTabs[tab][i-1],tab,true,false);
+			--i;
+		}
+		var items = this.allTabs[tab];
+		///NOW ReBuild the items in the view.
+		for (var i=0,tot=items.length;i<tot;++i){
+
+		}
+
 	}
 	p.unshift =function(items){}//to front
 	p.push =function(items){}//toback
@@ -310,6 +354,9 @@
 		//this.allTabs[0][childindex]  remove//
 		//this.allTabs.splice(0);
 	}
+	// var dynamojsons = {"tab0":[{type:"circle",position:[21,12],size:}]}
+	// for json in dynamojsons:
+	// 	WBoard.updateShape(json,'insert',0)
 
 	p.updateShape = function(shape,action/*int*/,tab){
 		//does tab exists?
@@ -328,7 +375,7 @@
 		console.log(this.allTabs[tab]);
 		
 		var flat = new window.WBdraw.FormProxy();
-		window.WBdraw.FormProxy.flattenForm(flat,shape);
+		window.WBdraw.FormProxy.flattenForm(flat,shape,tab);
 		if (flat==undefined){
 			window.WBdraw.trace("     [2]   <<<<<<<   ???????????   >>>>>>>>>"+flat);
 			window.WBdraw.trace("        <<<<<<<<<<      >>>>>>>>>>");
@@ -546,6 +593,34 @@
 		mc.addChild(shape);
 		owner.shapeNOW=shape;
 		addListeners(shape,owner);	
+		return shape;
+	}
+
+	function shapeInsert(owner,classIn,type,nameIn, obj){
+		var mc = owner.layers['cvsMAIN'];
+		// var nameIn="rcolvi_";
+		// if (!owner._isSynched){
+		// 	nameIn+=owner._int
+		// 	++owner._int;
+		// }
+		var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(classIn)](nameIn, type)
+		if (classIn=="Line"){
+			shape.points=obj.points
+		}
+		shape.pos =obj.points
+		shape.x=obj.x;
+		shape.y=obj.y;
+
+		shape.drawPerm(shape,false);
+		// if (owner.shapeNOW.type=="text"){
+		// 	if (owner.resizer.parent==undefined)
+		// 		owner.addChild(this.resizer);
+		// 		owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
+		// 		owner.test_draw("line","free");
+				
+		// }
+		//var shape = new FormLine("rcolvi_"+type, type);
+		mc.addChild(shape);
 		return shape;
 	}
 

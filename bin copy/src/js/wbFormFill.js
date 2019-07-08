@@ -4,10 +4,7 @@
 	function FormFill(id,type) {
 		this.Container_constructor();
 		this.id=this.name=id;
-		this.rotation=0;
-		this.color = "000000";
-		this.alpha=0;
-		this.weight=5;
+		this.color = "";
 		this.type=type;
 		this.limitDraw=false;
 		this.rect=null;
@@ -16,8 +13,6 @@
 		this.regY=0;
 		this.scaled=false;
 		this.rel={x:0,y:0};   		//relative coordinates
-		this.text=null;
-		this.label="";
 		this.tempOrigin=null;
 		this.lastXY={x:0,y:0}
 		this.related=null;
@@ -70,13 +65,8 @@
 		 // console.log("...create....");
 		if (finalIn)
 			this.commit(window.WBdraw.FormProxy.UPDATE);
-	}	
-	p.EMPTY = function (){
-		return false;
 	}
 	p.commit = function (action){
-		if (action=="blur")
-			return;
 		   var myevent = {
 			 type: "CommitEvent",
 			 param: this,
@@ -310,9 +300,7 @@
 		}
 		//owner.setBounds(owner.x,owner.y,Math.abs(inX),Math.abs(inY));
 		MC.setStrokeStyle(strokeIn);
-		MC.beginStroke('#'+'000000');  
-		// MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
-		//MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+		MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
 		MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
 		HTC.setStrokeStyle(strokeIn*2);
 		HTC.beginStroke('#000'); 

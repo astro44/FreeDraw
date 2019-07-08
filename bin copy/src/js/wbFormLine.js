@@ -4,10 +4,7 @@
 	function FormLine(id,type) {
 		this.Container_constructor();
 		this.id=this.name=id;
-		this.rotation=0;
-		this.color = "000000";
-		this.alpha=0;
-		this.weight=5;
+		this.color = "";
 		this.type=type;
 		this.limitDraw=false;
 		this.rect=null;
@@ -16,8 +13,6 @@
 		this.regY=0;
 		this.scaled=false;
 		this.rel={x:0,y:0};   		//relative coordinates
-		this.text=null;
-		this.label="";
 		this.lastXY={x:0,y:0};
 		this.cacheXY={x:0, y:0};
 		this._commited = false; 
@@ -182,27 +177,18 @@
 			//console.log("(CNT) @@@@@@@@@@   ADD LISTENERS");
 			owner._listenMove=moveForm.bind(owner);
 			owner._listenEnd=moveCompleted.bind(owner);
-			if (!BrowserDetect.isIOS()){
-				if (BrowserDetect.isChrome()){ 
-					to.addEventListener("MoveEvent",owner._listenMove);
-					from.addEventListener("MoveEvent", owner._listenMove);
-			}}
+			//to.addEventListener("MoveEvent",owner._listenMove);
+			//from.addEventListener("MoveEvent", owner._listenMove);
 			to.addEventListener("CommitEvent", owner._listenEnd);
 			from.addEventListener("CommitEvent", owner._listenEnd);
 		}	
 	function listenersRemove(owner,to, from) {
 			//console.log("(CNT)  $$$$$$$$$$$$  REMOVE LISTENERS");
 			if (to){
-				if (!BrowserDetect.isIOS()){
-					if (BrowserDetect.isChrome()){ 
-					to.removeEventListener("MoveEvent", owner._listenMove);
-				}}
+				//to.removeEventListener("MoveEvent", owner._listenMove);
 				to.removeEventListener("CommitEvent", owner._listenEnd);
 			}
-			if (!BrowserDetect.isIOS()){
-				if (BrowserDetect.isChrome()){ 
-				from.removeEventListener("MoveEvent", owner._listenMove);
-			}}
+			//from.removeEventListener("MoveEvent", owner._listenMove);
 			from.removeEventListener("CommitEvent", owner._listenEnd);
 	}
 	
@@ -277,12 +263,7 @@
 			this.commit(window.WBdraw.FormProxy.UPDATE);
 	}
 
-	p.EMPTY = function (){
-		return false;
-	}
 	p.commit = function (action){
-		if (action=="blur")
-			return;
 		   var myevent = {
 			 type: "CommitEvent",
 			 param: this,
