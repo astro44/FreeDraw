@@ -21,7 +21,7 @@ class App extends Component {
   		alert("dude")
   		this.setState({"on":true})
   	}
-  	/// BELOW could still be an issue if switching IN and OUT of views!!!!
+  	/// BELOW could still be an issue if switching IN and OUT of views!!!!d
 	render() {
 		const on = this.state
 		  return (

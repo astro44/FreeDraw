@@ -254,7 +254,7 @@
 			owner.formTarget=null;
 			if (owner.parent)
 				owner.parent.removeChild(this);
-			he.style.display='none';
+			//he.style.display='none';
 		}else{
 			this.rotation=obj.rotation;
 			var isText=(obj.type=="text");
@@ -279,7 +279,7 @@
 				if (isText){
 					owner.formTargetLAST=owner.formTarget
 					if (owner.formTarget.text.text!=""){
-						he.style.display='block';
+						//he.style.display='block';
 						console.log("<<<<<<<<<<   001  >>>>>>>>>>");
 						if (owner.formTarget.text.text !="enter text here")
 							// dd.value=owner.formTarget.text.text;
@@ -292,7 +292,7 @@
 						}
 					}
 				}else{
-					he.style.display='none';
+					//he.style.display='none';
 				}
 			}
 		}
