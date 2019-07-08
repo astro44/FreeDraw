@@ -1,0 +1,25 @@
+const path = require("path")
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin")
+const glob = require("glob")
+const webpack = require('webpack')
+
+module.exports = {
+  entry: {
+    "wb5.js": glob.sync("./js/*.?(js)").map(f => path.resolve(__dirname, f)),
+  },
+  output: {
+    path: path.join(__dirname, './public/js'),
+    // publicPath: '/public/js/',
+    filename: "wb5.min.js",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js)$/,
+        exclude: /node_modules/,
+        use: ["style-loader", "css-loader"],
+      },
+    ],
+  },
+  plugins: [new UglifyJsPlugin()],
+}

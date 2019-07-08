@@ -1,0 +1,30 @@
+  .wbMainTxtDiv{
+  z-index: 1; 
+  /*display: none; */
+  position: absolute; 
+  transform-origin: 0% 0%; 
+  width: 15px; 
+  height: 1px; 
+  visibility: visible; 
+  transform: matrix(1, 0, 0, 1, 5, 10); 
+  opacity: 1;
+}
+
+.txt2edit{
+  background:rgba(0,0,0,0);
+  color: black;
+  border: none;
+  overflow: hidden;
+  font-family: "Arial";
+  padding: 8px;
+  font-size: 20px;
+  line-height: 1.0em;
+}
+.txt2edit_init{
+  width: inherit;
+  font-size: 20px;
+  line-height: 1.0em;
+}
+
+
+
