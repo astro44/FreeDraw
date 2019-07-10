@@ -12,12 +12,12 @@ import varManager from './cr_vars.js';
 class App extends Component {
 
   	constructor(props) {
-     super();
-    this.toggle = this.toggle.bind(this);
+    	super();
+    	// this.toggle = this.toggle.bind(this);
       	var scripts = props.scripts;
 		var vman = varManager;
   	}
-  	toggle=function(){
+  	toggle=()=>{
   		alert("dude")
   		this.setState({"on":true})
   	}
@@ -28,9 +28,9 @@ class App extends Component {
 		    <div className="App">
 		    <button onClick={this.toggle}>test</button>
 
-		      <header className="App-header">
+		      <div className="App-header">
 		        <FreeDraw scripts={this.props.scripts}/>
-		      </header>
+		      </div>
 		    </div>
 		  );
 		}
