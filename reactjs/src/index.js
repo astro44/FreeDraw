@@ -10,22 +10,7 @@ import * as serviceWorker from './serviceWorker';
 
 // const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
 
-
-var all = document.getElementsByTagName("*");
-var nodeFound=[]
-for (var i=0, max=all.length; i < max; i++) {
-	if (!all[i].hasAttribute("id")) continue;
-	if ( all[i].getAttribute("id").includes("root_draw_photos") ){
-		nodeFound.push(all[i]);
-	}
-}
-
-
-for (var i=0, max=nodeFound.length; i < max; i++) {
-	window.reactjs[nodeFound[i].getAttribute("id")]= ReactDOM.render(
-		<App scripts={window["cr-scripts"]} dom={nodeFound[i]} />, nodeFound[i]);
-		
-}//
+ReactDOM.render(<App scripts={window["cr-scripts"]} />, document.getElementById("root_draw_photos"));
 
 // <Provider store={createStoreWithMiddleware(reducers)}><App scripts={window["cr-scripts"]} dom={nodeFound[i]} /></Provider>, nodeFound[i]);
 // If you want your app to work offline and load faster, you can change

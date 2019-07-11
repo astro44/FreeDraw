@@ -16,7 +16,15 @@
 		
 		//this.config=new WBdraw.ConfigWB(platform, width, height);
 		this._currentdeckIndex=null;
-		this.shapeNOW=null;		  	 //shape currently being used
+		this._shapeNOW=null;		  	 //shape currently being used
+		Object.defineProperty(this, "shapeNOW", { 
+			get: function() { return this._shapeNOW; },
+			set: function (shape) {
+				this._shapeNOW = shape;
+				this.notifyShapeNOW(this._shapeNOW)
+			}
+		});
+
 		this._objectInit=null;			
 		this._undoRange=null;        //Range for undo/redo
 		this._isConnector=null;      //Boolean
@@ -28,11 +36,27 @@
 		//action_delete=5;
 		//action_create=1;
 		//action_update=2;
-		
+		this.observersShapeNOW = [];
 		this.setup();
 	}
+
 	var p = createjs.extend(WBoard, createjs.Container);
 	
+	p.subscribeShapeNOW = function (f) {
+		this.observersShapeNOW.push(f);
+	}
+
+	// add the ability to unsubscribe from a particular object
+	// essentially, remove something from the observersShapeNOW array
+	p.unsubscribeShapeNOW = function (f) {
+		this.observersShapeNOW = this.observersShapeNOW.filter(subscriber => subscriber !== f);
+	}
+
+	// update all subscribed objects / DOM elements
+	// and pass some data to each of them
+	p.notifyShapeNOW = function (data) {
+		this.observersShapeNOW.forEach(observer => observer(data));
+	}
 	p.getLayer = function (id){return this.layers[id];}	
 		p.drawinit= function(owner,form,type,path){
 			//create modify Shape

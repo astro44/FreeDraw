@@ -281,9 +281,9 @@
 					if (owner.formTarget.text.text!=""){
 						//he.style.display='block';
 						console.log("<<<<<<<<<<   001  >>>>>>>>>>");
-						if (owner.formTarget.text.text !="enter text here")
+						// if (owner.formTarget.text.text !="enter text here")
 							// dd.value=owner.formTarget.text.text;
-						owner.formTarget.visible=false;
+						// owner.formTarget.visible=false;
 						if (!BrowserDetect.isIOS() && !BrowserDetect.isAndroid() ){
 							// dd.focus();
 							//if (dd.value=="enter text here"){

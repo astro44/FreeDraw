@@ -8,6 +8,7 @@ function Main(){}
 Main.main = function(canvas){
 	var main = new Main();
 	main.initialize(canvas);
+	return main;
 }
 
 Main.prototype.initialize = function(canvas){
@@ -75,7 +76,9 @@ Main.prototype.initialize = function(canvas){
 	this.mainStage.addChild(board1);
 
 }
-
+Main.prototype.getBoard = function(){
+	return this.mainStage.getChildByName("BASE_main");
+}
 	function tick(event){
 		var board1=mainStage.getChildByName("BASE_main");
 		
