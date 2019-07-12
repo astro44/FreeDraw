@@ -22,9 +22,9 @@ class FreeDraw extends Component {
     var WBdraw = this.props.scripts.WBdraw;
     var MainIn = this.props.scripts.wbMain;
     console.log(MainIn)
-    const main = MainIn.main(this.mainCanvas.current);
-    console.log(main)
-    main.getBoard().subscribeShapeNOW(this.shapeListener)
+    this.main = MainIn.main(this.mainCanvas.current);
+    console.log(this.main)
+    this.main.getBoard().subscribeShapeNOW(this.shapeListener)
     // debugger
   }
   shapeListener = (shape)=>{
@@ -48,6 +48,12 @@ class FreeDraw extends Component {
     if (shape.type === 'text') {
       shape.setText(text)
     }
+  }
+  addEvent = (form,type) => {
+    this.main.getBoard().menu.dispatchEvent({
+      type: "MenuEvent",
+      param: [form,type]
+    })
   }
   render() {
     const { width, height, shape, text } = this.state
