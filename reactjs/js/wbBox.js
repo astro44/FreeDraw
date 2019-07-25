@@ -73,6 +73,7 @@
 	p.handleRelease = function(event){
 		
 		console.log("release");
+		console.log("release is now??")
 		event.stopImmediatePropagation();
 	};
 	// out of scope below

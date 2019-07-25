@@ -17,12 +17,16 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import InputBase from '@material-ui/core/InputBase';
+
 class App extends Component {
 
   	constructor(props) {
 		super();
 		this.state = {
-			menuFill:null
+			menuFill:null,
+			text:"",
+			rotation:0
 		}
     	// this.toggle = this.toggle.bind(this);
       	var scripts = props.scripts;
@@ -65,8 +69,48 @@ class App extends Component {
 			</Menu>
 		</>
 	)}
+	selectShape = (shape) =>{
+		if (shape && shape.type === 'text') {
+			this.setState({shape,text:shape.text.text})
+		}else{
+			this.setState({shape})
+		}
+	}
+	textChange = ({target})=>{
+		this.setState({text:target.value})
+		const { shape } = this.state
+		if (shape && shape.type === 'text') {
+			shape.setText(target.value)
+		}
+	}
+	setRotation = (right) => () => {
+		const { rotation } = this.state
+		// debugger
+		const image = this.draweer.current.getImage()
+		let newRotation = right ? rotation +90 : rotation -90
+		switch (newRotation) {
+			case 90:
+					image.y = image.element.width/2
+					image.rotation = newRotation
+					break;
+			case 180:
+					image.y = image.element.height/2
+					image.rotation = newRotation
+					break;
+			case -90:
+			case 270:
+					image.y = image.element.width/2
+					image.rotation = newRotation = 270
+					break;		
+			default:
+					image.y = image.element.height/2
+					image.rotation = newRotation = 0
+				break;
+		}
+		this.setState({rotation:newRotation})
+	}
 	render() {
-		const {menuFill} = this.state
+		const {menuFill, shape, text} = this.state
 		  return (
 			  <>
 			   <AppBar position="static">
@@ -88,9 +132,38 @@ class App extends Component {
 						types:[
 							"square",
 							"circle",
-							"star"
+							"star",
+							"picture"
 						]
 					})}
+					{this.creteMenuItem({
+						form:"modify",
+						types:[
+							"delete",
+							"color",
+							"alpha",
+							"undo"
+						]
+					})}
+					{this.creteMenuItem({
+						form:"clear",
+						types:[
+							"clear"
+						]
+					})}
+					
+					<Button color="inherit" onClick={this.setRotation(false)}>
+						Left
+					</Button>
+					<Button color="inherit" onClick={this.setRotation(true)}>
+						Right
+					</Button>
+					{ shape && shape.type ==="text" &&
+						<InputBase
+							onChange={this.textChange} value={text}
+							/>
+					}
+
 					</Toolbar>
 				</AppBar>
 				<Grid
@@ -100,10 +173,7 @@ class App extends Component {
 					alignItems="stretch"
 				>
 					<Grid item xs={12}>
-						<div>12</div>
-					</Grid>
-					<Grid item xs={12}>
-						<FreeDraw ref={this.draweer} scripts={this.props.scripts}/>
+						<FreeDraw selectShape={this.selectShape} ref={this.draweer} scripts={this.props.scripts}/>
 					</Grid>
 				</Grid>	
 			</>

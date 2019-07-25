@@ -5,17 +5,18 @@
 
 function Main(){}
 
-Main.main = function(canvas){
+Main.main = function(canvas, mainTxt){
 	var main = new Main();
-	main.initialize(canvas);
+	main.initialize(canvas, mainTxt);
 	return main;
 }
 
-Main.prototype.initialize = function(canvas){
+Main.prototype.initialize = function(canvas, mainTxt){
 	/**
 	* mainCanvas  keep canvas at 3/4 and ~4/3.
 	*/
 	// this.mainCanvas = document.getElementById("mainCanvas");
+	this.mainTxt = mainTxt;
 	this.mainCanvas = canvas;
 	this.mainCanvas.setStrokeStyle="#FF0000";
 	/**
@@ -71,6 +72,8 @@ Main.prototype.initialize = function(canvas){
 	
 	var board1= new WBdraw.WBoard("BASE_main","#ccc");
 	board1.snapToPixel=true;
+	board1.resizer.dd=this.mainTxt;
+	board1.resizer.setup();
 	WBdraw.currentBoard = board1;
 	
 	this.mainStage.addChild(board1);

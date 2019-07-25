@@ -8,11 +8,11 @@ class FreeDraw extends Component {
     super();
     this.state = {    /* initial your state. without any added component */
       data: [],
-      width: 0, height: 0,
-      text:""
+      width: 0, height: 0
     }
     this.mainCanvas = React.createRef();
     this.mainContainer = React.createRef();
+    this.mainTxt = React.createRef();
   }
   componentDidMount(){
     this.updateWindowDimensions();
@@ -22,19 +22,14 @@ class FreeDraw extends Component {
     var WBdraw = this.props.scripts.WBdraw;
     var MainIn = this.props.scripts.wbMain;
     console.log(MainIn)
-    this.main = MainIn.main(this.mainCanvas.current);
+    this.main = MainIn.main(this.mainCanvas.current, this.mainTxt.current);
     console.log(this.main)
     this.main.getBoard().subscribeShapeNOW(this.shapeListener)
     // debugger
   }
   shapeListener = (shape)=>{
-    console.log(shape)
-    if (shape && shape.type === 'text') {
-      this.setState({shape,text:shape.text.text})
-    }else{
-      this.setState({shape})
-    }
-    
+    const { selectShape } = this.props
+    selectShape(shape)
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateWindowDimensions);
@@ -42,30 +37,21 @@ class FreeDraw extends Component {
   updateWindowDimensions=()=>{
     this.setState({ width: this.mainContainer.current.offsetWidth, height: this.mainContainer.current.offsetHeight });
   }
-  handleSubmit = (e)=>{
-    e.preventDefault()
-    const { shape, text } = this.state
-    if (shape.type === 'text') {
-      shape.setText(text)
-    }
-  }
   addEvent = (form,type) => {
     this.main.getBoard().menu.dispatchEvent({
       type: "MenuEvent",
       param: [form,type]
     })
   }
+  getImage = () => {
+    return this.main.getBoard().getImage()
+  }
   render() {
-    const { width, height, shape, text } = this.state
+    const { width, height } = this.state
     return(  
       <div ref={this.mainContainer} style={{width:"100%",height:"100vh"}}>
-        { shape && shape.type ==="text" && 
-          <form onSubmit={this.handleSubmit}>
-            <input type="text" onChange={({target})=>this.setState({text:target.value})} value={text}/>
-
-            <button>Send data!</button>
-          </form>
-        }
+        
+          <textarea ref={this.mainTxt} name="txt2edit" id="txt2edit" placeholder="enter text here" cols="" rows="" style={{width:'inherit',fontSize:"20px", lineHeight:"1.0em", display:'none'}}></textarea>
         <canvas ref={this.mainCanvas}  width={width} height={height}></canvas>
       </div>
       ) 

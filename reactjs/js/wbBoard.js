@@ -177,7 +177,19 @@
 		DECK.snapToPixel=true;
 		MAIN.snapToPixel=true;
 		SAND.snapToPixel=true;
+
+		// var shape = new WBdraw["FormFill"]("sasas32", "square")
+		// //var shape = new FormLine("rcolvi_"+type, type);
+		// shape.x=50;
+		// shape.y=50;
+		// shape.drawTemp(300, 300);
+		// addListeners(shape,this);
+		// console.log("SHAPPPEEEEEEE",{shape})
+		// MAIN.addChild(shape);
 		
+		
+
+
 		this.layers[DECK.id]=DECK;
 		this.layers[MAIN.id]=MAIN;
 		this.layers[SAND.id]=SAND;
@@ -187,7 +199,9 @@
 		this.resizer.y=20;
 		this.resizer.snapToPixel=true;
 		
-		
+		this.image = new createjs.Shape();
+		this.addChild(this.image)
+
 		this.addChild(bg,DECK,MAIN,SAND);
 		this.menu=new WBdraw.Menu("m1",this); 
 		this.menu.snapToPixel=true;
@@ -206,18 +220,72 @@
 		this.test_draw("line","free");
 		
 		this._pressMove = this.drawLine.bind(this);
+
+		var self = this;
+		// function loadImg(uri) {
+		// 	var image = document.createElement("img")
+		// 	image.crossOrigin = "Anonymous"
+		// 	image.src = uri 
+		// 	return image
+		//   }
+		// var img = new createjs.Bitmap(loadImg("https://nc-portal-dev.nuclaim.com/ale/branches/744/files/logo.jpg"))  
+		// debugger
+		var img = new Image();
+		img.crossOrigin = "Anonymous";
+		img.src = "https://nc-portal-dev.nuclaim.com/ale/clients/309/files/logo.gif";
+		// img.src = "/Homer_Simpson_2006.png";
+		img.onload = function () {
+			// self.img=img;
+			
+
+			var m = new createjs.Matrix2D();
+			m.translate(self.width/2 -img.width/2, 0);
+			// m.scale(self.width/img.width, self.height/img.height);
+			
+			self.image.graphics.beginBitmapFill(img, "no-repeat");
+			self.image.graphics.drawRect(0, 0,img.width,img.height);
+			self.image.x = self.width/2;
+			self.image.y = img.height/2;
+			self.image.regX = img.width/2;
+			self.image.regY = img.height/2;
+			self.image.element = img;
+			document.image = self.image;
+		}
+
 	};
 	
 	p.width=0;
 	p.height=0;
-	
+	p.getImage = function(){
+		return this.image;
+	}
 	p.setSize = function (width,height,color){
 		var bg=this.getChildByName("bg");
 		console.log("resizeBy");//.beginFill('#'+Math.floor(Math.random()*16777215))
-		bg.graphics.clear()
-				.beginStroke('#ccc')
-				.beginFill(color)
-				.drawRect(0,0,width,height);
+
+		if (this.img) {
+			var m = new createjs.Matrix2D();
+			// m.translate(inX, inY);
+			m.scale(width/this.img.width, height/this.img.height);
+	
+			// MC.beginBitmapFill(owner.img,"no-repeat"); 
+	
+			bg.graphics.clear()
+					.beginStroke('#ccc')
+					// .beginFill(color)
+					.beginFill('#F2314B')
+					.beginBitmapFill(this.img)
+					// .beginFill('#11F2314B')
+					.drawRect(0,0,width,height);
+		}else{
+			bg.graphics.clear()
+					.beginStroke('#ccc')
+					// .beginFill(color)
+					.beginFill('#fff')
+					.drawRect(0,0,width,height);
+					bg.alpha = 0.01;
+
+		}
 		
 		for (var i in this.layers){
 			this.layers[i].setSize(width,height,color);
@@ -461,7 +529,7 @@
 	function onCommit(event){
 		window.WBdraw.trace("=========commited-========"+this.currentTab);
 		var shape = event.param;
-		console.log(shape);
+		console.log({shape});
 		
 		if (shape.type=="links" && event.action!=window.WBdraw.FormProxy.DELETE){//check to see if another link with SAME objects exists  
 			var isCopy=this.uniqueLink(shape,this.currentTab);

@@ -155,39 +155,47 @@
 		// //var dd = ReactDOM.findDOMNode(this.refs.editTxt);
 		
 
-		// dd.style.background="rgba(0,0,0,0)";
-		// dd.style.color = "black";
-		// dd.style.border = "none";
-		// dd.style.overflow = "hidden";
-		// dd.style.fontFamily="Arial";
-		// dd.style.padding="8px";
-		// dd.style.fontSize="20px";
-		// dd.style.lineHeight="1.0em";
-		
-		// var owner=this;
-		// dd.onclick=function (e){
-		// 	dd.readOnly=false;
-		// }
-		// //dd.onfocus=function (e){dd.value="dude"}
-		// dd.onblur=function (e){
-		// 	//commit change
-		// 	if (owner.formTargetLAST!=null){
-		// 		owner.formTargetLAST.setText(dd.value);
-				
-				
-		// 		owner.formTarget.x=owner.x-owner.box4.x+owner.tolerance;
-		// 		owner.formTarget.y=owner.y-owner.box4.y+owner.tolerance;
-		// 		owner.formTarget.drawTemp((owner.box4.x*2)-owner.tolerance*2,(owner.box4.y*2)-owner.tolerance*2);
-		// 		owner.formTarget.drawPerm(owner.formTarget);
-				
-		// 		owner.formTargetLAST.commit("text");
-		// 		if (owner.formTarget!=owner.formTargetLAST)
-		// 			owner.formTargetLAST.visible=true;
-		// 		//if (owner.parent==null)
-		// 			//owner.formTargetLAST.visible=true;
-		// 	}
-		// 	owner.formTargetLAST=null;
-		// }
+		if(this.dd !== undefined && this.dd !== null){
+
+			var owner=this;
+
+			this.dd.style.background="rgba(0,0,0,0)";
+			this.dd.style.color = "black";
+			this.dd.style.border = "none";
+			this.dd.style.overflow = "hidden";
+			this.dd.style.fontFamily="Arial";
+			this.dd.style.padding="8px";
+			this.dd.style.fontSize="20px";
+			this.dd.style.lineHeight="1.0em";
+			
+			// var owner=this;
+			this.dd.onclick=function (e){
+				this.dd.readOnly=false;
+			}
+			//dd.onfocus=function (e){dd.value="dude"}
+			this.dd.onblur=function (e){
+				//commit change
+				console.log("********************************************************************************************************");
+				console.log(owner);
+				if (owner.formTargetLAST!=null){
+					owner.formTargetLAST.setText(owner.dd.value);
+					
+					
+					owner.formTarget.x=owner.x-owner.box4.x+owner.tolerance;
+					owner.formTarget.y=owner.y-owner.box4.y+owner.tolerance;
+					owner.formTarget.drawTemp((owner.box4.x*2)-owner.tolerance*2,(owner.box4.y*2)-owner.tolerance*2);
+					owner.formTarget.drawPerm(owner.formTarget);
+					
+					owner.formTargetLAST.commit("text");
+					if (owner.formTarget!=owner.formTargetLAST)
+						owner.formTargetLAST.visible=true;
+					//if (owner.parent==null)
+						//owner.formTargetLAST.visible=true;
+				}
+				owner.formTargetLAST=null;
+			}
+			this.TXT=new createjs.DOMElement(this.dd);
+		}
 		/*dd.onkeypress=function (e){
 			var code = e.which || e.keyCode;
 			console.log(code);
@@ -199,7 +207,7 @@
 			var code = e.which || e.keyCode;
 			console.log(code);
 			}*/
-		// this.TXT=new createjs.DOMElement(he);
+		
 		this.bg.snapToPixel=true;
 		this.box1.snapToPixel=true;
 		this.box2.snapToPixel=true;
@@ -242,7 +250,7 @@
 		// var he = window.WBdraw.getCanvasDiv("editTxt");
 		// 	var dd = window.WBdraw.getCanvasDiv("txt2edit");
 		if (obj==null){
-				// dd.blur();
+				this.dd.blur();
 			if (owner.formTarget!=null){
 				owner.formTarget.scaleState(false);
 				if(owner.formTarget.type=="text"){
@@ -254,12 +262,12 @@
 			owner.formTarget=null;
 			if (owner.parent)
 				owner.parent.removeChild(this);
-			//he.style.display='none';
+			this.dd.style.display='none';
 		}else{
 			this.rotation=obj.rotation;
 			var isText=(obj.type=="text");
 			if (isText){
-				// dd.blur();
+				this.dd.blur();
 				//owner.formTarget.visible=true;
 			}
 			
@@ -279,20 +287,20 @@
 				if (isText){
 					owner.formTargetLAST=owner.formTarget
 					if (owner.formTarget.text.text!=""){
-						//he.style.display='block';
+						this.dd.style.display='block';
 						console.log("<<<<<<<<<<   001  >>>>>>>>>>");
-						// if (owner.formTarget.text.text !="enter text here")
-							// dd.value=owner.formTarget.text.text;
-						// owner.formTarget.visible=false;
+						if (owner.formTarget.text.text !="enter text here")
+							this.dd.value=owner.formTarget.text.text;
+						owner.formTarget.visible=false;
 						if (!BrowserDetect.isIOS() && !BrowserDetect.isAndroid() ){
-							// dd.focus();
-							//if (dd.value=="enter text here"){
-								//dd.select();
-							//}
+							this.dd.focus();
+							if (this.dd.value=="enter text here"){
+								this.dd.select();
+							}
 						}
 					}
 				}else{
-					//he.style.display='none';
+					this.dd.style.display='none';
 				}
 			}
 		}
@@ -302,20 +310,23 @@
 
 	
 	function resizeEditor(owner,obj){
+		console.log({
+			owner,obj
+		})
 		// var he = window.WBdraw.getCanvasDiv("editTxt");
 		// var te=window.WBdraw.getCanvasDiv("txt2edit");
 		// te.style.width="inherit";
-		// 	he.style.width=obj.width+"px";
+		owner.dd.style.width=obj.width+"px";
 		// te.style.height="inherit";
-		// 	var lh=obj.height-10;
-		// 	he.style.height=lh+"px";
+			var lh=obj.height-10;
+			owner.dd.style.height=lh+"px";
 			
-		// 	var midW=Math.ceil(obj.width*.5)+owner.tolerance;
-		// 	var midH=Math.ceil(obj.height*.5)+owner.tolerance;
-		// 	owner.TXT.x=-midW+5;
-		// 	owner.TXT.y=-midH+5;
-		//if (owner.formTarget.type == "text")
-		//	owner.formTargetLAST.visible=true;
+			var midW=Math.ceil(obj.width*.5)+owner.tolerance;
+			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
+			owner.TXT.x=-midW+5;
+			owner.TXT.y=-midH+5;
+		// if (owner.formTarget.type == "text")
+		// 	owner.formTargetLAST.visible=true;
 			
 	}
 	

@@ -30,11 +30,11 @@
 	p.setup = function() {
 		this.points=[];
 		//this.l
-	this.bg = new createjs.Shape();
-	this.bg.snapToPixel=true;
-	this.hitHelper = new createjs.Shape();
-	this.hitHelper.snapToPixel=true;
-	this.bg.hitArea=this.hitHelper;
+		this.bg = new createjs.Shape();
+		this.bg.snapToPixel=true;
+		this.hitHelper = new createjs.Shape();
+		this.hitHelper.snapToPixel=true;
+		this.bg.hitArea=this.hitHelper;
 	
 		this.addChild(this.bg); 
 		
@@ -46,6 +46,10 @@
 		this.offset = Math.random()*10;
 		this.count = 0;
 		this.status=window.WBdraw.FormProxy.NEW;
+
+		var img = new Image();
+		img.src = "http://upload.wikimedia.org/wikipedia/pt/0/02/Homer_Simpson_2006.png";
+		this.img = img;
 	} ;
 
 	p.drawTemp= function (fx,fy) {
@@ -67,6 +71,7 @@
 		 // console.log("...create....");
 		if (finalIn)
 			this.commit(window.WBdraw.FormProxy.UPDATE);
+
 	}	
 	p.EMPTY = function (){
 		return false;
@@ -138,9 +143,6 @@
 		this.lastXY.y=this.y;
 		//event.stopImmediatePropagation();
 	}
-	
-	
-	
 	p.handlePress = function(event){
 		  //console.log("...handlePress....");
 	   var mevt = {
@@ -157,13 +159,12 @@
 		 type: "ReleaseEvent", 
 		 param: this
 	   };
+	   console.log("release in FILL")
 		event.stopImmediatePropagation();
 	   this.dispatchEvent(mevt);
 	}
-	
-
-
-	p.handleRollOver = function(event) {       
+	p.handleRollOver = function(event) { 
+		// alert("rolloever")      
 		this.alpha = event.type == "rollover" ? 0.4 : 1;
 	};
 
@@ -182,9 +183,6 @@
 		MC.endFill(); 
 		//this.cache(0,0,inX,inY);
 	}
-	
-	
-
 	p.squarePerm = function(owner,shape,init){
 		
 		var MC =owner.bg.graphics;
@@ -245,6 +243,121 @@
 		return true;
 	}
 
+	p.picture = function(owner,fx,fy){
+		var lc=new createjs.Point(fx,fy);
+		var MC =owner.bg.graphics;
+		MC.clear();
+		owner.points=[];
+		MC.setStrokeStyle(5);
+			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16)); 
+			// MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+			var m = new createjs.Matrix2D();
+				// m.translate(inX, inY);
+				m.scale(owner.width/owner.img.width, owner.height/owner.img.height);
+
+				MC.beginBitmapFill(owner.img,"no-repeat",m); 
+			MC.rect(0,0,lc.x, lc.y);
+		owner.points.push(lc);
+		MC.endStroke();
+		MC.endFill(); 
+		//this.cache(0,0,inX,inY);
+	}
+	p.picturePerm = function(owner,shape,init){
+		
+
+
+		// var img = new Image();
+		// var self = this;
+		// img.onload = function () {
+				
+				var MC =owner.bg.graphics;
+				var HTC =owner.bg.hitArea.graphics;
+				MC.clear();
+				HTC.clear();
+				var tot = owner.points.length;
+				if (tot==0){
+					var parentIN= owner.parent;
+					//console.log(parentIN.getNumChildren());
+					owner.parent.removeChild(this);
+					//console.log(parentIN.getNumChildren());
+					return false;
+				}
+				olc = owner.points[0];
+				lc = window.WBdraw.ConfigWB.convert2pos(owner,olc);
+				var strokeIn=5;
+				if (lc.x<0){//moveBy in the + direction X
+					owner.regX=-Math.abs(lc.x*.5);
+					owner.x=owner.x+owner.regX;
+				}else{//moveBy in neg
+					owner.regX = Math.abs(lc.x*.5);
+					owner.x = owner.x+owner.regX;
+				}
+				if (lc.y<0){//moveBy in the + direction Y
+					owner.regY =-Math.abs(lc.y*.5);
+					owner.y = owner.y+owner.regY;
+				}else{//moveBy in neg
+					owner.regY=Math.abs(lc.y*.5);
+					owner.y=owner.y+owner.regY;
+				}
+				var inX=Math.floor(lc.x);
+				var inY=Math.floor(lc.y)
+				owner.width=Math.abs(inX);
+				owner.height=Math.abs(inY);
+				if (owner.width<10 || owner.height<10){
+					owner.parent.removeChild(owner);
+					delete owner;
+					return false;
+				}
+				MC.setStrokeStyle(strokeIn);
+				MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
+				// MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+
+				var m = new createjs.Matrix2D();
+				// m.translate(inX, inY);
+				m.scale(owner.width/owner.img.width, owner.height/owner.img.height);
+
+				MC.beginBitmapFill(owner.img,"no-repeat"); 
+
+				HTC.setStrokeStyle(strokeIn*2);
+				HTC.beginStroke('#000'); 
+				HTC.beginFill('red');  
+				HTC.rect(0,0,inX,inY);
+				MC.rect(0,0,inX,inY);
+				
+				MC.endStroke();
+				HTC.endStroke();
+				HTC.endFill(); 
+				MC.endFill(); 
+
+				owner.cache(-strokeIn+(inX<0?inX:0),-strokeIn+(inY<0?inY:0), owner.width+strokeIn*2,owner.height+strokeIn*2);
+				// MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+				// // MC.beginBitmapFill(img); //.beginFill('red');
+				// // MC.drawRect(50, 50, 120, 120);
+				// MC.endFill();
+
+				// owner.bg.hitArea=null;
+				// owner.removeremChild(owner.hitHelper)
+
+				// debugger
+
+				// owner.removeAllEventListeners();
+				// owner.on("pressup", this.handleRelease.bind(this));
+				// owner.removeAllEventListeners("pressmove");
+				// owner.removeAllEventListeners("PressEvent");
+				// owner.removeAllEventListeners("mousedown");
+				// owner.removeAllEventListeners("pressup");
+				// owner.removeAllEventListeners("CommitEvent");
+				// owner.removeAllEventListeners("ReleaseEvent");
+				// owner.commit(window.WBdraw.FormProxy.UPDATE);
+		// };
+		// img.src = "http://upload.wikimedia.org/wikipedia/pt/0/02/Homer_Simpson_2006.png";
+
+		//owner.cache(-strokeIn,-strokeIn,inX+strokeIn*2,inY+strokeIn*2);
+		
+		//owner.setBounds(owner.x,owner.y,owner.width+strokeIn*2,owner.height+strokeIn*2);
+		
+		return true;
+	}
 	
 	p.circle = function(owner,fx,fy){
 		var lc=new createjs.Point(fx,fy);
