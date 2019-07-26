@@ -46,6 +46,9 @@ class FreeDraw extends Component {
   getImage = () => {
     return this.main.getBoard().getImage()
   }
+  getBoard = () => {
+    return this.main.getBoard()
+  }
   render() {
     const { width, height } = this.state
     return(  

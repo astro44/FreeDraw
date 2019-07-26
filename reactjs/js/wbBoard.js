@@ -389,6 +389,7 @@
 			var stot = this.allTabs[tab].length;
 			var i = this.allTabs[tab].length;
 			while (this.allTabs[tab].length>0){
+				debugger
 				console.log(this.allTabs[tab][i-1]);
 				this.onDelete(this.allTabs[tab][i-1],tab,true,false);
 				--i;
@@ -403,6 +404,63 @@
 		//this.allTabs.splice(0);
 	}
 
+
+	p.wbImport=function(wbList){
+		// debugger
+		var tot = wbList.length;
+		for (var i=0;i<tot; ++i){ //create each virtual tab....
+			var items=wbList[i];
+			var itot=items.length;
+			var currTab = i;
+			for (var j=0;j<itot;++j){
+				var cTab = wbList[i][j].tab
+				var shape=wbList[i][j];
+				var action=window.WBdraw.FormProxy.NEW
+				this.updateShape(shape,action,cTab);
+			}
+		} 
+
+		var tab = wbList[0]
+		var tot = tab.length
+		for (var i=0;i<tot; ++i){
+			var shape=tab[i];
+			var classIn = shape['class']
+			var type = shape['type']
+			var nameIn = shape['name']
+
+			
+			this.shapeInsert(this,classIn,type,nameIn,shape)
+			//this.shapeInsert(this,"line","free",nameIn)
+		}
+	}
+
+	p.shapeInsert = function (owner,classIn,type,nameIn, obj){
+		var mc = owner.layers['cvsMAIN'];
+		// var nameIn="rcolvi_";
+		// if (!owner._isSynched){
+		// 	nameIn+=owner._int
+		// 	++owner._int;
+		// }
+		var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(classIn)](nameIn, type)
+		if (classIn=="Line"){
+			shape.points=obj.points
+		}
+		shape.pos =obj.points
+		shape.x=obj.x;
+		shape.y=obj.y;
+
+		shape.drawPerm(shape,false);
+		// if (owner.shapeNOW.type=="text"){
+		// 	if (owner.resizer.parent==undefined)
+		// 		owner.addChild(this.resizer);
+		// 		owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
+		// 		owner.test_draw("line","free");
+				
+		// }
+		//var shape = new FormLine("rcolvi_"+type, type);
+		mc.addChild(shape);
+		return shape;
+	}
 	p.updateShape = function(shape,action/*int*/,tab){
 		//does tab exists?
 		var found=false;
@@ -635,6 +693,7 @@
 		//var shape = new FormLine("rcolvi_"+type, type);
 		shape.x=mainStage.mouseX;
 		shape.y=mainStage.mouseY;
+		shape.class=window.WBdraw.toTitleCase(owner._tempModel.classIn);
 		mc.addChild(shape);
 		owner.shapeNOW=shape;
 		addListeners(shape,owner);	

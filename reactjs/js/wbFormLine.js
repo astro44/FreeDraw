@@ -6,6 +6,7 @@
 		this.id=this.name=id;
 		this.color = "";
 		this.type=type;
+		this.class="Line";
 		this.limitDraw=false;
 		this.rect=null;
 		this.segSize=12;

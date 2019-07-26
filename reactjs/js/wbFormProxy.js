@@ -100,6 +100,8 @@
 		flat.tab = tab;
 		flat.pod = shape.pod;
 		flat.label = shape.label;
+		flat.class = shape.constructor.name.replace("Form","")
+		// debugger
 		return flat;
 	}
 

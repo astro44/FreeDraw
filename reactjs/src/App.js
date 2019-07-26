@@ -26,7 +26,8 @@ class App extends Component {
 		this.state = {
 			menuFill:null,
 			text:"",
-			rotation:0
+			rotation:0,
+			tabsaved:[]
 		}
     	// this.toggle = this.toggle.bind(this);
       	var scripts = props.scripts;
@@ -109,6 +110,17 @@ class App extends Component {
 		}
 		this.setState({rotation:newRotation})
 	}
+	save = () => {
+		const board = this.draweer.current.getBoard()
+		this.setState({
+			tabsaved : [board.allTabs[0].slice(0)]
+		})
+	}
+	import = () => {
+		const { tabsaved } = this.state
+		const board = this.draweer.current.getBoard()
+		board.wbImport(tabsaved)
+	}
 	render() {
 		const {menuFill, shape, text} = this.state
 		  return (
@@ -157,6 +169,12 @@ class App extends Component {
 					</Button>
 					<Button color="inherit" onClick={this.setRotation(true)}>
 						Right
+					</Button>
+					<Button color="inherit" onClick={this.save}>
+						Save
+					</Button>
+					<Button color="inherit" onClick={this.import}>
+						Import
 					</Button>
 					{ shape && shape.type ==="text" &&
 						<InputBase
