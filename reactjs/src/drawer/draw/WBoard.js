@@ -1,19 +1,57 @@
-(function(scope) {
- // 'use strict';
+ 
+
+    import { 
+        Point,
+        Matrix2D,
+        // Stage,
+        // Ticker,
+        // Touch,
+        Container,
+        Shape,
+        EventDispatcher
+    } from "@createjs/easeljs"; 
+
+    import { Tween } from "@createjs/tweenjs";
+
+    import WbFormFill from './forms/wbFormFill'
+    import wbFormLine from './forms/wbFormLine'
+    import wbFormProxy from './forms/wbFormProxy'
+    import wbFormResizer from './forms/wbFormResizer'
+    import wbFormShape from './forms/wbFormShape'
+    import wbFormText from './forms/wbFormText'
+    import WbBox from './WbBox'
+    import WbMenu from './WbMenu'
+    
+    // import { quadIn } from "@createjs/easeljs";
+
  	/**
 	 * ...
 	 * @author R Colvin
 	 */
+    import { promote, toTitleCase } from  '../Utils'
+
+    const Forms = {
+        FormFill:WbFormFill,
+        FormLine:wbFormLine,
+        FormProxy:wbFormProxy,
+        FormResizer:wbFormResizer,
+        FormShape:wbFormShape,
+        FormText:wbFormText,
+    }
+
 	///var scope;// SAME AS static dynamic var
-	function WBoard(id, color ) {
-		this.Container_constructor();
+	class  WBoard extends Container{
+        constructor(id, color ) {
+            super();
+        // _inheritsLoose(WBoard, Container);
+		// this.Container_constructor();
 		this.id=this.name=id;
 		this.color = color;
-		this.layers= new Object();
+		this.layers= {};
 		this.controller =null;
 		this.currentTab=0;
 		this.allTabs={};
-		
+		this.mainStage= null;
 		//this.config=new WBdraw.ConfigWB(platform, width, height);
 		this._currentdeckIndex=null;
 		this._shapeNOW=null;		  	 //shape currently being used
@@ -38,29 +76,27 @@
 		//action_update=2;
 		this.observersShapeNOW = [];
 		this.setup();
-	}
-
-	var p = createjs.extend(WBoard, createjs.Container);
-	
-	p.subscribeShapeNOW = function (f) {
+    }
+    
+	subscribeShapeNOW = function (f) {
 		this.observersShapeNOW.push(f);
 	}
 
 	// add the ability to unsubscribe from a particular object
 	// essentially, remove something from the observersShapeNOW array
-	p.unsubscribeShapeNOW = function (f) {
+	unsubscribeShapeNOW = function (f) {
 		this.observersShapeNOW = this.observersShapeNOW.filter(subscriber => subscriber !== f);
 	}
 
 	// update all subscribed objects / DOM elements
 	// and pass some data to each of them
-	p.notifyShapeNOW = function (data) {
+	notifyShapeNOW = function (data) {
 		this.observersShapeNOW.forEach(observer => observer(data));
 	}
-	p.getLayer = function (id){return this.layers[id];}	
-		p.drawinit= function(owner,form,type,path){
+	getLayer = function (id){return this.layers[id];}	
+		drawinit= function(owner,form,type,path){
 			//create modify Shape
-			if (type==null || type=="")type=form;
+			if (type==null || type==="")type=form;
 			console.log("!@#@!!@###@@@====>>  form:"+form+" type:"+type);
 			switch (form){
 				case "modify":
@@ -74,7 +110,8 @@
 						case "color":
 							break;
 						case "alpha":
-							break
+                            break
+                        default:
 					}
 					break;
 				case "clear":
@@ -90,18 +127,30 @@
 					owner._tempModel = modelIN;
 			}
 		}
-		p.shapeTweenUpdate= function (form,pos){
+		shapeTweenUpdate= function (form,pos){
 			pos.alpha=0.5;
-			createjs.Tween.get(owner.form, {override:true}).to({x:pos.x,y:pos.y,alpha:1},300,createjs.Ease.quadIn);
-		},
-		p.menuEventProxy=  function (event){
+			Tween.get(
+                form, {override:true})
+                .to(
+                    {
+                        x:pos.x,
+                        y:pos.y,
+                        alpha:1
+                    },
+                    300,
+                    // createjs.Ease.quadIn
+                );
+        }
+        
+		menuEventProxy=  function (event){
 			this.drawinit(this,event.param[0],event.param[1]);
-		},
-		p.shapeStart=  function (){
+        }
+        
+		shapeStart=  function (){
 			if (this.shapeNOW!=null){
 				console.log("...found shape in use..."+this.shapeNOW.id);
 				if (!this.shapeNOW._commited) {
-					if (this.shapeNOW.type!="links"){
+					if (this.shapeNOW.type!=="links"){
 						this.shapeNOW.drawPerm(this.shapeNOW,false);
 					}else{
 						this.onDelete(this.shapeNOW,this.currentTab,false,true);	
@@ -110,7 +159,7 @@
 				this.shapeNOW=null;
 			}
 			console.log(this.shapeNOW);
-			var type =this._tempModel.type;
+			// var type =this._tempModel.type;
 			switch (this._tempModel.type) {
 				case "select":
 					break;
@@ -128,26 +177,28 @@
 					}
 					
 			}
-		},
-		p.drawing=  function (x,y){
-			if (this._objectInit!=false){
+        }
+        
+		drawing=  function (x,y){
+			if (this._objectInit!==false){
 				return;
 			}
 			console.log("..drawing nwo");
 			console.log(this.shapeNOW);
-			if (this.shapeNOW!=undefined){
-				if (this.shapeNOW != this.resizer.formTarget){
+			if (this.shapeNOW){
+				if (this.shapeNOW !== this.resizer.formTarget){
 					var lc= this.shapeNOW.bg.globalToLocal(x,y);
 					this.shapeNOW.drawTemp(lc.x,lc.y);		
 				}
 			}
-		},
-		p.drawdone=  function (owner){
-			window.WBdraw.trace("...done nwo",p);
-			if (owner.shapeNOW!=undefined){
+        }
+        
+		drawdone=  function (owner){
+			window.WBdraw.trace("...done nwo",this);
+			if (owner.shapeNOW){
 					owner.shapeNOW.drawPerm(owner.shapeNOW,false);
-				if (owner.shapeNOW.type=="text"){
-					if (owner.resizer.parent==undefined)
+				if (owner.shapeNOW.type==="text"){
+					if (!owner.resizer.parent)
 						owner.addChild(this.resizer);
 						owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
 						owner.test_draw("line","free");
@@ -155,8 +206,9 @@
 			}
 			owner.shapeNOW=null;
 			
-		},
-		p.clearObject=  function(){
+        }
+        
+		clearObject=  function(){
 			
 			this.shapeNOW=null;
 		}
@@ -164,17 +216,17 @@
 
 	
 	
-	p.setup = function() {
+	setup = function() {
 		
-		var bg = new createjs.Shape();
+		var bg = new Shape();
 		
 		bg.snapToPixel=true;
 		bg.alpha=1;
 		bg.name=bg.id="bg";
 
-		var DECK = new WBdraw.Box("cvsDECK", "#ccc", true);
-		var MAIN = new WBdraw.Box("cvsMAIN", "#ccc", true);
-		var SAND = new WBdraw.Box("cvsSAND", "#ccc", true);
+		var DECK = new WbBox("cvsDECK", "#ccc", true);
+		var MAIN = new WbBox("cvsMAIN", "#ccc", true);
+		var SAND = new WbBox("cvsSAND", "#ccc", true);
 		DECK.snapToPixel=true;
 		MAIN.snapToPixel=true;
 		SAND.snapToPixel=true;
@@ -195,16 +247,16 @@
 		this.layers[MAIN.id]=MAIN;
 		this.layers[SAND.id]=SAND;
 		window.WBdraw.trace("8=====1====o");
-		this.resizer= new WBdraw.FormResize("rsize","rtool");
+		this.resizer= new Forms.FormResizer("rsize","rtool");
 		this.resizer.x=200;
 		this.resizer.y=20;
 		this.resizer.snapToPixel=true;
 		
-		this.image = new createjs.Shape();
+		this.image = new Shape();
 		this.addChild(this.image)
 
 		this.addChild(bg,DECK,MAIN,SAND);
-		this.menu=new WBdraw.Menu("m1",this); 
+		this.menu=new WbMenu("m1",this); 
 		this.menu.snapToPixel=true;
 		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
 		this.addChild(this.menu); 
@@ -239,7 +291,7 @@
 			// self.img=img;
 			
 
-			var m = new createjs.Matrix2D();
+			var m = new Matrix2D();
 			m.translate(self.width/2 -img.width/2, 0);
 			// m.scale(self.width/img.width, self.height/img.height);
 			
@@ -255,17 +307,17 @@
 		
 	};
 	
-	p.width=0;
-	p.height=0;
-	p.getImage = function(){
+	width=0;
+	height=0;
+	getImage = function(){
 		return this.image;
 	}
-	p.setSize = function (width,height,color){
+	setSize = function (width,height,color){
 		var bg=this.getChildByName("bg");
 		console.log("resizeBy");//.beginFill('#'+Math.floor(Math.random()*16777215))
 
 		if (this.img) {
-			var m = new createjs.Matrix2D();
+			var m = new Matrix2D();
 			// m.translate(inX, inY);
 			m.scale(width/this.img.width, height/this.img.height);
 	
@@ -291,32 +343,32 @@
 		for (var i in this.layers){
 			this.layers[i].setSize(width,height,color);
 		}
-		p.width=width;
-		p.height=height;
+		this.width=width;
+		this.height=height;
 	};
-	p.getWidth = function(){
+	getWidth = function(){
 		console.log("get width");
-		return width;
+		return this.width;
 	};
-	p.wbRegister = function (wbid,tabid){
+	wbRegister = function (wbid,tabid){
 		
 	}
-	p.clear = function(type,wbid){
+	clear = function(type,wbid){
 		//clear all objects in view based on type  ;
 	}
-	p.wbSwitch = function (wbid){
+	wbSwitch = function (wbid){
 		
 	}
-	p.unshift =function(items){}//to front
-	p.push =function(items){}//toback
+	unshift =function(items){}//to front
+	push =function(items){}//toback
 	
 
-	p.handleClick = function (event) {
+	handleClick = function (event) {
 		//alert("You clicked on a button: "+this.label);
 		window.WBdraw.trace("click1");
 	};
 	
-	p.handlePress = function(event){
+	handlePress = function(event){
         //mainStage.addEventListener("stagemousemove", this.drawLine);
         //mainStage.addEventListener("stagemouseup", this.endDraw);
 		console.log("pressing.33gfw...");
@@ -324,7 +376,7 @@
 		this.shapeStart();
 		this.on("pressmove", this._pressMove);
 		if (this.resizer.EMPTY()){
-			if (this.shapeNOW.id==this.resizer.formTarget.id)
+			if (this.shapeNOW.id===this.resizer.formTarget.id)
 				this.shapeNOW=null;
 			//this.resizer.formTarget.action=
 			this.onDelete(this.resizer.formTarget,this.currentTab,false,false);
@@ -332,34 +384,34 @@
 		this.resizer.wrapTarget(this.resizer,null);
 		event.stopImmediatePropagation();
 	};
-	p.handleRelease = function(event){
+	handleRelease = function(event){
 		this.drawdone(this);
 		this.off("pressmove", this._pressMove);
 	};
 	
 	
 	// out of scope below
-	p.drawLine = function(event){
+	drawLine = function(event){
 		//console.log(".......drawline..........");
-		this.drawing(mainStage.mouseX,mainStage.mouseY);
+		this.drawing(this.mainStage.mouseX,this.mainStage.mouseY);
 	};
-	p.endDraw = function(event){
+	endDraw = function(event){
 		window.WBdraw.trace("enddraw1");
 		this.off("pressmove", this._pressMove);
 	};
 	
 	
-	p.test_draw = function(form,type){
+	test_draw = function(form,type){
 		window.WBdraw.trace("enddraw1");
 		this.drawinit(this,form,type);
 	};
 	/* when changing tabs fromJMS should be set to true
 	** when deleting And requires update to fromJMS set to false
 	*/
-	p.onDelete=function(ss,tab,grouped,fromJMS){
+	onDelete=function(ss,tab,grouped,fromJMS){
 		window.WBdraw.trace("8=========o");
 		console.log(ss);
-		if (ss == undefined){
+		if (ss === undefined){
 			window.WBdraw.trace("<<<<<<<<<< undefined in DELETE >>>>>>>>>>");
 			return;
 		}
@@ -374,7 +426,8 @@
 				shape.commit(window.WBdraw.FormProxy.DELETE);
 				shape.removeAllEventListeners();
 				shape.parent.removeChild(shape);
-				delete shape;
+                // delete 
+				shape = null; //************************************************************************************************************************
 			}
 		}
 		if (!fromJMS){//send commited event
@@ -382,12 +435,12 @@
 		}
 		this.resizer.wrapTarget(this.resizer,null);
 	}
-	p.onDeleteAll=function(tab){
-		if (tab==this.currentTab){
+	onDeleteAll=function(tab){
+		if (tab===this.currentTab){
 			//remove from view
 			window.WBdraw.trace("< [START] removeAll>");
 			console.log(this.allTabs);
-			var stot = this.allTabs[tab].length;
+			// var stot = this.allTabs[tab].length;
 			var i = this.allTabs[tab].length;
 			while (this.allTabs[tab].length>0){
 				// debugger
@@ -398,7 +451,7 @@
 		}
 			window.WBdraw.trace("< [END] removeAll>");
 			console.log(this.allTabs[tab]);
-		if (this.allTabs[tab]!=undefined)
+		if (this.allTabs[tab])
 			this.allTabs[tab].splice(0);
 		//remove from memory the given tab
 		//this.allTabs[0][childindex]  remove//
@@ -406,13 +459,13 @@
 	}
 
 
-	p.wbImport=function(wbList){
+	wbImport=function(wbList){
 		// debugger
 		var tot = wbList.length;
 		for (var i=0;i<tot; ++i){ //create each virtual tab....
 			var items=wbList[i];
 			var itot=items.length;
-			var currTab = i;
+			// var currTab = i;
 			for (var j=0;j<itot;++j){
 				var cTab = wbList[i][j].tab
 				var shape=wbList[i][j];
@@ -422,9 +475,9 @@
 		} 
 
 		var tab = wbList[0]
-		var tot = tab.length
-		for (var i=0;i<tot; ++i){
-			var shape=tab[i];
+		tot = tab.length
+		for (let i=0;i<tot; ++i){
+			let shape=tab[i];
 			var classIn = shape['class']
 			var type = shape['type']
 			var nameIn = shape['name']
@@ -435,15 +488,15 @@
 		}
 	}
 
-	p.shapeInsert = function (owner,classIn,type,nameIn, obj){
+	shapeInsert = function (owner,classIn,type,nameIn, obj){
 		var mc = owner.layers['cvsMAIN'];
 		// var nameIn="rcolvi_";
 		// if (!owner._isSynched){
 		// 	nameIn+=owner._int
 		// 	++owner._int;
 		// }
-		var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(classIn)](nameIn, type)
-		if (classIn=="Line"){
+		var shape = new Forms["Form"+toTitleCase(classIn)](nameIn, type)
+		if (classIn==="Line"){
 			shape.points=obj.points
 		}
 		shape.pos =obj.points
@@ -463,33 +516,33 @@
 		addListeners(shape,owner);
 		return shape;
 	}
-	p.updateShape = function(shape,action/*int*/,tab){
+	updateShape = function(shape,action/*int*/,tab){
 		//does tab exists?
 		var found=false;
 		console.log("~~~~!-updateShape-!~~~~"+tab);
-		if (shape==undefined){
+		if (!shape){
 			window.WBdraw.trace("<<<<<<<  [1] ???????????   >>>>>>>>>"+shape);
 			window.WBdraw.trace("<<<<<<<<<<      >>>>>>>>>>");
 			window.WBdraw.trace("<<<<<<<<<<      >>>>>>>>>>");
 			window.WBdraw.trace("<<<<<<<<<< undefined in updateShape >>>>>>>>>>");
 		}
 		//if (tab==undefined)return;
-		if (this.allTabs[tab]==undefined)this.allTabs[tab]=[];
+		if (!this.allTabs[tab])this.allTabs[tab]=[];
 		var tot=this.allTabs[tab].length;
 		console.log(this.allTabs);
 		console.log(this.allTabs[tab]);
 		
 		var flat = new window.WBdraw.FormProxy();
 		window.WBdraw.FormProxy.flattenForm(flat,shape,tab);
-		if (flat==undefined){
+		if (!flat){
 			window.WBdraw.trace("     [2]   <<<<<<<   ???????????   >>>>>>>>>"+flat);
 			window.WBdraw.trace("        <<<<<<<<<<      >>>>>>>>>>");
 			window.WBdraw.trace("        <<<<<<<<<<      >>>>>>>>>>");
 			window.WBdraw.trace("        <<<<<<<<<< undefined in updateShape >>>>>>>>>>");
 		}
 		for (var i=0;i<tot;++i){
-			if (this.allTabs[tab][i].name==flat.name){
-				if(action==window.WBdraw.FormProxy.DELETE){//DELETE
+			if (this.allTabs[tab][i].name===flat.name){
+				if(action===window.WBdraw.FormProxy.DELETE){//DELETE
 					this.allTabs[tab].splice(i,1);
 				}else{
 					this.allTabs[tab][i]=flat;
@@ -498,9 +551,9 @@
 				break;
 			}
 		}
-		if (!found && action!=window.WBdraw.FormProxy.DELETE){
+		if (!found && action!==window.WBdraw.FormProxy.DELETE){
 			this.allTabs[tab].push(flat);
-		}else if (action==window.WBdraw.FormProxy.DELETE){
+		}else if (action===window.WBdraw.FormProxy.DELETE){
 			console.log("see if event already exists in undo/redo with SAME timeStamp");
 			//console.log(shape);
 			//console.log(this.allTabs[tab]);
@@ -509,29 +562,29 @@
 	/**
 	** any links connected to SAME objects?
 	**/
-	p.uniqueLink = function (linkShape,tab){
+	uniqueLink = function (linkShape,tab){
 		console.log("~~~~!-link check-!~~~~"+tab);
 		//if (tab==undefined)return;
-		if (this.allTabs[tab]==undefined)this.allTabs[tab]=[];
+		if (!this.allTabs[tab])this.allTabs[tab]=[];
 		var tot=this.allTabs[tab].length;
 		var rin=linkShape.related;
 		var rout=null;
 		var curT=null;
 		for (var i=0;i<tot;++i){
-			if (this.allTabs[tab][i].type=="links" && this.allTabs[tab][i].id != linkShape.id){
+			if (this.allTabs[tab][i].type==="links" && this.allTabs[tab][i].id !== linkShape.id){
 				//could still be linked to similar object if connected to link
 				curT = this.allTabs[tab][i];
 				rout = curT.related;
-				if (rin.to.id == curT.id || rin.from.id == curT.id){//it is connecting to another link /// NOW check to see if from or to objects R the same
-					if (rin.from.id == rout.to.id || rin.from.id == rout.from.id || rin.to.id == rout.to.id || rin.to.id == rout.from.id){
+				if (rin.to.id === curT.id || rin.from.id === curT.id){//it is connecting to another link /// NOW check to see if from or to objects R the same
+					if (rin.from.id === rout.to.id || rin.from.id === rout.from.id || rin.to.id === rout.to.id || rin.to.id === rout.from.id){
 						console.log("  @@!!@@!!@@found same And ITS A copy");
 						return curT;
 					}
 				}	
-				if (rout.from.id==rin.from.id || rout.from.id==rin.to.id){
-					if (rout.to.id==rin.to.id || rout.to.id==rin.from.id){
+				if (rout.from.id===rin.from.id || rout.from.id===rin.to.id){
+					if (rout.to.id===rin.to.id || rout.to.id===rin.from.id){
 						var link = this.allTabs[tab][i];
-						if (rout.from.id!=rin.from.id){
+						if (rout.from.id!==rin.from.id){
 							var mc = this.layers['cvsMAIN'];
 							var sLink = mc.getChildByName(link.id);
 							sLink.bidirection = link.bidirection = true;
@@ -552,13 +605,20 @@
 	}
 	
 
+	setMainStage = function(mainStage){
+		this.mainStage = mainStage;
+    }
+    
+}
+	// var p = extend(WBoard, Container);
+	
 	
 	function addListeners (shape,owner){
 		shape.addEventListener("CommitEvent", onCommit.bind(owner));
 		//shape.addEventListener("NONCommitEvent", onNONCommit.bind(owner));
 		shape.addEventListener("PressEvent", onPress.bind(owner));
 		shape.addEventListener("ReleaseEvent", onRelease.bind(owner));
-		if (shape.type!="links")
+		if (shape.type!=="links")
 			shape.on("pressmove", moveLocally.bind(owner));
 	}
 	
@@ -569,14 +629,14 @@
 	function moveLocally (evt){
 		//console.log(evt);
 		var shape = evt.currentTarget;
-		if (this._tempModel.type=="links"){//You can't moveBy links... they Area tied down by binding objects
+		if (this._tempModel.type==="links"){//You can't moveBy links... they Area tied down by binding objects
 			return;
 		}
 		var newX=evt.stageX-shape.rel.x+shape.regX;
 		var newY=evt.stageY-shape.rel.y+shape.regY;
 		shape.x=newX;
 		shape.y=newY;
-		update=true;
+		// var update=true;
 		evt.stopImmediatePropagation();
 		
 	   var myevent = {
@@ -591,7 +651,7 @@
 		var shape = event.param;
 		console.log({shape});
 		
-		if (shape.type=="links" && event.action!=window.WBdraw.FormProxy.DELETE){//check to see if another link with SAME objects exists  
+		if (shape.type==="links" && event.action!==window.WBdraw.FormProxy.DELETE){//check to see if another link with SAME objects exists  
 			var isCopy=this.uniqueLink(shape,this.currentTab);
 			if (isCopy){//remove shape from Stage since its a copy
 				window.WBdraw.trace("========= C O P Y ========");
@@ -617,14 +677,14 @@
 		//console.log("skip the rest of the function if type == links");
 		var shape = event.param;
 		console.log("   ===>"+shape.id);
-		if (this._tempModel.type=="links"){
+		if (this._tempModel.type==="links"){
 			console.log("ola links just happened");
 			var frshape = null;
 			if (this.shapeNOW == null){
 				frshape=shapeCreate(this);
 				console.log("=========  ( A )");
 			}else{
-				if (this.shapeNOW.type=="links"){
+				if (this.shapeNOW.type==="links"){
 					frshape = this.shapeNOW;
 					console.log("=========  ( B )"+frshape);
 					if (frshape.linked){//relationship complete create new NOW
@@ -642,40 +702,42 @@
 			var finished=frshape.link(shape);
 			if (finished){
 				this.shapeNOW=null;
-				mainStage.removeEventListener("stagemousemove", this._pressMove);
+				this.mainStage.removeEventListener("stagemousemove", this._pressMove);
 				return;
 			}
 			this.shapeNOW=frshape;
 			frshape.x=shape.x;
 			frshape.y=shape.y;
-			mainStage.addEventListener("stagemousemove", this._pressMove);
+			this.mainStage.addEventListener("stagemousemove", this._pressMove);
 			return;
 		}
-        mainStage.addEventListener("stagemouseup", shape.moveEND.bind(shape));
+        this.mainStage.addEventListener("stagemouseup", shape.moveEND.bind(shape));
 		if (!shape.scaled){
-			createjs.Tween.get(shape,{override:true}).to({scaleX:1.05, scaleY:1.05},100,createjs.Ease.quadIn);
+            Tween.get(shape,{override:true}).to({scaleX:1.05, scaleY:1.05},100,
+                // createjs.Ease.quadIn
+            );
 			shape.scaled=true;
-			shape.rel2=new createjs.Point(mainStage.mouseX-shape.x,mainStage.mouseY-shape.y);
-			shape.rel = new createjs.Point(shape.width*.5+shape.rel2.x,shape.height*.5+shape.rel2.y);
+			shape.rel2=new Point(this.mainStage.mouseX-shape.x,this.mainStage.mouseY-shape.y);
+			shape.rel = new Point(shape.width*.5+shape.rel2.x,shape.height*.5+shape.rel2.y);
 		}
 	}
 	/** ReleaseEvent is also selectevent**/
 	function onRelease(event){
 		window.WBdraw.trace("=========onRelease-========"+this.currentTab);
-		
+		// debugger 
 		var shape = event.param;
-		if (this._tempModel.type=="links"){
+		if (this._tempModel.type==="links"){
 			console.log("ola links just happened");
 			return;
 		}
-        mainStage.removeEventListener("stagemousemove", shape.moveSTART);
-        mainStage.removeEventListener("stagemouseup", shape.moveEND);
+        this.mainStage.removeEventListener("stagemousemove", shape.moveSTART);
+        this.mainStage.removeEventListener("stagemouseup", shape.moveEND);
 		
 
 		window.WBdraw.trace(this.resizer);
 		window.WBdraw.trace("=========onSelect-=22222=======");
 		this.resizer.handleRollOver(event);
-		if (this.resizer.parent==undefined)
+		if (!this.resizer.parent)
 			this.addChild(this.resizer);
 		this.resizer.wrapTarget(this.resizer,shape);
 		console.log(shape);
@@ -683,6 +745,7 @@
 	}
 	
 	function shapeCreate(owner){
+        var mainStage = owner.mainStage;
 		console.log("!!!!! create    !!!"+owner._tempModel.classIn);
 		var mc = owner.layers['cvsMAIN'];
 		var type =owner._tempModel.type
@@ -691,7 +754,7 @@
 			nameIn+=owner._int
 			++owner._int;
 		}
-		var shape = new WBdraw["Form"+window.WBdraw.toTitleCase(owner._tempModel.classIn)](nameIn, type)
+		var shape = new Forms["Form"+toTitleCase(owner._tempModel.classIn)](nameIn, type)
 		//var shape = new FormLine("rcolvi_"+type, type);
 		shape.x=mainStage.mouseX;
 		shape.y=mainStage.mouseY;
@@ -704,9 +767,9 @@
 
 
 	
-	createjs.EventDispatcher.initialize(WBoard.prototype);
+	EventDispatcher.initialize(WBoard.prototype);
 	
 	
-	scope.WBoard = createjs.promote(WBoard, "Container");
-	//scope.WBoard = WBoard;
-	}(window.WBdraw))
+    // scope.WBoard = createjs.promote(WBoard, "Container");
+    
+    export default  promote(WBoard, "Container"); 

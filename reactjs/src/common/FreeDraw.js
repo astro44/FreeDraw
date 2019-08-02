@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import "./wbStyles.css";
 import varManager from '../cr_vars.js';
 
+import Main from '../drawer/Main'
+
 class FreeDraw extends Component {
   constructor(props) {
     super();
@@ -20,7 +22,7 @@ class FreeDraw extends Component {
 
     var createjs = this.props.scripts.createjs;
     var WBdraw = this.props.scripts.WBdraw;
-    var MainIn = this.props.scripts.wbMain;
+    var MainIn = Main // this.props.scripts.wbMain;
     console.log(MainIn)
     this.main = MainIn.main(this.mainCanvas.current, this.mainTxt.current);
     console.log(this.main)
