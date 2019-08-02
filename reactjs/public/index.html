@@ -24,33 +24,9 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Test Whiteboard</title>
-    <script src="wbDraw.js"></script>
-    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
-
-    <script>
-      //////////////////////////////////////////////////////////////////
-      //////. BELOW IS USED TO HELP WIRE DATA IN TO REACT!!!///////////
-      //////////////////////////////////////////////////////////////////
-      window['cr-scripts']={}; 
-      window['reactjs']={} 
-      function clickNow(){
-
-      }
-      function blurNow(){
-        alert("bluring here...")
-      }
-    </script>
-
-    <script src="js/wb5.min.js"></script>
+    
   </head>
   <body> 
-    <script>
-      window['cr-scripts']['createjs']=createjs;
-      window['cr-scripts']['WBdraw']=WBdraw;
-      window['cr-scripts']['wbMain']=Main;
-      window['cr-scripts']['blurNow']=blurNow;
-      window['cr-scripts']['txtDOM']=null;
-    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root_draw_photos"></div>
     <!--

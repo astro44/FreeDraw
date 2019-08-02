@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import FreeDraw from './common/FreeDraw'
 
-import varManager from './cr_vars.js';
+// import varManager from './cr_vars.js';
 import {Grid} from '@material-ui/core'
 
 // windowScript()=>{
@@ -13,8 +13,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+// import IconButton from '@material-ui/core/IconButton';
+// import MenuIcon from '@material-ui/icons/Menu';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputBase from '@material-ui/core/InputBase';
@@ -31,8 +31,8 @@ class App extends Component {
 			tabsaved:[]
 		}
     	// this.toggle = this.toggle.bind(this);
-      	var scripts = props.scripts;
-		var vman = varManager;
+      	// var scripts = props.scripts;
+		// var vman = varManager;
 
 		this.draweer = React.createRef();
   	}
@@ -65,8 +65,8 @@ class App extends Component {
 				open={Boolean(menu)}
 				onClose={()=>this.handleClose(`menu-${form}`)}
 			>
-				{types.map(t=>(
-					<MenuItem onClick={this.sendEvent(form, t)}>{t}</MenuItem>
+				{types.map((t,k)=>(
+					<MenuItem key={k} onClick={this.sendEvent(form, t)}>{t}</MenuItem>
 				))}
 			</Menu>
 		</>
@@ -123,7 +123,7 @@ class App extends Component {
 		board.wbImport(tabsaved)
 	}
 	render() {
-		const {menuFill, shape, text} = this.state
+		const { shape, text} = this.state
 		  return (
 			  <>
 			   <AppBar position="static">

@@ -1,7 +1,7 @@
 import React, { Component, textarea } from 'react'
-import ReactDOM from "react-dom";
+// import ReactDOM from "react-dom";
 import "./wbStyles.css";
-import varManager from '../cr_vars.js';
+// import varManager from '../cr_vars.js';
 
 import Main from '../drawer/Main'
 
@@ -20,8 +20,8 @@ class FreeDraw extends Component {
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
 
-    var createjs = this.props.scripts.createjs;
-    var WBdraw = this.props.scripts.WBdraw;
+    // var createjs = this.props.scripts.createjs;
+    // var WBdraw = this.props.scripts.WBdraw;
     var MainIn = Main // this.props.scripts.wbMain;
     console.log(MainIn)
     this.main = MainIn.main(this.mainCanvas.current, this.mainTxt.current);

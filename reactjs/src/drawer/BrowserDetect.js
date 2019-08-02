@@ -7,43 +7,43 @@ var s = {};
 	s.os = null;
 
 	s.isIE = function () {
-		return s.browser == 'Explorer';
+		return s.browser === 'Explorer';
 	};
 
 	s.isVista = function() {
-		return navigator.userAgent.indexOf('Windows NT 6.0') != -1;
+		return navigator.userAgent.indexOf('Windows NT 6.0') !== -1;
 	};
 
 	s.isXP = function() {
-		return navigator.userAgent.indexOf('Windows NT 5') != -1;
+		return navigator.userAgent.indexOf('Windows NT 5') !== -1;
 	};
 
 	s.isWindows = function() {
-		return s.os == "Windows";
+		return s.os === "Windows";
 	};
 
 	s.isWP8 = function () {
-		return navigator.userAgent.indexOf('Windows Phone 8') != -1;
+		return navigator.userAgent.indexOf('Windows Phone 8') !== -1;
 	};
 
 	s.isWP7 = function () {
-		return navigator.userAgent.indexOf('Windows Phone 7') != -1;
+		return navigator.userAgent.indexOf('Windows Phone 7') !== -1;
 	};
 
 	s.isAndroid = function() {
-		return navigator.userAgent.indexOf('Android') != -1;
+		return navigator.userAgent.indexOf('Android') !== -1;
 	};
 
 	s.isIE9 = function () {
-		return this.isIE() && this.getInternetExplorerVersion() == 9;
+		return this.isIE() && this.getInternetExplorerVersion() === 9;
 	};
 
 	s.isMac = function() {
-		return s.os == "Mac" || s.isIOS();
+		return s.os === "Mac" || s.isIOS();
 	};
 
 	s.isIOS = function() {
-		return s.os == "iPhone/iPod" || s.os == "iPad";
+		return s.os === "iPhone/iPod" || s.os === "iPad";
 	};
 
 	s.isIOSRetina = function () {
@@ -55,19 +55,19 @@ var s = {};
 	};
 
 	s.isSafari = function() {
-		return s.browser == "Safari";
+		return s.browser === "Safari";
 	};
 
 	s.isChrome = function() {
-		return s.browser == "Chrome";
+		return s.browser === "Chrome";
 	};
 
 	s.isFirefox = function() {
-		return s.browser == "Firefox" || s.browser == "Mozilla";
+		return s.browser === "Firefox" || s.browser === "Mozilla";
 	};
 
 	s.isOpera = function () {
-		return s.browser == "Opera";
+		return s.browser === "Opera";
 	};
 
 	s.getInternetExplorerVersion =  function()
@@ -75,10 +75,10 @@ var s = {};
 	// (indicating the use of another browser).
 	{
 	  var rv = -1; // Return value assumes failure.
-	  if (navigator.appName == 'Microsoft Internet Explorer')
+	  if (navigator.appName === 'Microsoft Internet Explorer')
 	  {
 	    var ua = navigator.userAgent;
-	    var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+	    var re  = new RegExp("MSIE ([0-9]{1,}[.0-9]{0,})");
 	    if (re.exec(ua) != null)
 	      rv = parseFloat( RegExp.$1 );
 	  }
@@ -201,7 +201,7 @@ var s = {};
 
 			s._versionSearchString = data[i].versionSearch || data[i].identity;
 			if (dataString) {
-				if (dataString.indexOf(data[i].subString) != -1) { return data[i].identity; }
+				if (dataString.indexOf(data[i].subString) !== -1) { return data[i].identity; }
 			} else if (dataProp) {
 				return data[i].identity;
 			}
@@ -210,7 +210,7 @@ var s = {};
 
 	s._searchVersion = function (dataString) {
 		var index = dataString.indexOf(s._versionSearchString);
-		if (index == -1) { return; }
+		if (index === -1) { return; }
 		return parseFloat(dataString.substring(index + s._versionSearchString.length + 1));
 	};
 

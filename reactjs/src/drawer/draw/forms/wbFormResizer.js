@@ -84,7 +84,7 @@ import resizeBtn from '../ResizeBtn'
 			
 			// var owner=this;
 			this.dd.onclick=function (e){
-				this.dd.readOnly=false;
+				owner.dd.readOnly=false;
 			}
 			//dd.onfocus=function (e){dd.value="dude"}
 			this.dd.onblur=function (e){
@@ -109,6 +109,7 @@ import resizeBtn from '../ResizeBtn'
 				owner.formTargetLAST=null;
 			}
 			this.TXT=new DOMElement(this.dd);
+			this.TXT.x = 200;
 		}
 		/*dd.onkeypress=function (e){
 			var code = e.which || e.keyCode;
@@ -248,6 +249,7 @@ import resizeBtn from '../ResizeBtn'
 					this.formTarget.drawTemp((this.box4.x*2)-this.tolerance*2,(this.box4.y*2)-this.tolerance*2);
 					this.formTarget.drawPerm(this.formTarget);
 			}
+			// debugger
 			if (this.TXT!==null){
 				this.TXT.visible=true;
 				resizeEditor(this,this.formTarget);
@@ -351,8 +353,8 @@ import resizeBtn from '../ResizeBtn'
 			
 			var midW=Math.ceil(obj.width*.5)+owner.tolerance;
 			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
-			owner.TXT.x=-midW+5;
-			owner.TXT.y=-midH+5;
+			owner.TXT.x=midW+5;
+			owner.TXT.y=midH+5;
 		// if (owner.formTarget.type == "text")
 		// 	owner.formTargetLAST.visible=true;
 			

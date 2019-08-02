@@ -15,7 +15,8 @@ import {
 import { Tween } from "@createjs/tweenjs";
 
 import { promote } from  '../../Utils'
-// import ConfigWB from '../ConfigWB'
+import ConfigWB from '../ConfigWB'
+import FormProxy from './wbFormProxy'
 // import BrowserDetect from '../../BrowserDetect'
 // import resizeBtn from '../ResizeBtn'
 
@@ -83,7 +84,7 @@ import { promote } from  '../../Utils'
 					this.height = this.text.getMeasuredHeight()+20;
 			this.points.push(new Point(this.text.getMeasuredWidth()+30,this.text.getMeasuredHeight()+20));
 			this.squarePerm(this);
-			this.status=window.WBdraw.FormProxy.NEW;
+			this.status=FormProxy.NEW;
 		} ;
 	
 		setText=function(text){
@@ -113,7 +114,7 @@ import { promote } from  '../../Utils'
 			  // };
 			  console.log("...create....");
 			if (finalIn)
-				this.commit(window.WBdraw.FormProxy.UPDATE);
+				this.commit(FormProxy.UPDATE);
 				//this.dispatchEvent(myevent);
 		}
 		EMPTY = function (){
@@ -125,11 +126,13 @@ import { promote } from  '../../Utils'
 			if (action==="blur"){
 					return;	
 			}
+			// debugger
 			   var myevent = {
 				 type: "CommitEvent",
 				 param: this,
 				 action:action
 			   };
+			   console.log(myevent)
 			this.dispatchEvent(myevent);
 		}
 	
@@ -189,7 +192,7 @@ import { promote } from  '../../Utils'
 			}
 			
 			  console.log("...moved....");
-			this.commit(window.WBdraw.FormProxy.MOVED);
+			this.commit(FormProxy.MOVED);
 			this.lastXY.x=this.x;
 			this.lastXY.y=this.y;
 			//event.stopImmediatePropagation();
@@ -271,7 +274,7 @@ import { promote } from  '../../Utils'
 			
 			
 			var olc = owner.points[0];
-			var lc = window.WBdraw.ConfigWB.convert2pos(owner,olc);
+			var lc = ConfigWB.convert2pos(owner,olc);
 			var strokeIn=5;
 			if (lc.x<0){//moveBy in the + direction X
 				owner.regX=-Math.abs(lc.x*.5);

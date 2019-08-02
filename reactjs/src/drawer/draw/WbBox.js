@@ -4,7 +4,7 @@ import {
 	Shape,
 } from "@createjs/easeljs"; 
 
-import { extend, promote, _inheritsLoose } from  '../Utils'
+import { promote } from  '../Utils'
 
 
 

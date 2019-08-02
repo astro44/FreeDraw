@@ -14,7 +14,7 @@ import {
 // import { Tween } from "@createjs/tweenjs";
 
 import {  promote } from  '../Utils'
-// import ConfigWB from '../ConfigWB'
+import ConfigWB from './ConfigWB'
 // import BrowserDetect from '../../BrowserDetect'
  
 	class Button extends Container{
@@ -36,8 +36,8 @@ import {  promote } from  '../Utils'
 
 
 	setup = function() {
-		var luma = window.WBdraw.ConfigWB.luma(this.color);
-		var tcolor = window.WBdraw.ConfigWB.getContrast50(this.color);
+		var luma = ConfigWB.luma(this.color);
+		var tcolor = ConfigWB.getContrast50(this.color);
 		//console.log(luma);
 		if (luma < 130) {//very dark switch text color to white
 			tcolor="#FFF";

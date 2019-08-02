@@ -18,6 +18,7 @@ import {  promote } from  '../Utils'
 
 import WbButton from './WbButton'
 import WnMenuBar from './WnMenuBar'
+import Trace from '../Trace'
     // 'use strict';  
    
     /**
@@ -133,7 +134,7 @@ import WnMenuBar from './WnMenuBar'
         this.on("pressup", this.handleRelease);
         this.on("pressmove", this.moveLocally);
         
-        window.WBdraw.trace("box1");
+        Trace("box1");
         //this.cursor = "pointer";
         //this.mouseChildren = false;
         
@@ -171,7 +172,7 @@ import WnMenuBar from './WnMenuBar'
         }
     }
     getWidth = function(){
-        window.WBdraw.trace("get width");
+        Trace("get width");
         return this.width;
     }
     wbRegister = function (wbid,tabid){
@@ -215,8 +216,7 @@ import WnMenuBar from './WnMenuBar'
             if ( !this.subscriberWL[opt["name"]] ){
                 continue;
             }
-            // invoke=(opt["btns"][">"]===undefined? oInvoke : invoke=oInvokeSub);
-            invoke=(!opt["btns"][">"]? oInvoke : invoke=oInvokeSub);
+            invoke=(opt["btns"][">"]===undefined || opt["btns"][">"]===null? oInvoke : invoke=oInvokeSub);
             btn = new WbButton(opt["name"],opt["btns"]["icon"],opt["btns"]["hint"],opt["name"],'#'+Math.floor(Math.random()*16777215).toString(16),invoke);
             if (old!=null){
                 btn.x=0;
@@ -229,7 +229,7 @@ import WnMenuBar from './WnMenuBar'
             
             old = btn;
         }
-        window.WBdraw.trace("________done...");
+        Trace("________done...");
         var mPoint=this.menucontain.getSize();
         //this.setSize(mPoint.x,mPoint.y);
         console.log(mPoint);
@@ -287,7 +287,7 @@ import WnMenuBar from './WnMenuBar'
                    }
                    break;
                }
-               window.WBdraw.trace(".........FINISHED ");
+               Trace(".........FINISHED ");
                owner.submenu.setSize(owner.menucontain.width,owner.menucontain.height,'#'+Math.floor(Math.random()*16777215).toString(16),true)
                owner.submenu.x=owner.menucontain.width;
                owner.submenu.scaleX=0;
@@ -302,9 +302,9 @@ import WnMenuBar from './WnMenuBar'
            Tween.get(owner.menucontain, {override:true}).to({x: 0, scaleX:1}, 250, 
             // createjs.Ease.quadIn
             );
-           window.WBdraw.trace("----->OUT");
-           window.WBdraw.trace(owner);
-           window.WBdraw.trace(owner.hi_Y);
+           Trace("----->OUT");
+           Trace(owner);
+           Trace(owner.hi_Y);
            if (owner.hi_Y!==0){
                var hi=owner.getChildByName("hi");
                Tween.get(hi, {override:true}).to({y:owner.hi_Y},250,
@@ -320,8 +320,8 @@ import WnMenuBar from './WnMenuBar'
            Tween.get(owner.menucontain, {override:true}).to({x:0, scaleX:.01},250,
             // createjs.Ease.quadIn
             );
-           window.WBdraw.trace("----->IN");
-           window.WBdraw.trace(owner.hi_Y);
+           Trace("----->IN");
+           Trace(owner.hi_Y);
            if (owner.hi_Y!==0){
                var hi=owner.getChildByName("hi");
                Tween.get(hi, {override:true}).to({y:-20},250,
@@ -332,8 +332,7 @@ import WnMenuBar from './WnMenuBar'
            
        function oInvokeSub(btn,btnID){ 
            var m = btn.parent.parent;
-        //    if (m.options===undefined){
-           if (!m.options){
+           if (m.options===undefined || m.options===null){
                console.log("[E] submenu functions out of context. Please make sure function is delegated");
            }
            subButtons(m,m.options,btnID);
@@ -345,8 +344,7 @@ import WnMenuBar from './WnMenuBar'
            for (var i=0;i<tot;++i){
                var opt = options[i];
                var subs = opt["btns"][">"];
-            //    if (subs !== undefined){
-               if (subs){
+               if (subs !== undefined && subs !== null){
                    var stot = subs.length;
                    for (var j=0;j<stot;++j){
                        if(subs[j]["name"] === btn.name)	
@@ -383,12 +381,12 @@ import WnMenuBar from './WnMenuBar'
                //hi.y = mbtn.y;
                owner.setHiSize(w,mbtn.height,'#FF0000');
            }
-           window.WBdraw.trace("---==>> ||>>  main:"+ form +"  sub:"+ subType);
+           Trace("---==>> ||>>  main:"+ form +"  sub:"+ subType);
            
            //owner.controller.drawinit(form,subType);
            //drawinit
            
-               window.WBdraw.trace("........---------__bb__--->>>>>   event Controller>>>>>   ");
+               Trace("........---------__bb__--->>>>>   event Controller>>>>>   ");
            var myevent = {
                 type: "MenuEvent",
                 param: [form,subType]

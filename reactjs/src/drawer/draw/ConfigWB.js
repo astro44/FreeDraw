@@ -1,3 +1,6 @@
+
+import FormLine from './forms/wbFormLine'
+
 function ConfigWB( platform, width, height) {
     this.initialize(platform, width, height);
 }
@@ -148,7 +151,7 @@ s.convert2pos =function (owner,lc){
         //then move the reg.x and reg.y points accordingly
         console.log(owner.type)
         if (owner.type=== 'straight' || owner.type=== 'links'){
-                console.log(">>>>>  +%+%+%--GOT IT HOOKED--%+%+%+%++"+owner.constructor.name +"   ::>> "+window.WBdraw.FormLine.name);
+                console.log(">>>>>  +%+%+%--GOT IT HOOKED--%+%+%+%++"+owner.constructor.name +"   ::>> "+FormLine.name);
             return lc;
         }
     }

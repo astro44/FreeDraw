@@ -2,7 +2,9 @@
 import { Stage, Ticker, Touch  } from "@createjs/easeljs";
 import BrowserDetect from './BrowserDetect'
 import WBdraw from './WbDraw'
+import ConfigWB from './draw/ConfigWB'
 import WBoard from './draw/WBoard'
+import Trace from './Trace'
 
 function Main(){}
 
@@ -27,7 +29,7 @@ Main.prototype.initialize = function(canvas, mainTxt){
 	//this.mainStage = new createjs.SpriteStage(this.mainCanvas,false,false);
 	this.mainStage.snapToPixelsEnabled = true;
 	this.mainStage.id="mainIn";
-	window.mainStage =this.mainStage;
+	// window.mainStage =this.mainStage;
 	this.mainStage.enableMouseOver(10);
 	
 	// var stats = new Stats();
@@ -69,7 +71,7 @@ Main.prototype.initialize = function(canvas, mainTxt){
             // window.stats2.begin();
             //below only works with canvas NOT WEBGL  (*
             //if (!_mainStage.isWebGL){
-                if (board1.width != _mainStage.canvas.width || board1.height != _mainStage.canvas.height){
+                if (board1.width !== _mainStage.canvas.width || board1.height !== _mainStage.canvas.height){
                     board1.setSize(_mainStage.canvas.width,_mainStage.canvas.height, '#CCC');
                     console.log("abc tick  width:"+board1.width+"  widthCvs:"+ _mainStage.canvas.width+"  height:"+board1.height+"  heightCvs:"+_mainStage.canvas.height)
                     
@@ -86,14 +88,14 @@ Main.prototype.initialize = function(canvas, mainTxt){
 	Touch.enable(this.mainStage);
 	this.mainStage.enableMouseOver();
 	//this.mainStage.enableDOMEvents(true);
-	window.WBdraw.trace("main...start");
-	window.WBdraw.trace( BrowserDetect.browser);
-	window.WBdraw.trace( BrowserDetect.version);
-	window.WBdraw.trace( BrowserDetect.os);
-	window.WBdraw.trace( BrowserDetect.isIOS());
+	Trace("main...start");
+	Trace( BrowserDetect.browser);
+	Trace( BrowserDetect.version);
+	Trace( BrowserDetect.os);
+	Trace( BrowserDetect.isIOS());
 	
 	var board1= new WBoard("BASE_main","#ccc");
-	board1.snapToPixel=true;
+    board1.snapToPixel=true;
 	board1.resizer.dd=this.mainTxt;
 	board1.resizer.setup();
 	WBdraw.currentBoard = board1;
@@ -112,11 +114,11 @@ Main.prototype.getBoard = function(){
 		//below only works with canvas NOT WEBGL
 		
 		//if (!mainStage.isWebGL){
-			if (canvas !=undefined){
+			if (canvas !==undefined && canvas !==null){
 				var board1=stage.getChildByName("BASE_main");
-				var wbInfo =new window.WBdraw.ConfigWB( BrowserDetect.os, board1.width, board1.height);
+				var wbInfo =new ConfigWB( BrowserDetect.os, board1.width, board1.height);
 				//var wbInfo = window.WBdraw.ConfigWB;
-				window.WBdraw.trace(wbInfo.width +", "+wbInfo.height+", "+wbInfo.scaleFactor);
+				Trace(wbInfo.width +", "+wbInfo.height+", "+wbInfo.scaleFactor);
 				// Set the Canvas size
 				canvas.width = wbInfo.width;
 				canvas.height = wbInfo.height;

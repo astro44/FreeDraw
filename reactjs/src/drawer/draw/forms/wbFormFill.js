@@ -13,6 +13,7 @@ import { Tween } from "@createjs/tweenjs";
 
 import { promote } from  '../../Utils'
 import ConfigWB from '../ConfigWB'
+import FormProxy from './wbFormProxy'
 
  // 'use strict';
 	///var scope;// SAME AS static dynamic var
@@ -65,7 +66,7 @@ import ConfigWB from '../ConfigWB'
 			
 			this.offset = Math.random()*10;
 			this.count = 0;
-			this.status=window.WBdraw.FormProxy.NEW;
+			this.status=FormProxy.NEW;
 
 			var img = new Image();
 			img.src = "http://upload.wikimedia.org/wikipedia/pt/0/02/Homer_Simpson_2006.png";
@@ -90,7 +91,7 @@ import ConfigWB from '../ConfigWB'
 			}
 			// console.log("...create....");
 			if (finalIn)
-				this.commit(window.WBdraw.FormProxy.UPDATE);
+				this.commit(FormProxy.UPDATE);
 
 		}	
 		EMPTY = function (){
@@ -160,7 +161,7 @@ import ConfigWB from '../ConfigWB'
 			}
 			
 			//console.log("...moved....");
-			this.commit(window.WBdraw.FormProxy.MOVED);
+			this.commit(FormProxy.MOVED);
 			this.lastXY.x=this.x;
 			this.lastXY.y=this.y;
 			//event.stopImmediatePropagation();
@@ -453,7 +454,7 @@ import ConfigWB from '../ConfigWB'
 			HTC.drawEllipse(0,0,inX,inY);
 			MC.drawEllipse(0,0,inX,inY);
 			
-			//window.WBdraw.trace();
+			//Trace();
 			
 			MC.endStroke();
 			HTC.endStroke();

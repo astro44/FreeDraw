@@ -12,8 +12,9 @@ import {
 
 import { Tween } from "@createjs/tweenjs";
 
-import { extend, promote } from  '../../Utils'
+import { promote } from  '../../Utils'
 import ConfigWB from '../ConfigWB'
+import FormProxy from './wbFormProxy'
 import BrowserDetect from '../../BrowserDetect'
 
  // 'use strict';
@@ -69,7 +70,7 @@ import BrowserDetect from '../../BrowserDetect'
 		this.offset = Math.random()*10;
 		this.count = 0;
 		if (this.type==="links") drawArrow(this);
-		this.status=window.WBdraw.FormProxy.NEW;
+		this.status=FormProxy.NEW;
 	} 
 
 	drawTemp= function (fx,fy) {
@@ -97,7 +98,7 @@ import BrowserDetect from '../../BrowserDetect'
 				var finalIn = this.linksPerm(this,Obj.to,Obj.from,this.bidirection);
 				
 				if (finalIn)
-					this.commit(window.WBdraw.FormProxy.UPDATE);
+					this.commit(FormProxy.UPDATE);
 							
 							return true;
 				//TODO: draw final And commit
@@ -139,7 +140,7 @@ import BrowserDetect from '../../BrowserDetect'
 		}
 		 
 		if (finalIn)
-			this.commit(window.WBdraw.FormProxy.UPDATE);
+			this.commit(FormProxy.UPDATE);
 	}
 
 	EMPTY = function (){
@@ -206,7 +207,7 @@ import BrowserDetect from '../../BrowserDetect'
 			);
 		}
 		 // console.log("...moved....");
-		this.commit(window.WBdraw.FormProxy.MOVED);
+		this.commit(FormProxy.MOVED);
 		this.lastXY.x=this.x;
 		this.lastXY.y=this.y;
 		//event.stopImmediatePropagation();
@@ -545,7 +546,7 @@ import BrowserDetect from '../../BrowserDetect'
 		
 		// ## START SEARCH FOR TOUCH POINTS  ##//
 		var gaps=6;
-		 var zz=window.WBdraw.ConfigWB.lineInterpolate(owner, to.x-from.x , to.y-from.y , gaps);
+		 var zz=ConfigWB.lineInterpolate(owner, to.x-from.x , to.y-from.y , gaps);
 		 owner.related.a = zz;
 		var a = (owner.related.a?owner.related.a:[]);
 		//var mc = owner.sqr2.graphics;
@@ -713,7 +714,7 @@ import BrowserDetect from '../../BrowserDetect'
 		MC.endFill(); 
 	}
 	function positionEnds(owner,from,to){
-		var angle=window.WBdraw.ConfigWB.rotateAngle(from,to);
+		var angle=ConfigWB.rotateAngle(from,to);
 		console.log(angle);
 		owner.arrow.rotation=angle;
 		owner.ball.rotation=180+angle;
@@ -755,19 +756,19 @@ import BrowserDetect from '../../BrowserDetect'
 	function moveForm(event){
 		//console.log("(CNT) [[moveForm]] LISTENERS"+this);
 		console.log(event);
-		this.moveLink(this, window.WBdraw.FormProxy.UPDATE);
+		this.moveLink(this, FormProxy.UPDATE);
 	}
 
 	function moveCompleted(event){
 			//console.log("(CNT) [[moveCompleted]] LISTENERS"+this);
-			if (event.action===window.WBdraw.FormProxy.DELETE){
+			if (event.action===FormProxy.DELETE){
 				this._commited=false;
 				this.commit(event.action);
 				if (this.parent)
 					this.parent.removeChild(this);
 				this.destroy(false);
 			}else{
-				this.moveLink(this,window.WBdraw.FormProxy.UPDATE);	
+				this.moveLink(this,FormProxy.UPDATE);	
 			}
 			
 		//positionEnds(this,this.related.from, this.related.to);
