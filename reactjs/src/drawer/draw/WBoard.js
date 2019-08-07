@@ -260,7 +260,7 @@
 		this.menu=new WbMenu("m1",this); 
 		this.menu.snapToPixel=true;
 		this.menu.addEventListener("MenuEvent", this.menuEventProxy.bind(this));
-		this.addChild(this.menu); 
+		// this.addChild(this.menu); 
 		
 		this.on("click", this.handleClick.bind(this));
 		this.on("mousedown", this.handlePress.bind(this));
@@ -284,30 +284,43 @@
 		//   }
 		// var img = new createjs.Bitmap(loadImg("https://nc-portal-dev.nuclaim.com/ale/branches/744/files/logo.jpg"))  
 		// debugger
-		var img = new Image();
-		img.crossOrigin = "Anonymous";
-		img.src = "https://nc-portal-dev.nuclaim.com/ale/clients/309/files/logo.gif";
-		// img.src = "/Homer_Simpson_2006.png";
-		img.onload = function () {
-			// self.img=img;
+		// var img = new Image();
+		// img.crossOrigin = "Anonymous";
+		// img.src = "https://nc-portal-dev.nuclaim.com/ale/clients/309/files/logo.gif";
+		// // img.src = "/Homer_Simpson_2006.png";
+		// img.onload = function () {
+		// 	// self.img=img;
 			
 
-			var m = new Matrix2D();
-			m.translate(self.width/2 -img.width/2, 0);
-			// m.scale(self.width/img.width, self.height/img.height);
+		// 	var m = new Matrix2D();
+		// 	m.translate(self.width/2 -img.width/2, 0);
+		// 	// m.scale(self.width/img.width, self.height/img.height);
 			
-			self.image.graphics.beginBitmapFill(img, "no-repeat");
-			self.image.graphics.drawRect(0, 0,img.width,img.height);
-			self.image.x = self.width/2;
-			self.image.y = img.height/2;
-			self.image.regX = img.width/2;
-			self.image.regY = img.height/2;
-			self.image.element = img;
-			document.image = self.image;
-		}
+		// 	self.image.graphics.beginBitmapFill(img, "no-repeat");
+		// 	self.image.graphics.drawRect(0, 0,img.width,img.height);
+		// 	self.image.x = self.width/2;
+		// 	self.image.y = img.height/2;
+		// 	self.image.regX = img.width/2;
+		// 	self.image.regY = img.height/2;
+		// 	self.image.element = img;
+		// 	document.image = self.image;
+		// }
 		
 	};
-	
+	setImage = function(img){
+		// var m = new Matrix2D();
+		// m.translate(img.width/2, img.height/2);
+		// m.scale(img.width,img.height);
+		
+		this.image.graphics.beginBitmapFill(img, "no-repeat");
+		this.image.graphics.drawRect(0, 0,img.width,img.height);
+		this.image.x = img.width/2;
+		this.image.y = img.height/2;
+		this.image.regX = img.width/2;
+		this.image.regY = img.height/2;
+		this.image.element = img;
+		document.image = this.image;
+	}
 	width=0;
 	height=0;
 	getImage = function(){

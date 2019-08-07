@@ -110,6 +110,8 @@ import resizeBtn from '../ResizeBtn'
 			}
 			this.TXT=new DOMElement(this.dd);
 			this.TXT.x = 200;
+			// debugger
+			// this.TXT.style.left = 200;
 		}
 		/*dd.onkeypress=function (e){
 			var code = e.which || e.keyCode;
@@ -353,8 +355,10 @@ import resizeBtn from '../ResizeBtn'
 			
 			var midW=Math.ceil(obj.width*.5)+owner.tolerance;
 			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
-			owner.TXT.x=midW+5;
-			owner.TXT.y=midH+5;
+			owner.dd.style.left=(midW+5)+"px";
+			owner.dd.style.top=(midH+5)+"px";
+			// owner.TXT.x=midW+5;
+			// owner.TXT.y=midH+5;
 		// if (owner.formTarget.type == "text")
 		// 	owner.formTargetLAST.visible=true;
 			

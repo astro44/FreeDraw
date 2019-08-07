@@ -86,30 +86,32 @@ class App extends Component {
 		}
 	}
 	setRotation = (right) => () => {
-		const { rotation } = this.state
 		// debugger
-		const image = this.draweer.current.getImage()
-		let newRotation = right ? rotation +90 : rotation -90
-		switch (newRotation) {
-			case 90:
-					image.y = image.element.width/2
-					image.rotation = newRotation
-					break;
-			case 180:
-					image.y = image.element.height/2
-					image.rotation = newRotation
-					break;
-			case -90:
-			case 270:
-					image.y = image.element.width/2
-					image.rotation = newRotation = 270
-					break;		
-			default:
-					image.y = image.element.height/2
-					image.rotation = newRotation = 0
-				break;
-		}
-		this.setState({rotation:newRotation})
+		this.draweer.current.setRotation(right)
+		// const { rotation } = this.state
+		// // debugger
+		// const image = this.draweer.current.getImage()
+		// let newRotation = right ? rotation +90 : rotation -90
+		// switch (newRotation) {
+		// 	case 90:
+		// 			image.y = image.element.width/2
+		// 			image.rotation = newRotation
+		// 			break;
+		// 	case 180:
+		// 			image.y = image.element.height/2
+		// 			image.rotation = newRotation
+		// 			break;
+		// 	case -90:
+		// 	case 270:
+		// 			image.y = image.element.width/2
+		// 			image.rotation = newRotation = 270
+		// 			break;		
+		// 	default:
+		// 			image.y = image.element.height/2
+		// 			image.rotation = newRotation = 0
+		// 		break;
+		// }
+		// this.setState({rotation:newRotation})
 	}
 	save = () => {
 		const board = this.draweer.current.getBoard()
