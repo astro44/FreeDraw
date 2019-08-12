@@ -196,24 +196,24 @@ import resizeBtn from '../ResizeBtn'
 			positionBoxes(owner,midW,midH,"")
 			miniWrap(owner,midW,midH);
 			if (owner.formTarget!=null){
-				if (isText){
-					owner.formTargetLAST=owner.formTarget
-					if (owner.formTarget.text.text!==""){
-						this.dd.style.display='block';
-						console.log("<<<<<<<<<<   001  >>>>>>>>>>");
-						if (owner.formTarget.text.text !=="enter text here")
-							this.dd.value=owner.formTarget.text.text;
-						owner.formTarget.visible=false;
-						if (!BrowserDetect.isIOS() && !BrowserDetect.isAndroid() ){
-							this.dd.focus();
-							if (this.dd.value==="enter text here"){
-								this.dd.select();
-							}
-						}
-					}
-				}else{
+				// if (isText){
+				// 	owner.formTargetLAST=owner.formTarget
+				// 	if (owner.formTarget.text.text!==""){
+				// 		this.dd.style.display='block';
+				// 		console.log("<<<<<<<<<<   001  >>>>>>>>>>");
+				// 		if (owner.formTarget.text.text !=="enter text here")
+				// 			this.dd.value=owner.formTarget.text.text;
+				// 		owner.formTarget.visible=false;
+				// 		if (!BrowserDetect.isIOS() && !BrowserDetect.isAndroid() ){
+				// 			this.dd.focus();
+				// 			if (this.dd.value==="enter text here"){
+				// 				this.dd.select();
+				// 			}
+				// 		}
+				// 	}
+				// }else{
 					this.dd.style.display='none';
-				}
+				// }
 			}
 		}
 		
@@ -357,8 +357,8 @@ import resizeBtn from '../ResizeBtn'
 			var midH=Math.ceil(obj.height*.5)+owner.tolerance;
 			owner.dd.style.left=(midW+5)+"px";
 			owner.dd.style.top=(midH+5)+"px";
-			// owner.TXT.x=midW+5;
-			// owner.TXT.y=midH+5;
+			owner.TXT.x=midW+5;
+			owner.TXT.y=midH+5;
 		// if (owner.formTarget.type == "text")
 		// 	owner.formTargetLAST.visible=true;
 			

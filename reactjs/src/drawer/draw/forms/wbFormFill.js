@@ -18,7 +18,7 @@ import FormProxy from './wbFormProxy'
  // 'use strict';
 	///var scope;// SAME AS static dynamic var
 	class FormFill extends Container{
-		constructor(id,type) {
+		constructor(id,type, mainStage) {
 			super();
 			// this.Container_constructor();
 			this.id=this.name=id;
@@ -41,6 +41,7 @@ import FormProxy from './wbFormProxy'
 			this._commited = false;
 			this.elastic=true;
 			this.rotary=true;
+			this.mainStage = mainStage;
 			this.setup();
 		}
 
@@ -83,6 +84,7 @@ import FormProxy from './wbFormProxy'
 			if (shape.id !==this.id)
 				return;
 			try{
+				
 				var finalIn=this[this.type+"Perm"](this,shape,init);
 			}catch(err){
 				//console.log(err);
@@ -107,9 +109,6 @@ import FormProxy from './wbFormProxy'
 			};
 			this.dispatchEvent(myevent);
 		}
-
-
-		
 		scaleState = function (scld){
 			this.scaled=scld;
 			this.scaleX=this.scaleY=1;
@@ -117,8 +116,6 @@ import FormProxy from './wbFormProxy'
 		setSize = function (width,height,color){
 			
 		}
-
-
 		moveSTART = function (event){
 			event.stopImmediatePropagation();
 			var mStage = event.target;		
@@ -176,7 +173,6 @@ import FormProxy from './wbFormProxy'
 			event.stopImmediatePropagation();
 		this.dispatchEvent(mevt);
 		}
-		
 		handleRelease = function(event){
 		var mevt = {
 			type: "ReleaseEvent", 
@@ -190,8 +186,6 @@ import FormProxy from './wbFormProxy'
 			// alert("rolloever")      
 			this.alpha = event.type === "rollover" ? 0.4 : 1;
 		};
-
-		
 		square = function(owner,fx,fy){
 			var lc=new Point(fx,fy);
 			var MC =owner.bg.graphics;
@@ -213,10 +207,14 @@ import FormProxy from './wbFormProxy'
 			MC.clear();
 			HTC.clear();
 			var tot = owner.points.length;
-			if (tot===0){
-				// var parentIN= owner.parent;
+			console.log('******************************',owner);
+		if (tot===0){
+			// var parentIN= owner.parent;
+				console.log('******************************---->>>',owner.parent);
 				//console.log(parentIN.getNumChildren());
-				owner.parent.removeChild(this);
+				if (owner.parent){
+					owner.parent.removeChild(this);
+				}				
 				//console.log(parentIN.getNumChildren());
 				return false;
 			}
@@ -486,41 +484,48 @@ import FormProxy from './wbFormProxy'
 			MC.endFill(); 
 		}
 		starPerm = function(owner,shape,init){
-			var MC =owner.bg.graphics;
-			var HTC =owner.bg.hitArea.graphics;
-			MC.clear();
-			HTC.clear();
-			var tot = owner.points.length;
-			if (tot===0){
-				var parentIN= owner.parent;
-				console.log(parentIN.getNumChildren());
-				owner.parent.removeChild(this);
-				console.log(parentIN.getNumChildren());
-				return false;
+			try {
+
+			
+				var MC =owner.bg.graphics;
+				var HTC =owner.bg.hitArea.graphics;
+				MC.clear();
+				HTC.clear();
+				var tot = owner.points.length;
+				if (tot===0){
+					var parentIN= owner.parent;
+					console.log(parentIN.getNumChildren());
+					owner.parent.removeChild(this);
+					console.log(parentIN.getNumChildren());
+					return false;
+				}
+				var sPos = owner.points[0];
+				var strokeIn=5;
+				
+				owner.width=Math.abs(Math.floor(sPos.radius*2));
+				owner.height=Math.abs(Math.floor(sPos.radius*2));
+				MC.setStrokeStyle(strokeIn);
+				MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
+				MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
+				HTC.setStrokeStyle(strokeIn*2);
+				HTC.beginStroke('#000'); 
+				HTC.beginFill('red');  
+				HTC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
+				MC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
+				
+				owner.x-=sPos.radius;
+				owner.y-=sPos.radius;
+				this.x+=sPos.radius;
+				this.y+=sPos.radius;
+				/**/
+				MC.endStroke();
+				HTC.endStroke();
+				HTC.endFill(); 
+				MC.endFill(); 
+			}catch(error){
+				console.error(error);
+					// debugger
 			}
-			var sPos = owner.points[0];
-			var strokeIn=5;
-			
-			owner.width=Math.abs(Math.floor(sPos.radius*2));
-			owner.height=Math.abs(Math.floor(sPos.radius*2));
-			MC.setStrokeStyle(strokeIn);
-			MC.beginStroke('#'+Math.floor(Math.random()*16777215).toString(16));  
-			MC.beginFill('#'+Math.floor(Math.random()*16777215).toString(16)); 
-			HTC.setStrokeStyle(strokeIn*2);
-			HTC.beginStroke('#000'); 
-			HTC.beginFill('red');  
-			HTC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
-			MC.drawPolyStar(0, 0, sPos.radius, sPos.points, sPos.pointy, -90);
-			
-			owner.x-=sPos.radius;
-			owner.y-=sPos.radius;
-			this.x+=sPos.radius;
-			this.y+=sPos.radius;
-			/**/
-			MC.endStroke();
-			HTC.endStroke();
-			HTC.endFill(); 
-			MC.endFill(); 
 			return true;
 		}
 		

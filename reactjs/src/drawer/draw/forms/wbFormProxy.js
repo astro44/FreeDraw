@@ -34,10 +34,13 @@
 		this.pod=null;
 		this.x=0;
 		this.y=0;
+		this.regX = 0;
+		this.regY = 0;
 		this.type=EMPTY;
 		this.points=EMPTY;
 		this.related=EMPTY;
 		this.biderectional=false;
+		this.rotation = 0;
 	} 
 	//var s = {};
 	
@@ -107,6 +110,8 @@
 		flat.id = flat.name=shape.name;
 		flat.x = shape.x;
 		flat.y = shape.y;
+		flat.regX = shape.regX;
+		flat.regY = shape.regY;
 		flat.status = shape.status;
 		flat.type = shape.type;
 		flat.points = shape.points;
@@ -117,6 +122,7 @@
 		flat.tab = tab;
 		flat.pod = shape.pod;
 		flat.label = shape.label;
+		flat.rotation = shape.rotation;
 		flat.class = shape.constructor.name.replace("Form","")
 		// debugger
 		return flat;

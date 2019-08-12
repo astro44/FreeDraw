@@ -8,7 +8,8 @@
         // Touch,
         Container,
         Shape,
-        EventDispatcher
+		EventDispatcher,
+		Bitmap
     } from "@createjs/easeljs"; 
 
     import { Tween } from "@createjs/tweenjs";
@@ -40,6 +41,7 @@
         FormText:wbFormText,
     }
 
+	
 	///var scope;// SAME AS static dynamic var
 	class  WBoard extends Container{
         constructor(id, color ) {
@@ -320,6 +322,7 @@
 		this.image.regY = img.height/2;
 		this.image.element = img;
 		document.image = this.image;
+		
 	}
 	width=0;
 	height=0;
@@ -371,7 +374,35 @@
 		//clear all objects in view based on type  ;
 	}
 	wbSwitch = function (wbid){
+		// debugger
+		const currentTab = this.currentTab
+		const mc = this.layers['cvsMAIN'];
+		const { [currentTab]:oldTab=[] } = this.allTabs
+
+		for (let iss = 0; iss < oldTab.length; iss++) {
+			const ss = oldTab[iss];
+			
+			var shape = mc.getChildByName(ss.name);
+			if (shape!=null){
+				if(shape.parent != null){
+					shape.removeAllEventListeners();
+					shape.parent.removeChild(shape);
+				}
+			}
+		}
+		this.currentTab = wbid
 		
+		const { [wbid]:tab=[] } = this.allTabs
+
+		const tot = tab.length
+		for (let i=0;i<tot; ++i){
+			const shape=tab[i];
+			const classIn = shape['class']
+			const type = shape['type']
+			const nameIn = shape['name']
+			
+			this.shapeInsert(this,classIn,type,nameIn,shape)
+		}
 	}
 	unshift =function(items){}//to front
 	push =function(items){}//toback
@@ -495,10 +526,8 @@
 			var classIn = shape['class']
 			var type = shape['type']
 			var nameIn = shape['name']
-
 			
 			this.shapeInsert(this,classIn,type,nameIn,shape)
-			//this.shapeInsert(this,"line","free",nameIn)
 		}
 	}
 
@@ -509,16 +538,29 @@
 		// 	nameIn+=owner._int
 		// 	++owner._int;
 		// }
-		var shape = new Forms["Form"+toTitleCase(classIn)](nameIn, type)
-		if (classIn==="Line"){
+		console.log("this.mainStage----->>>",this.mainStage)
+		var shape = new Forms["Form"+toTitleCase(classIn)](nameIn, type, this.mainStage)
+		if (classIn==="Line" || classIn==="Fill"){
 			shape.points=obj.points
 		}
+		if (type==="links"){
+			shape.related=obj.related
+		}
+		if (classIn==="Text"){
+			shape.setText(obj.label);
+		}
 		shape.pos =obj.points
+		// debugger
+		
+		shape.drawPerm(shape,false);
+
+		shape.regX=obj.regX;
+		shape.regY=obj.regY;
 		shape.x=obj.x;
 		shape.y=obj.y;
+		shape.rotation=obj.rotation;
 
-		shape.drawPerm(shape,false);
-		// if (owner.shapeNOW.type=="text"){
+		// if (owner.shapeNOW.type=="text"){119.89.134.108
 		// 	if (owner.resizer.parent==undefined)
 		// 		owner.addChild(this.resizer);
 		// 		owner.resizer.wrapTarget(owner.resizer,owner.shapeNOW);
@@ -766,7 +808,7 @@
 			nameIn+=owner._int
 			++owner._int;
 		}
-		var shape = new Forms["Form"+toTitleCase(owner._tempModel.classIn)](nameIn, type)
+		var shape = new Forms["Form"+toTitleCase(owner._tempModel.classIn)](nameIn, type, mainStage)
 		//var shape = new FormLine("rcolvi_"+type, type);
 		shape.x=mainStage.mouseX;
 		shape.y=mainStage.mouseY;

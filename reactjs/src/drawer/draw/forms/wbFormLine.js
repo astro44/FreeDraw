@@ -364,9 +364,11 @@ import BrowserDetect from '../../BrowserDetect'
 		var HTC =owner.bg.hitArea.graphics;
 		//console.log(owner);
 		var tot = owner.points.length;
+		// debugger;
+			console.log('******************************',tot);
 		if (tot===0){
 			// var parentIN= owner.parent;
-			//console.log(parentIN.getNumChildren());
+			console.log('******************************---->>>',owner.parent);
 			owner.parent.removeChild(this);
 			//console.log(parentIN.getNumChildren());
 			return false;
@@ -585,16 +587,16 @@ import BrowserDetect from '../../BrowserDetect'
 		// propSquare2(owner.sqr2,20,{x:tor.x,y:tor.y},"#0000FF");
 		 //propSquare2(owner.sqr2,20,{x:fromr.x,y:fromr.y},"#0000FF");
 		//  var ddpt2=owner.bg.localToLocal(tor.x,tor.y,owner.parent);
-		 var ddpt=owner.bg.localToLocal(fromr.x,fromr.y,owner.parent);
-		
-		
+		if (owner.parent) {
+			var ddpt=owner.bg.localToLocal(fromr.x,fromr.y,owner.parent);	
+			owner.x=ddpt.x;
+			owner.y=ddpt.y;
+		}
 		positionEnds(owner,fromr, tor);
 		//positionEnds(owner,from, to);
 		owner.points=[];
 		owner.points.push({x:owner.arrow.x , y: owner.arrow.y});
 		
-		owner.x=ddpt.x;
-		owner.y=ddpt.y;
 		linkFinal(owner,owner,false);
 		
 		propArrow(owner.arrow,20,owner.color);

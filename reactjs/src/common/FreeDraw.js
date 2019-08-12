@@ -54,8 +54,10 @@ class FreeDraw extends Component {
   getBoard = () => {
     return this.main.getBoard()
   }
-  selectImage = (event) => {
-    const { target:{src=""}} = event
+  switchTab = (tab) => {
+    return this.main.getBoard().wbSwitch(tab)
+  }
+  selectImage = (src, index)=>() => {
     var image = new Image();
 		image.crossOrigin = "Anonymous";
 		image.src = src;
@@ -67,9 +69,13 @@ class FreeDraw extends Component {
         width:image.width,
         height:image.height,
       },() => {
-        this.getBoard().setImage(image)
+        this.setImage(image)
+        this.switchTab(index)
       })
 		}
+  }
+  setImage = (image) => {
+    this.getBoard().setImage(image)
   }
   setRotation = (right) => {
 		const { rotation } = this.state
@@ -113,7 +119,13 @@ class FreeDraw extends Component {
       width,
       height
     })
-	}
+  }
+  download = () => {
+    var link = document.createElement('a');
+    link.download = 'filename.png';
+    link.href = this.mainCanvas.current.toDataURL()
+    link.click();
+  }
   render() {
     const { width, height, image, src } = this.state
     const images = [
@@ -142,7 +154,7 @@ class FreeDraw extends Component {
               }}
             >
               <img src={e} alt="img" width="200"
-                onClick={this.selectImage}
+                onClick={this.selectImage(e, k)}
                 style={src === e?{
                   border:"10px solid #1faf46",
                   borderRadius: "12px"
