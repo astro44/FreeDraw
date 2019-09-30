@@ -581,7 +581,7 @@
 		console.log("!!!!! create    !!!"+owner._tempModel.classIn);
 		var mc = owner.layers['cvsMAIN'];
 		var type =owner._tempModel.type
-		var nameIn="rcolvi_";
+		var nameIn=(new Date()).getTime() + "rcolvi_";
 		if (!owner._isSynched){
 			nameIn+=owner._int
 			++owner._int;
